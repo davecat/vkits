@@ -1,0 +1,166 @@
+{
+  "menus": {
+    "menus": [
+      {
+        "id": "1",
+        "name": "控制台首页",
+        "url": "/",
+        "icon": "fa fa-dashboard",
+        "type": 1,
+        "orderNum": 0,
+        "label": "控制台首页",
+        "value": "1"
+      },
+      {
+        "id": "2",
+        "name": "个人信息",
+        "url": "",
+        "icon": "fa fa-user-secret",
+        "type": 0,
+        "orderNum": 0,
+        "children": [
+          {
+            "id": "3",
+            "name": "个人资料",
+            "url": "profile",
+            "icon": "fa fa-file-text",
+            "type": 1,
+            "orderNum": 0,
+            "label": "个人资料",
+            "value": "3"
+          },
+          {
+            "id": "4",
+            "name": "修改密码",
+            "url": "changePassword",
+            "icon": "fa fa-lock",
+            "type": 1,
+            "orderNum": 0,
+            "label": "修改密码",
+            "value": "4"
+          }
+        ],
+        "label": "个人信息",
+        "value": "2"
+      },
+      {
+        "id": "5",
+        "name": "系统管理",
+        "url": "",
+        "icon": "el-icon-setting",
+        "type": 0,
+        "orderNum": 0,
+        "children": [
+          {
+            "id": "6",
+            "name": "用户管理",
+            "url": "users",
+            "icon": "fa fa-user",
+            "type": 1,
+            "orderNum": 0,
+            "label": "用户管理",
+            "value": "6"
+          },
+          {
+            "id": "7",
+            "name": "角色管理",
+            "url": "roles",
+            "icon": "fa fa-table",
+            "type": 1,
+            "orderNum": 0,
+            "label": "角色管理",
+            "value": "7"
+          },
+          {
+            "id": "8",
+            "name": "权限管理",
+            "url": "roles",
+            "icon": "fa fa-th-large",
+            "type": 1,
+            "orderNum": 0,
+            "label": "权限管理",
+            "value": "8"
+          },
+          {
+            "id": "9",
+            "name": "菜单管理",
+            "url": "menus",
+            "icon": "fa fa-th",
+            "type": 1,
+            "orderNum": 0,
+            "label": "菜单管理",
+            "value": "9"
+          },
+          {
+            "id": "10",
+            "name": "操作日志",
+            "url": "syslogs",
+            "icon": "fa fa-list-ol",
+            "type": 1,
+            "orderNum": 0,
+            "label": "操作日志",
+            "value": "10"
+          }
+        ],
+        "label": "系统管理",
+        "value": "5"
+      },
+      {
+        "id": "11",
+        "name": "组织机构",
+        "url": "",
+        "icon": "fa fa-building",
+        "type": 0,
+        "orderNum": 0,
+        "children": [
+          {
+            "id": "12",
+            "name": "员工管理",
+            "url": "users",
+            "icon": "fa fa-user",
+            "type": 1,
+            "orderNum": 0,
+            "children": [],
+            "label": "员工管理",
+            "value": "12"
+          },
+          {
+            "id": "13",
+            "name": "部门管理",
+            "url": "roles",
+            "icon": "fa fa-align-left",
+            "type": 1,
+            "orderNum": 0,
+            "children": [],
+            "label": "部门管理",
+            "value": "13"
+          },
+          {
+            "id": "14",
+            "name": "工作组管理",
+            "url": "group",
+            "icon": "fa fa-group",
+            "type": 1,
+            "orderNum": 0,
+            "children": [],
+            "label": "工作组管理",
+            "value": "14"
+          },
+          {
+            "id": "15",
+            "name": "组织管理",
+            "url": "syslogs",
+            "icon": "fa fa-align-right",
+            "type": 1,
+            "orderNum": 0,
+            "children": [],
+            "label": "组织管理",
+            "value": "15"
+          }
+        ],
+        "label": "组织机构",
+        "value": "11"
+      }
+    ]
+  }
+}

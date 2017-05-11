@@ -1,0 +1,79 @@
+<template>
+    <div class="header">
+        <div class="logo">后台管理系统</div>
+        <div class="user-info">
+                <span class="username">你好，Ethan</span>
+            <i class="fa fa-sign-out logout"></i>
+        </div>
+    </div>
+</template>
+<script>
+    export default {
+        data() {
+            return {
+                name: 'linxin'
+            }
+        },
+        computed: {
+            username(){
+                let username = localStorage.getItem('ms_username');
+                return username ? username : this.name;
+            }
+        },
+        methods: {
+            handleCommand(command) {
+                if (command == 'logout') {
+                    localStorage.removeItem('ms_username')
+                    this.$router.push('/login');
+                }
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .header {
+        position: relative;
+        box-sizing: border-box;
+        width: 100%;
+        height: 70px;
+        font-size: 22px;
+        line-height: 70px;
+        color: #fff;
+    }
+
+    .header .logo {
+        float: left;
+        width: 250px;
+        text-align: center;
+    }
+
+    .user-info {
+        float: right;
+        padding-right: 50px;
+        font-size: 16px;
+        color: #fff;
+    }
+
+    .user-info .user-logo {
+        position: absolute;
+        left: 0;
+        top: 15px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+    .username {
+        height: 60px;
+        line-height: 60px;
+        cursor: pointer;
+    }
+    .logout{
+        width:60px;
+        height: 60px;
+        line-height: 70px;
+        text-align: center;
+        float: right;
+        cursor: pointer;
+    }
+</style>
