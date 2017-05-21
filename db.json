@@ -74,7 +74,7 @@
           {
             "id": "8",
             "name": "权限管理",
-            "url": "roles",
+            "url": "permissions",
             "icon": "fa fa-th-large",
             "type": 1,
             "orderNum": 0,
@@ -116,7 +116,7 @@
           {
             "id": "12",
             "name": "员工管理",
-            "url": "users",
+            "url": "employees",
             "icon": "fa fa-user",
             "type": 1,
             "orderNum": 0,
@@ -127,7 +127,7 @@
           {
             "id": "13",
             "name": "部门管理",
-            "url": "roles",
+            "url": "departments",
             "icon": "fa fa-align-left",
             "type": 1,
             "orderNum": 0,
@@ -149,7 +149,7 @@
           {
             "id": "15",
             "name": "组织管理",
-            "url": "syslogs",
+            "url": "orgnazation",
             "icon": "fa fa-align-right",
             "type": 1,
             "orderNum": 0,
@@ -161,6 +161,11 @@
         "label": "组织机构",
         "value": "11"
       }
+    ]
+  },
+  "roles": {
+    "roles": [
+      {"id":1, "name": "管理员","createTime": "2017-05-20 12:00:01"}
     ]
   }
 }

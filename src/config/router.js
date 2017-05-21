@@ -19,6 +19,10 @@ export default new Router({
                     component: resolve => require(['../components/page/ChangePassword.vue'], resolve)
                 },
                 {
+                    path: '/roles',
+                    component: resolve => require(['../components/page/Roles.vue'], resolve)
+                },
+                {
                     path: '/menus',
                     component: resolve => require(['../components/page/Menu.vue'], resolve)
                 }

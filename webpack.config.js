@@ -45,10 +45,6 @@ module.exports = {
         historyApiFallback: true,
         noInfo: true,
         proxy: {
-            '/api/v2/*': {
-                target: 'https://api.anlewowo.com',
-                secure: false
-            },
             '/api/v1/*': {
                 target: 'http://localhost:5001',
                 secure: false
