@@ -3,7 +3,7 @@
         <div class="logo">后台管理系统</div>
         <div class="user-info">
                 <span class="username">你好，Ethan</span>
-            <i class="fa fa-sign-out logout"></i>
+            <i class="fa fa-sign-out logout" @click="doLogout"></i>
         </div>
     </div>
 </template>
@@ -21,11 +21,13 @@
             }
         },
         methods: {
-            handleCommand(command) {
-                if (command == 'logout') {
-                    localStorage.removeItem('ms_username')
+            doLogout() {
+                this.axios.get("/anon/logout").then((response) => {
+                    console.log(response.data);
                     this.$router.push('/login');
-                }
+                }).catch((error) => {
+                    console.log(error);
+                })
             }
         }
     }

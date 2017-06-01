@@ -19,21 +19,21 @@ import VueAxios from 'vue-axios';
 // 设置axios支持set cookies
 axios.defaults.withCredentials = true;
 // Add a request interceptor
-axios.interceptors.request.use(function (config) {
-    if (store.state.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
-        config.headers.Authorization = `token ${store.state.token}`;
-    }
-    return config;
-}, function (error) {
-    // Do something with request error
-    return Promise.reject(error);
-});
+// axios.interceptors.request.use(function (config) {
+//     if (store.state.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
+//         config.headers.Authorization = `token ${store.state.token}`;
+//     }
+//     return config;
+// }, function (error) {
+//     // Do something with request error
+//     return Promise.reject(error);
+// });
 // Add a 401 response interceptor
 axios.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
     if  (401 === error.response.status) {
-        window.location = '/login';
+        window.location = '/';
     }
     return Promise.reject(error);
 });

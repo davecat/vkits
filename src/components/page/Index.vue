@@ -12,7 +12,7 @@
 
             <!-- Your Page Content Here -->
             <el-button type="primary" @click="test">测试Get</el-button>
-            <el-button type="primary" @click="test2">测试Post</el-button>
+            <el-button type="primary" @click="test2">测试Login</el-button>
             <el-button type="primary" @click="test3">测试合并请求</el-button>
             <el-button type="primary" @click="getMenu">获取Menu</el-button>
 
@@ -25,20 +25,18 @@
     export default {
         methods: {
             test() {
-                this.axios.get("/api/v2/sign", {
-                    params: {
-                        orderId: 1
-                    }
-                }).then((response) => {
+                this.axios.get("/api/v1/menu").then((response) => {
                     console.log(response.data);
                 }).catch((error) => {
                     console.log(error);
                 })
             },
             test2() {
-                this.axios.post("/api/user", {
-                    firstName: 'Ethan',
-                    lastName: 'Liu'
+                this.axios.post("/anon/login", {
+                    username: 'admin',
+                    password: '123456',
+                    captchaId: 'xxx',
+                    captcha: 'zzz'
                 }).then((response) => {
                     console.log(response.data);
                 }).catch((error) => {
