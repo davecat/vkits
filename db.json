@@ -4,7 +4,7 @@
       {
         "id": "1",
         "name": "控制台首页",
-        "url": "/",
+        "url": "/home",
         "icon": "fa fa-dashboard",
         "type": 1,
         "orderNum": 0,
