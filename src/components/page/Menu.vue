@@ -57,8 +57,8 @@
                     </el-form-item>
                     <el-form-item label="菜单类型">
                         <el-select v-model="form.type" placeholder="请选择菜单类型">
-                            <el-option label="目录" :value="0"></el-option>
-                            <el-option label="功能" :value="1"></el-option>
+                            <el-option label="目录" :value="Directory"></el-option>
+                            <el-option label="功能" :value="Menu"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="菜单路径">
