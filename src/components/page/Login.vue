@@ -17,6 +17,13 @@
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 </div>
                 <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名admin、密码123456、验证码zzz。</p>
+                <el-form-item prop="error" v-if="error">
+                    <el-alert
+                            :title="error"
+                            :closable="false"
+                            type="error">
+                    </el-alert>
+                </el-form-item>
             </el-form>
         </div>
     </div>
@@ -26,12 +33,13 @@
     export default {
         data: function(){
             return {
+                error: '',
                 captchaUrl: '',
                 ruleForm: {
                     username: '',
                     password: '',
                     captcha: '',
-                    captchaId: 'xxx'
+                    captchaId: ''
                 },
                 rules: {
                     username: [
@@ -55,10 +63,10 @@
                 self.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.doLogin(self.ruleForm).then((response) => {
-                            console.log(response.data);
                             self.$router.push('/home');
                         }).catch((error) => {
                             console.log(error);
+                            this.error = error.response.data.message;
                         });
                     } else {
                         console.log('error submit!!');
@@ -71,8 +79,8 @@
             },
             getCaptcha() {
                 this.axios.get("/anon/captchaId").then((response) => {
-                    console.log(response.data);
                     this.captchaUrl = response.data.captchaURL;
+                    this.ruleForm.captchaId = response.data.captchaId;
                 }).catch((error) => {
                     console.log(error);
                 })
@@ -101,7 +109,7 @@
         left:50%;
         top:50%;
         width:300px;
-        height:300px;
+        height:350px;
         margin:-150px 0 0 -190px;
         padding:40px;
         border-radius: 5px;
