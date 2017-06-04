@@ -25,17 +25,20 @@
                     <div class="text item">
                         菜单名称: {{node.name}}
                     </div>
-                    <div class="text item">
-                        菜单类型: {{node.type == 0?"目录":"功能"}}
-                    </div>
+                    <!--<div class="text item">-->
+                        <!--菜单类型: {{node.type == 0?"目录":"功能"}}-->
+                    <!--</div>-->
                     <div class="text item">
                         菜单路径: {{node.url}}
+                    </div>
+                    <div class="text item">
+                        权限标识: {{node.permission}}
                     </div>
                     <div class="text item">
                         菜单图标: <i :class="node.icon"></i>
                     </div>
                     <div class="text item">
-                        菜单顺序: {{node.orderNum}}
+                        菜单顺序: {{node.sortNum}}
                     </div>
                 </el-card>
             </el-col>
@@ -57,12 +60,15 @@
                     </el-form-item>
                     <el-form-item label="菜单类型">
                         <el-select v-model="form.type" placeholder="请选择菜单类型">
-                            <el-option label="目录" :value="Directory"></el-option>
-                            <el-option label="功能" :value="Menu"></el-option>
+                            <el-option label="目录" value="Directory"></el-option>
+                            <el-option label="功能" value="Menu"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="菜单路径">
                         <el-input v-model="form.url" :disabled="form.type == '0' "></el-input>
+                    </el-form-item>
+                    <el-form-item label="权限标识">
+                        <el-input v-model="form.permission"></el-input>
                     </el-form-item>
                     <el-form-item label="菜单图标">
                         <el-input v-model="form.icon"></el-input>
@@ -95,20 +101,22 @@
                 },
                 selectedOptions: [],
                 form: {
-                    id: '',
+                    parentId: '',
                     name: '',
                     type: '',
                     url: '',
+                    permission: '',
                     icon: '',
-                    orderNum: ''
+                    sortNum: ''
                 },
                 node: {
                     id: '',
                     name: '',
                     type: '',
                     url: '',
+                    permission: '',
                     icon: '',
-                    orderNum: ''
+                    sortNum: ''
                 }
             }
         },
@@ -123,12 +131,13 @@
                 this.node.name = data.name;
                 this.node.type = data.type;
                 this.node.url = data.url;
+                this.node.permission = data.permission;
                 this.node.icon = data.icon;
-                this.node.orderNum = data.orderNum;
+                this.node.sortNum = data.orderNum;
             },
             onSubmit() {
                 console.log(this.form);
-                this.axios.put("/api/v1/menu", this.form).then((response) => {
+                this.axios.post("/api/v1/menu", this.form).then((response) => {
                     console.log(response.data);
                 }).catch((error) => {
                     console.log(error);
@@ -142,6 +151,7 @@
             },
             cleanSelectedOptions() {
                 this.selectedOptions = [];
+                this.form.parentId = '';
             },
             getPath(id) {
                 // TODO 应该返回节点id在整个tree的路径id数组,暂时返回空数组
