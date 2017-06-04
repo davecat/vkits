@@ -25,9 +25,9 @@
                     <div class="text item">
                         菜单名称: {{node.name}}
                     </div>
-                    <!--<div class="text item">-->
-                        <!--菜单类型: {{node.type == 0?"目录":"功能"}}-->
-                    <!--</div>-->
+                    <div class="text item">
+                        菜单类型: {{node.type}}
+                    </div>
                     <div class="text item">
                         菜单路径: {{node.url}}
                     </div>
