@@ -2,7 +2,7 @@
     <div class="header">
         <div class="logo">后台管理系统</div>
         <div class="user-info">
-                <span class="username">你好，Ethan</span>
+                <span class="username">你好，{{ staffName }}</span>
             <i class="fa fa-sign-out logout" @click="doLogout"></i>
         </div>
     </div>
@@ -11,16 +11,20 @@
     export default {
         data() {
             return {
-                name: 'linxin'
+                staffName: ''
             }
         },
-        computed: {
-            username(){
-                let username = localStorage.getItem('ms_username');
-                return username ? username : this.name;
-            }
+        created: function () {
+            this.getUserInfo();
         },
         methods: {
+            getUserInfo() {
+                this.axios.get("/api/v1/user/current").then((response) => {
+                    this.staffName = response.data.staffName;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            },
             doLogout() {
                 this.axios.get("/anon/logout").then((response) => {
                     this.$router.push('/login');
