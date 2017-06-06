@@ -109,12 +109,28 @@
                     if (valid) {
                         this.axios.put("/api/v1/user/changePassword", {
                             oldPassword: this.dialog[userinfo].old_password,
-                            newPassword: this.dialog[userinfo].password}).then((response) => {
-                            console.log(response.data);
+                            newPassword: this.dialog[userinfo].password
+                        }).then((response) => {
+                            this.sendMsg();
                         }).catch((error) => {
                             console.log(error);
+                            this.sendError(error.response.data.message);
                         })
                     }
+                });
+            },
+            sendMsg() {
+                this.$message({
+                    showClose: true,
+                    message: '恭喜你，密码修改成功',
+                    type: 'success'
+                });
+            },
+            sendError(message) {
+                this.$message({
+                    showClose: true,
+                    message: message,
+                    type: 'error'
                 });
             }
         }
