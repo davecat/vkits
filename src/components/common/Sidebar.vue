@@ -3,7 +3,7 @@
         <!-- Sidebar Menu -->
         <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="dark" unique-opened router>
             <template v-for="(menu,index) in menus">
-                <el-menu-item v-if="menu.type==1" :index="menu.url"><i :class="menu.icon"></i>{{menu.name}}
+                <el-menu-item v-if='menu.type=="Menu"' :index="menu.url"><i :class="menu.icon"></i>{{menu.name}}
                 </el-menu-item>
                 <el-submenu v-else :index="menu.id">
                     <template slot="title"><i :class="menu.icon"></i>{{menu.name}}</template>

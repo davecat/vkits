@@ -23,7 +23,6 @@
         methods: {
             doLogout() {
                 this.axios.get("/anon/logout").then((response) => {
-                    console.log(response.data);
                     this.$router.push('/login');
                 }).catch((error) => {
                     console.log(error);

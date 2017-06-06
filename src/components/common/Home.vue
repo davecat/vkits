@@ -18,6 +18,21 @@
     export default {
         components: {
             vHead, vSidebar
+        },
+        created: function () {
+            this.setMenu();
+        },
+        methods: {
+            setMenu() {
+                this.axios.get("/api/v1/menu").then((response) => {
+                    let menus = response.data;
+                    menus.sort((a,b) => a.sortNum - b.sortNum);
+                    menus.forEach(m => m.children.sort((a,b) => a.sortNum - b.sortNum));
+                    this.$store.dispatch('set_menu', menus);
+                }).catch((error) => {
+                    console.log(error);
+                })
+            }
         }
     }
 </script>

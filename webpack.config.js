@@ -46,7 +46,7 @@ module.exports = {
         noInfo: true,
         proxy: {
             '/api/v1/*': {
-                target: 'http://localhost:8080',
+                target: 'http://localhost:5001',
                 secure: false
             },
             '/api/*': {
@@ -54,7 +54,7 @@ module.exports = {
                 secure: false
             },
             '/anon/*': {
-                target: 'http://localhost:8080',
+                target: 'http://localhost:5001',
                 secure: false
             }
         }

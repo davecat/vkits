@@ -11,7 +11,7 @@
                 </el-form-item>
                 <el-form-item prop="captcha">
                     <el-input type="captcha" placeholder="验证码" v-model="ruleForm.captcha" @keyup.enter.native="submitForm('ruleForm')"></el-input>
-                    <img :src="captchaUrl"/>
+                    <img :src="captchaUrl" @click="getCaptcha" />
                 </el-form-item>
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
@@ -66,6 +66,7 @@
                             self.$router.push('/home');
                         }).catch((error) => {
                             console.log(error);
+                            this.getCaptcha();
                             this.error = error.response.data.message;
                         });
                     } else {

@@ -26,7 +26,7 @@
                         菜单名称: {{node.name}}
                     </div>
                     <div class="text item">
-                        菜单类型: {{node.type}}
+                        菜单类型: {{node.type == 'Directory' ? '目录':'功能'}}
                     </div>
                     <div class="text item">
                         菜单路径: {{node.url}}
@@ -65,7 +65,7 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="菜单路径">
-                        <el-input v-model="form.url" :disabled="form.type == '0' "></el-input>
+                        <el-input v-model="form.url" :disabled="form.type == 'Directory' "></el-input>
                     </el-form-item>
                     <el-form-item label="权限标识">
                         <el-input v-model="form.permission"></el-input>
@@ -74,7 +74,7 @@
                         <el-input v-model="form.icon"></el-input>
                     </el-form-item>
                     <el-form-item label="菜单顺序">
-                        <el-input v-model="form.orderNum"></el-input>
+                        <el-input v-model="form.sortNum"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="onSubmit">新增</el-button>
@@ -133,18 +133,23 @@
                 this.node.url = data.url;
                 this.node.permission = data.permission;
                 this.node.icon = data.icon;
-                this.node.sortNum = data.orderNum;
+                this.node.sortNum = data.sortNum;
             },
             onSubmit() {
-                console.log(this.form);
-                this.axios.post("/api/v1/menu", this.form).then((response) => {
+                let postForm = Object.assign({}, this.form);
+                // TODO 应该在用户输入的权限标识前加上父级权限标识并使用冒号分隔
+                this.axios.post("/api/v1/menu", postForm).then((response) => {
                     console.log(response.data);
                 }).catch((error) => {
                     console.log(error);
                 })
             },
             delNode(id) {
-                console.log(id);
+                this.axios.delete("/api/v1/menu/" + id).then((response) => {
+                    console.log(response.data);
+                }).catch((error) => {
+                    console.log(error);
+                })
             },
             handleChange(value) {
                 this.form.parentId = value[value.length - 1];

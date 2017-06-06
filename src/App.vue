@@ -9,18 +9,6 @@
         name: 'app',
         data() {
             return {a: 1}
-        },
-        created: function () {
-            this.setMenu();
-        },
-        methods: {
-            setMenu() {
-                this.axios.get("/api/menus").then((response) => {
-                    this.$store.dispatch('set_menu', response.data.menus);
-                }).catch((error) => {
-                    console.log(error);
-                })
-            }
         }
     }
 </script>
