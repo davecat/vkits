@@ -33,6 +33,10 @@ export default new Router({
                 {
                     path: '/menus',
                     component: resolve => require(['../components/page/Menu.vue'], resolve)
+                },
+                {
+                    path: '/buttons',
+                    component: resolve => require(['../components/page/Button.vue'], resolve)
                 }
             ]
         },
