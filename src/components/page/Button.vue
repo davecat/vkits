@@ -163,24 +163,4 @@
 </script>
 
 <style>
-    .text {
-        font-size: 14px;
-    }
-
-    .item {
-        padding: 18px 0;
-    }
-
-    .clearfix:before,
-    .clearfix:after {
-        display: table;
-        content: "";
-    }
-    .clearfix:after {
-        clear: both
-    }
-
-    .box-card {
-        width: 300px;
-    }
 </style>

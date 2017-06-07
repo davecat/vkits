@@ -37,6 +37,10 @@ export default new Router({
                 {
                     path: '/buttons',
                     component: resolve => require(['../components/page/Button.vue'], resolve)
+                },
+                {
+                    path: '/users',
+                    component: resolve => require(['../components/page/User.vue'], resolve)
                 }
             ]
         },

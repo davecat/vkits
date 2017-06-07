@@ -22,22 +22,22 @@
                         <span style="line-height: 36px;">菜单配置</span>
                         <el-button style="float: right;" type="primary" @click="delNode(node.id)">删除</el-button>
                     </div>
-                    <div class="text item">
+                    <div class="text">
                         菜单名称: {{node.name}}
                     </div>
-                    <div class="text item">
+                    <div class="text">
                         菜单类型: {{node.type == 'Directory' ? '目录':'功能'}}
                     </div>
-                    <div class="text item">
+                    <div class="text">
                         菜单路径: {{node.url}}
                     </div>
-                    <div class="text item">
+                    <div class="text">
                         权限标识: {{node.permission}}
                     </div>
-                    <div class="text item">
+                    <div class="text">
                         菜单图标: <i :class="node.icon"></i>
                     </div>
-                    <div class="text item">
+                    <div class="text">
                         菜单顺序: {{node.sortNum}}
                     </div>
                 </el-card>
@@ -169,9 +169,6 @@
 <style>
     .text {
         font-size: 14px;
-    }
-
-    .item {
         padding: 18px 0;
     }
 
