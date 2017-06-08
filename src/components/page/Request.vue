@@ -7,6 +7,69 @@
             </el-breadcrumb>
         </div>
 
+        <el-row>
+            <el-button type="primary">新增</el-button>
+            <el-button type="primary">修改</el-button>
+            <el-button type="primary">删除</el-button>
+            <el-button type="primary">停用</el-button>
+            <el-button type="primary">隐藏停用</el-button>
+        </el-row>
+        <el-row>
+            <el-form :inline="true" :model="form">
+                <el-form-item label="中介编号：">
+                    <el-input v-model="form.id" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="中介名称：">
+                    <el-input v-model="form.name" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="状态：">
+                    <el-select v-model="form.status" placeholder="请选择">
+                        <el-option label="启用" value="1"></el-option>
+                        <el-option label="停用" value="0"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="Search">查询</el-button>
+                </el-form-item>
+            </el-form>
+        </el-row>
+        <el-row>
+            <el-table
+                    ref="multipleTable"
+                    :data="tableData"
+                    border
+                    tooltip-effect="dark"
+                    style="width: 100%"
+                    @selection-change="handleSelectionChange">
+                <el-table-column type="selection" width="80">
+                </el-table-column>
+                <el-table-column
+                        prop="code"
+                        label="中介编号">
+                </el-table-column>
+                <el-table-column
+                        prop="name"
+                        label="中介名称">
+                </el-table-column>
+                <el-table-column
+                        prop="branchAmount"
+                        label="门店数量">
+                </el-table-column>
+                <el-table-column
+                        prop="enabled"
+                        label="状态"
+                        show-overflow-tooltip>
+                </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination
+                        @current-change="handleCurrentChange"
+                        layout="prev, pager, next"
+                        :total="totalElements">
+                </el-pagination>
+            </div>
+        </el-row>
+
     </div>
 </template>
 
@@ -15,7 +78,11 @@
         data() {
             return {
                 tableData: [],
-                cur_page: 1
+                multipleSelection: [],
+                cur_page: 1,
+                size: 10,
+                totalElements: 0,
+                form: {}
             }
         },
         created(){
@@ -28,12 +95,14 @@
             },
             getData(){
                 let self = this;
-                this.axios.get('/api/roles', {
+                this.axios.post('/api/v1/agency/getAgencyPage', {
                     params: {
-                        page: self.cur_page
+                        page: self.cur_page - 1,
+                        size: self.size
                     }
                 }).then((res) => {
-                    self.tableData = res.data.roles;
+                    self.tableData = res.data.content;
+                    self.totalElements = res.data.totalElements;
                 })
             },
             handleEdit(index, row) {
@@ -42,6 +111,12 @@
             handleDelete(index, row) {
                 this.$message.error('删除第' + (index + 1) + '行');
             },
+            Search() {
+                console.log("Search")
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            }
         }
     }
 </script>
