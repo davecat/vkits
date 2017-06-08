@@ -63,6 +63,7 @@
                 self.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.doLogin(self.ruleForm).then((response) => {
+                            localStorage.setItem('token', response.data.token);
                             self.$router.push('/home');
                         }).catch((error) => {
                             console.log(error);

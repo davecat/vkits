@@ -2,170 +2,147 @@
   "menus": {
     "menus": [
       {
-        "id": "1",
-        "name": "控制台首页",
-        "url": "/home",
+        "children": [],
         "icon": "fa fa-dashboard",
-        "type": 1,
-        "orderNum": 0,
-        "label": "控制台首页",
-        "value": "1"
+        "id": "402880f65c7bc026015c7bc1552a0000",
+        "name": "控制台首页",
+        "permission": "home",
+        "sortNum": 1,
+        "type": "Menu",
+        "url": "/home"
       },
       {
-        "id": "2",
-        "name": "个人信息",
-        "url": "",
-        "icon": "fa fa-user-secret",
-        "type": 0,
-        "orderNum": 0,
         "children": [
           {
-            "id": "3",
-            "name": "个人资料",
-            "url": "profile",
-            "icon": "fa fa-file-text",
-            "type": 1,
-            "orderNum": 0,
-            "label": "个人资料",
-            "value": "3"
-          },
-          {
-            "id": "4",
-            "name": "修改密码",
-            "url": "changePassword",
-            "icon": "fa fa-lock",
-            "type": 1,
-            "orderNum": 0,
-            "label": "修改密码",
-            "value": "4"
-          }
-        ],
-        "label": "个人信息",
-        "value": "2"
-      },
-      {
-        "id": "5",
-        "name": "系统管理",
-        "url": "",
-        "icon": "el-icon-setting",
-        "type": 0,
-        "orderNum": 0,
-        "children": [
-          {
-            "id": "6",
+            "children": [],
+            "icon": "fa fa-user",
+            "id": "402880f65c7bc026015c7bc2e1860002",
             "name": "用户管理",
-            "url": "users",
-            "icon": "fa fa-user",
-            "type": 1,
-            "orderNum": 0,
-            "label": "用户管理",
-            "value": "6"
+            "permission": "system:users",
+            "sortNum": 1,
+            "type": "Menu",
+            "url": "/users"
           },
           {
-            "id": "7",
-            "name": "角色管理",
-            "url": "roles",
+            "children": [],
             "icon": "fa fa-table",
-            "type": 1,
-            "orderNum": 0,
-            "label": "角色管理",
-            "value": "7"
+            "id": "402880f65c7bc026015c7bc366da0003",
+            "name": "角色管理",
+            "permission": "system:roles",
+            "sortNum": 2,
+            "type": "Menu",
+            "url": "/roles"
           },
           {
-            "id": "8",
-            "name": "权限管理",
-            "url": "permissions",
-            "icon": "fa fa-th-large",
-            "type": 1,
-            "orderNum": 0,
-            "label": "权限管理",
-            "value": "8"
-          },
-          {
-            "id": "9",
-            "name": "菜单管理",
-            "url": "menus",
+            "children": [],
             "icon": "fa fa-th",
-            "type": 1,
-            "orderNum": 0,
-            "label": "菜单管理",
-            "value": "9"
+            "id": "402880f65c7bc026015c7bc3e6340004",
+            "name": "菜单管理",
+            "permission": "system:menus",
+            "sortNum": 3,
+            "type": "Menu",
+            "url": "/menus"
           },
           {
-            "id": "10",
-            "name": "操作日志",
-            "url": "syslogs",
-            "icon": "fa fa-list-ol",
-            "type": 1,
-            "orderNum": 0,
-            "label": "操作日志",
-            "value": "10"
+            "children": [],
+            "icon": "fa fa-th-large",
+            "id": "402880f65c7bc026015c7d051088000b",
+            "name": "按钮管理",
+            "permission": "system:buttons",
+            "sortNum": 4,
+            "type": "Menu",
+            "url": "/buttons"
           }
         ],
-        "label": "系统管理",
-        "value": "5"
+        "icon": "el-icon-setting",
+        "id": "402880f65c7bc026015c7bc202cd0001",
+        "name": "系统管理",
+        "permission": "system",
+        "sortNum": 99,
+        "type": "Directory",
+        "url": ""
       },
       {
-        "id": "11",
-        "name": "组织机构",
-        "url": "",
-        "icon": "fa fa-building",
-        "type": 0,
-        "orderNum": 0,
         "children": [
           {
-            "id": "12",
-            "name": "员工管理",
-            "url": "employees",
-            "icon": "fa fa-user",
-            "type": 1,
-            "orderNum": 0,
             "children": [],
-            "label": "员工管理",
-            "value": "12"
-          },
-          {
-            "id": "13",
-            "name": "部门管理",
-            "url": "departments",
-            "icon": "fa fa-align-left",
-            "type": 1,
-            "orderNum": 0,
-            "children": [],
-            "label": "部门管理",
-            "value": "13"
-          },
-          {
-            "id": "14",
-            "name": "工作组管理",
-            "url": "group",
-            "icon": "fa fa-group",
-            "type": 1,
-            "orderNum": 0,
-            "children": [],
-            "label": "工作组管理",
-            "value": "14"
-          },
-          {
-            "id": "15",
-            "name": "组织管理",
-            "url": "orgnazation",
-            "icon": "fa fa-align-right",
-            "type": 1,
-            "orderNum": 0,
-            "children": [],
-            "label": "组织管理",
-            "value": "15"
+            "icon": "fa fa-lock",
+            "id": "402880f65c7bc026015c7cd6f964000a",
+            "name": "修改密码",
+            "permission": "personal:changePassword",
+            "sortNum": 2,
+            "type": "Menu",
+            "url": "/changePassword"
           }
         ],
-        "label": "组织机构",
-        "value": "11"
+        "icon": "fa fa-user-secret",
+        "id": "402880f65c7bc026015c7c73d0110005",
+        "name": "个人信息",
+        "permission": "personal",
+        "sortNum": 98,
+        "type": "Directory",
+        "url": ""
+      },
+      {
+        "children": [],
+        "icon": "fa fa-building",
+        "id": "402880f65c816998015c822c9e0a0000",
+        "name": "中介管理",
+        "permission": "agency",
+        "sortNum": 2,
+        "type": "Menu",
+        "url": "/agency"
+      },
+      {
+        "children": [],
+        "icon": "fa fa-briefcase",
+        "id": "402880f65c816998015c822f88d00001",
+        "name": "门店管理",
+        "permission": "branch",
+        "sortNum": 3,
+        "type": "Menu",
+        "url": "/branch"
+      },
+      {
+        "children": [],
+        "icon": "fa fa-male",
+        "id": "402880f65c816998015c82313c660002",
+        "name": "经纪人管理",
+        "permission": "agent",
+        "sortNum": 4,
+        "type": "Menu",
+        "url": "/agent"
+      },
+      {
+        "children": [
+          {
+            "children": [],
+            "icon": "fa fa-paper-plane",
+            "id": "402880f65c816998015c823793900004",
+            "name": "分期申请",
+            "permission": "instalment:request",
+            "sortNum": 1,
+            "type": "Menu",
+            "url": "/request"
+          }
+        ],
+        "icon": "fa fa-bars",
+        "id": "402880f65c816998015c8235feeb0003",
+        "name": "分期管理",
+        "permission": "instalment",
+        "sortNum": 5,
+        "type": "Directory",
+        "url": ""
       }
     ]
   },
   "roles": {
     "roles": [
-      {"id":1, "name": "管理员","createTime": "2017-05-20 12:00:01"}
+      {
+        "id": 1,
+        "name": "管理员",
+        "createTime": "2017-05-20 12:00:01"
+      }
     ]
   }
 }

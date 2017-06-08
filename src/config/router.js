@@ -8,10 +8,12 @@ export default new Router({
     routes: [
         {
             path: '/',
+            meta: { requiresAuth: false },
             redirect: '/login'
         },
         {
             path: '/login',
+            meta: { requiresAuth: false },
             component: resolve => require(['../components/page/Login.vue'], resolve)
         },
         {
@@ -20,27 +22,53 @@ export default new Router({
             children:[
                 {
                     path: '/',
+                    meta: { requiresAuth: true },
                     component: resolve => require(['../components/page/Index.vue'], resolve)
                 },
                 {
                     path: '/changePassword',
+                    meta: { requiresAuth: true },
                     component: resolve => require(['../components/page/ChangePassword.vue'], resolve)
                 },
                 {
                     path: '/roles',
+                    meta: { requiresAuth: true },
                     component: resolve => require(['../components/page/Roles.vue'], resolve)
                 },
                 {
                     path: '/menus',
+                    meta: { requiresAuth: true },
                     component: resolve => require(['../components/page/Menu.vue'], resolve)
                 },
                 {
                     path: '/buttons',
+                    meta: { requiresAuth: true },
                     component: resolve => require(['../components/page/Button.vue'], resolve)
                 },
                 {
                     path: '/users',
+                    meta: { requiresAuth: true },
                     component: resolve => require(['../components/page/User.vue'], resolve)
+                },
+                {
+                    path: '/agency',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Agency.vue'], resolve)
+                },
+                {
+                    path: '/branch',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Branch.vue'], resolve)
+                },
+                {
+                    path: '/agent',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Agent.vue'], resolve)
+                },
+                {
+                    path: '/request',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Request.vue'], resolve)
                 }
             ]
         },
@@ -50,6 +78,7 @@ export default new Router({
             children:[
                 {
                     path: '/',
+                    meta: { requiresAuth: false },
                     component: resolve => require(['../components/page/NotFound.vue'], resolve)
                 }
             ]

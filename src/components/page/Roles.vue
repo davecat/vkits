@@ -8,9 +8,6 @@
         </div>
 
         <el-row>
-            <el-button type="primary">新建角色</el-button>
-        </el-row>
-        <el-row>
             <el-table :data="tableData" border style="width: 50%">
                 <el-table-column prop="id" label="ID" width="120">
                 </el-table-column>

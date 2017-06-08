@@ -40,6 +40,21 @@ axios.interceptors.response.use(function (response) {
 Vue.use(VueAxios, axios);
 
 import router from './config/router.js';
+
+router.beforeEach((to, from, next) => {
+    if(to.matched.some(record => record.meta.requiresAuth)) {
+        const token = localStorage.getItem('token');
+        if (!token || token === null) {
+            console.log("I'm here2");
+            next({path: '/login'})
+        } else {
+            next()
+        }
+    } else {
+        next()
+    }
+});
+
 import "babel-polyfill";
 import App from './App.vue';
 
