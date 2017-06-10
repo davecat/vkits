@@ -33,6 +33,7 @@ axios.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
     if  (401 === error.response.status) {
+        localStorage.removeItem('token');
         window.location = '/';
     }
     return Promise.reject(error);
@@ -42,10 +43,15 @@ Vue.use(VueAxios, axios);
 import router from './config/router.js';
 
 router.beforeEach((to, from, next) => {
+    if(to.path === '/login') {
+        const token = localStorage.getItem('token');
+        if(token) {
+            next({path: '/home'})
+        }
+    }
     if(to.matched.some(record => record.meta.requiresAuth)) {
         const token = localStorage.getItem('token');
         if (!token || token === null) {
-            console.log("I'm here2");
             next({path: '/login'})
         } else {
             next()
