@@ -30,6 +30,21 @@
             </el-form>
         </el-row>
         <el-row>
+            <!--<el-tag>待补充</el-tag>-->
+            <!--<el-tag type="gray">待修改</el-tag>-->
+            <!--<el-tag type="primary">待审核</el-tag>-->
+            <!--<el-tag type="success">审批通过</el-tag>-->
+            <!--<el-tag type="warning">审批不通过</el-tag>-->
+            <!--<el-tag type="danger">已取消</el-tag>-->
+            <el-radio-group v-model="radio">
+                <el-radio-button label="待补充"></el-radio-button>
+                <el-radio-button label="待修改"></el-radio-button>
+                <el-radio-button label="待审核"></el-radio-button>
+                <el-radio-button label="审批通过"></el-radio-button>
+                <el-radio-button label="审批不通过"></el-radio-button>
+            </el-radio-group>
+        </el-row>
+        <el-row>
             <el-table
                     ref="multipleTable"
                     :data="tableData"
@@ -98,7 +113,9 @@
 </template>
 
 <script>
+    import ElRow from "element-ui/packages/row/src/row";
     export default {
+        components: {ElRow},
         data() {
             return {
                 tableData: [],
@@ -106,7 +123,8 @@
                 cur_page: 1,
                 size: 10,
                 totalElements: 0,
-                form: {}
+                form: {},
+                radio: ''
             }
         },
         created(){
