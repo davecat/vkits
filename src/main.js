@@ -40,6 +40,9 @@ axios.interceptors.response.use(function (response) {
 });
 Vue.use(VueAxios, axios);
 
+//vuex store
+import store from './store/';
+
 import router from './config/router.js';
 
 router.beforeEach((to, from, next) => {
@@ -54,6 +57,14 @@ router.beforeEach((to, from, next) => {
         if (!token || token === null) {
             next({path: '/login'})
         } else {
+            Vue.axios.get("/api/v1/menu").then((response) => {
+                let menus = response.data;
+                menus.sort((a,b) => a.sortNum - b.sortNum);
+                menus.forEach(m => m.children.sort((a,b) => a.sortNum - b.sortNum));
+                store.dispatch('set_menu', menus);
+            }).catch((error) => {
+                console.log(error);
+            });
             next()
         }
     } else {
@@ -63,9 +74,6 @@ router.beforeEach((to, from, next) => {
 
 import "babel-polyfill";
 import App from './App.vue';
-
-//vuex store
-import store from './store/';
 
 new Vue({
     el: '#app',
