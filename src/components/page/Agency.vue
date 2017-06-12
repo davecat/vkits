@@ -336,11 +336,7 @@
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
-                if(val.length > 1) {
-                    this.multipleEditButton = true;
-                } else {
-                    this.multipleEditButton = false;
-                }
+                this.multipleEditButton = val.length > 1;
             }
         }
     }
