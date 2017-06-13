@@ -10,7 +10,6 @@
         <el-row>
             <el-button type="primary">修改</el-button>
             <el-button type="primary">停用</el-button>
-            <el-button type="primary">隐藏停用</el-button>
             <el-button type="primary">审批通过</el-button>
             <el-button type="primary">审批不通过</el-button>
         </el-row>

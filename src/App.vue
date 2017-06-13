@@ -146,4 +146,13 @@
     .pure-button{
         background: #20a0ff;
     }
+    .el-row {
+        margin-bottom: 20px;
+
+    &
+    :last-child {
+        margin-bottom: 0;
+    }
+
+    }
 </style>
