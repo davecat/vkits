@@ -2,8 +2,8 @@
     <div>
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 控制台</el-breadcrumb-item>
-                <el-breadcrumb-item>门店管理</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 分期管理</el-breadcrumb-item>
+                <el-breadcrumb-item>分期合同</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
 
