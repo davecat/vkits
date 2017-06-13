@@ -69,6 +69,31 @@ export default new Router({
                     path: '/request',
                     meta: { requiresAuth: true },
                     component: resolve => require(['../components/page/Request.vue'], resolve)
+                },
+                {
+                    path: '/contract',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Contract.vue'], resolve)
+                },
+                {
+                    path: '/loaner',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Loaner.vue'], resolve)
+                },
+                {
+                    path: '/risk_control_request',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Risk_control_request.vue'], resolve)
+                },
+                {
+                    path: '/post_lending_management_contract',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Post_lending_management_contract.vue'], resolve)
+                },
+                {
+                    path: '/request_handling',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Request_handling.vue'], resolve)
                 }
             ]
         },
