@@ -17,6 +17,7 @@
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="所属中介：">
                     <el-select v-model="searchForm.agencyId">
+                        <el-option label="全部" value=""></el-option>
                         <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
                     </el-select>
                 </el-form-item>

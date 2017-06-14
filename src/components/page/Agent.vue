@@ -8,6 +8,7 @@
         </div>
 
         <el-row>
+            <el-button type="primary" @click="dialogVisible = true">启用</el-button>
             <el-button type="primary" @click="dialogVisible1 = true">停用</el-button>
             <el-button type="primary" @click="dialogVisible2 = true">审批通过</el-button>
             <el-button type="primary" @click="dialogVisible3 = true">审批不通过</el-button>
@@ -19,11 +20,13 @@
                 </el-form-item>
                 <el-form-item label="所属中介：">
                     <el-select v-model="searchForm.agencyId" @change="getBranchList(searchForm.agencyId)">
+                        <el-option label="全部" value=""></el-option>
                         <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="所属门店：">
                     <el-select v-model="searchForm.branchId">
+                        <el-option label="全部" value=""></el-option>
                         <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
                     </el-select>
                 </el-form-item>
@@ -74,8 +77,10 @@
                 </el-table-column>
                 <el-table-column
                         prop="status"
-                        label="人员状态"
-                        show-overflow-tooltip>
+                        label="人员状态">
+                    <template scope="scope">
+                        {{ scope.row.status | agentStatusFormat }}
+                    </template>
                 </el-table-column>
                 <el-table-column label="操作">
                     <template scope="scope">
@@ -115,17 +120,24 @@
                     <el-input v-model="form.staffNo"></el-input>
                 </el-form-item>
                 <el-form-item label="人员状态：" :label-width="formLabelWidth" prop="status">
-                    <el-select v-model="searchForm.status" placeholder="请选择">
-                        <el-option label="待审批" value="Pending"></el-option>
-                        <el-option label="启用" value="Enabled"></el-option>
-                        <el-option label="停用" value="Disable"></el-option>
-                    </el-select>
+                    <span>{{ form.status | agentStatusFormat }}</span>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="resetForm('form')">取 消</el-button>
                 <el-button type="primary" @click="submitAgent('form')">确 定</el-button>
             </div>
+        </el-dialog>
+
+        <el-dialog
+                title="启用"
+                :visible.sync="dialogVisible"
+                size="tiny">
+            <span>此操作将启用选中人员，是否继续？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="multipleEnable">确 定</el-button>
+            </span>
         </el-dialog>
 
         <el-dialog
@@ -189,10 +201,11 @@
                     status: ''
                 },
                 formVisible: false,
+                dialogVisible: false,
                 dialogVisible1: false,
                 dialogVisible2: false,
                 dialogVisible3: false,
-                formLabelWidth: '80px',
+                formLabelWidth: '100px',
                 rules: {
                     name: [{required: true, message: '请输入经纪人姓名', trigger: 'blur'}],
                     tel: [{required: true, message: '请输入经纪人电话', trigger: 'blur'}],
@@ -204,6 +217,17 @@
         created(){
             this.getData();
             this.getAgencyList();
+        },
+        filters: {
+            agentStatusFormat: function (value) {
+                if (value === "Pending") {
+                    return "待审批";
+                } else if (value === "Enabled") {
+                    return "启用";
+                } else if (value === "Disable") {
+                    return "停用";
+                }
+            }
         },
         methods: {
             handleCurrentChange(val){
@@ -245,6 +269,26 @@
                 this.form.branchName = row.branchName;
                 this.formVisible = true;
             },
+            submitAgent(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.axios.put('/api/v1/agent', this.form).then((res) => {
+                            this.getData();
+                            this.$refs[formName].resetFields();
+                            this.formVisible = false;
+                        }).catch((error) => {
+                            console.log(error);
+                        })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+                this.formVisible = false;
+            },
             Search() {
                 let self = this;
                 this.axios.post('/api/v1/agent/getAgentPage', {
@@ -260,6 +304,21 @@
                 }).catch((error) => {
                     console.log(error);
                 })
+            },
+            multipleEnable() {
+                let ids = this.multipleSelection.map(row => {
+                    return row.id
+                });
+                if (ids.length === 0) {
+                    console.log('ids is null');
+                } else {
+                    this.axios.put('/api/v1/agent/enabled', ids).then((res) => {
+                        this.getData();
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                }
+                this.dialogVisible = false;
             },
             multipleDisable() {
                 let ids = this.multipleSelection.map(row => {
