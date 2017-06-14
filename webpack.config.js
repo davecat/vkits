@@ -58,6 +58,10 @@ module.exports = {
             '/anon/*': {
                 target: 'http://localhost:5001',
                 secure: false
+            },
+            '/admin/api/branch/*': {
+                target: 'http://192.168.0.104:8001',
+                secure: false
             }
         }
     },

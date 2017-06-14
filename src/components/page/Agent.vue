@@ -18,7 +18,7 @@
                     <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="所属中介：">
-                    <el-select v-model="searchForm.agencyId">
+                    <el-select v-model="searchForm.agencyId" @change="getBranchList(searchForm.agencyId)">
                         <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
                     </el-select>
                 </el-form-item>
@@ -204,7 +204,6 @@
         created(){
             this.getData();
             this.getAgencyList();
-            this.getBranchList();
         },
         methods: {
             handleCurrentChange(val){
@@ -230,8 +229,8 @@
                     console.log(error);
                 })
             },
-            getBranchList() {
-                this.axios.get('/api/v1/branch/getBranchList').then((res) => {
+            getBranchList(agencyId) {
+                this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencyId).then((res) => {
                     this.branchList = res.data;
                 }).catch((error) => {
                     console.log(error);

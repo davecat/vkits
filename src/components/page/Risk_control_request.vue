@@ -25,7 +25,7 @@
                 <el-form-item label="申请编号：">
                     <el-input v-model="form.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
-                <el-form-item label="申请日期：">
+                <el-form-item label="起租日期：">
                     <el-select v-model="form.enabled">
                         <el-option label="全部" value="1"></el-option>
                         <el-option label="今日" value="2"></el-option>
@@ -66,7 +66,7 @@
                 </el-table-column>
                 <el-table-column
                         prop="code"
-                        label="申请日期">
+                        label="起租日期">
                 </el-table-column>
                 <el-table-column
                         prop="name"

@@ -9,13 +9,6 @@
         </div>
 
         <el-row>
-            <el-button type="primary" @click="test">测试Get</el-button>
-            <el-button type="primary" @click="test2">测试用户信息</el-button>
-            <el-button type="primary" @click="test3">测试合并请求</el-button>
-            <el-button type="primary" @click="getMenu">获取Menu</el-button>
-        </el-row>
-
-        <el-row>
             <el-col :span="12">
                 <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
                 <div id="bar" style="width: 600px;height:400px;"></div>

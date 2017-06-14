@@ -29,7 +29,7 @@
                 <el-form-item label="状态：">
                     <el-select v-model="searchForm.enabled">
                         <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
+                        <el-option label="停用" value="false"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -64,7 +64,7 @@
                         label="门店状态"
                         show-overflow-tooltip>
                     <template scope="scope">
-                        {{ scope.row.enabled ? '启用':'禁用' }}
+                        {{ scope.row.enabled ? '启用':'停用' }}
                     </template>
                 </el-table-column>
                 <el-table-column label="操作">
@@ -78,6 +78,11 @@
                         <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
                             <el-button size="small" type="warning"
                                        @click="rowDelete(scope.row.id)"><i class="fa fa-trash"></i>
+                            </el-button>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="查看二维码" placement="top-end">
+                            <el-button size="small" type="success"
+                                       @click="showQRCode(scope.row)"><i class="fa fa-qrcode"></i>
                             </el-button>
                         </el-tooltip>
                     </template>
@@ -108,7 +113,7 @@
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
                     <el-select v-model="form.enabled">
                         <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
+                        <el-option label="停用" value="false"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -129,7 +134,7 @@
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
                     <el-select v-model="form2.enabled">
                         <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
+                        <el-option label="停用" value="false"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -172,6 +177,17 @@
             </span>
         </el-dialog>
 
+        <el-dialog
+                title="门店二维码"
+                :visible.sync="dialogQRCode"
+                size="tiny">
+            <span><img :src="qrCodeUrl" width="550"></span>
+            <span style="text-align:center;display:block;">经纪人注册专用</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="dialogQRCode = false">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -210,7 +226,9 @@
                 dialogVisible: false,
                 dialogVisible2: false,
                 dialogVisible3: false,
+                dialogQRCode: false,
                 deleteId: '',
+                qrCodeUrl: 'http://images.tmtpost.com/uploads/images/2014/14/report/30519/mac600.jpg',
                 formLabelWidth: '80px',
                 rules: {
                     agencyId: [{required: true, message: '请选择中介', trigger: 'change'}],
@@ -358,6 +376,19 @@
                 }).catch((error) => {
                     console.log(error);
                 })
+            },
+            showQRCode(row) {
+                this.axios.get('/admin/api/branch/getBranchQRCode', {
+                    params: {
+                        branchId: row.id,
+                        branchName: row.name
+                    }
+                }).then((res) => {
+                    this.qrCodeUrl = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=' + res.data.ticket;
+                    this.dialogQRCode = true;
+                }).catch((error) => {
+                    console.log(error);
+                });
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;

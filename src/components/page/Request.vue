@@ -15,7 +15,7 @@
                 <el-form-item label="申请编号：">
                     <el-input v-model="form.id" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
-                <el-form-item label="申请日期：">
+                <el-form-item label="起租日期：">
                     <el-input v-model="form.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="租客姓名：">
@@ -30,12 +30,6 @@
             </el-form>
         </el-row>
         <el-row>
-            <!--<el-tag>待补充</el-tag>-->
-            <!--<el-tag type="gray">待修改</el-tag>-->
-            <!--<el-tag type="primary">待审核</el-tag>-->
-            <!--<el-tag type="success">审批通过</el-tag>-->
-            <!--<el-tag type="warning">审批不通过</el-tag>-->
-            <!--<el-tag type="danger">已取消</el-tag>-->
             <el-radio-group v-model="radio">
                 <el-radio-button label="待补充"></el-radio-button>
                 <el-radio-button label="待修改"></el-radio-button>
@@ -60,7 +54,7 @@
                 </el-table-column>
                 <el-table-column
                         prop="code"
-                        label="申请日期">
+                        label="起租日期">
                 </el-table-column>
                 <el-table-column
                         prop="name"

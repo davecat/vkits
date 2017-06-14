@@ -24,7 +24,7 @@
                 <el-form-item label="状态：">
                     <el-select v-model="searchForm.enabled">
                         <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
+                        <el-option label="停用" value="false"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -58,7 +58,7 @@
                         label="状态"
                         show-overflow-tooltip>
                     <template scope="scope">
-                        {{ scope.row.enabled ? '启用':'禁用' }}
+                        {{ scope.row.enabled ? '启用':'停用' }}
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="320">
