@@ -8,26 +8,33 @@
         </div>
 
         <el-row>
-            <el-button type="primary">修改</el-button>
-            <el-button type="primary">停用</el-button>
-            <el-button type="primary">审批通过</el-button>
-            <el-button type="primary">审批不通过</el-button>
+            <el-button type="primary" @click="dialogVisible1 = true">停用</el-button>
+            <el-button type="primary" @click="dialogVisible2 = true">审批通过</el-button>
+            <el-button type="primary" @click="dialogVisible3 = true">审批不通过</el-button>
         </el-row>
         <el-row>
             <el-form :inline="true" :model="form">
                 <el-form-item label="姓名：">
-                    <el-input v-model="form.name" placeholder="支持模糊查询"></el-input>
+                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="所属中介：">
+                    <el-select v-model="searchForm.agencyId">
+                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="所属门店：">
-                    <el-input v-model="form.name" placeholder="支持模糊查询"></el-input>
+                    <el-select v-model="searchForm.branchId">
+                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="联系电话：">
-                    <el-input v-model="form.name" placeholder="支持模糊查询"></el-input>
+                    <el-input v-model="searchForm.tel" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="人员状态：">
-                    <el-select v-model="form.status" placeholder="请选择">
-                        <el-option label="启用" value="1"></el-option>
-                        <el-option label="停用" value="0"></el-option>
+                    <el-select v-model="searchForm.status" placeholder="请选择">
+                        <el-option label="待审批" value="Pending"></el-option>
+                        <el-option label="启用" value="Enabled"></el-option>
+                        <el-option label="停用" value="Disable"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -46,7 +53,7 @@
                 <el-table-column type="selection" width="80">
                 </el-table-column>
                 <el-table-column
-                        prop="code"
+                        prop="id"
                         label="人员编号">
                 </el-table-column>
                 <el-table-column
@@ -54,25 +61,31 @@
                         label="姓名">
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
+                        prop="branchName"
                         label="所属门店">
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
+                        prop="tel"
                         label="联系电话">
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
+                        prop="staffNo"
                         label="工号">
                 </el-table-column>
                 <el-table-column
-                        prop="enabled"
+                        prop="status"
                         label="人员状态"
                         show-overflow-tooltip>
                 </el-table-column>
-                <el-table-column
-                        prop="branchAmount"
-                        label="操作">
+                <el-table-column label="操作">
+                    <template scope="scope">
+                        <el-tooltip class="item" effect="dark" content="修改" placement="top-end">
+                            <el-button size="small" type="primary"
+                                       @click="handleEdit(scope.row)"><i
+                                    class="fa fa-pencil-square-o"></i>
+                            </el-button>
+                        </el-tooltip>
+                    </template>
                 </el-table-column>
             </el-table>
             <div class="pagination">
@@ -83,6 +96,70 @@
                 </el-pagination>
             </div>
         </el-row>
+
+        <el-dialog title="修改经纪人" :visible.sync="formVisible">
+            <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="所属门店：">
+                    <span>{{ form.branchName }}</span>
+                </el-form-item>
+                <el-form-item label="人员编号" :label-width="formLabelWidth">
+                    <span>{{ form.id }}</span>
+                </el-form-item>
+                <el-form-item label="人员姓名" :label-width="formLabelWidth" prop="name">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="联系电话" :label-width="formLabelWidth" prop="tel">
+                    <el-input v-model="form.tel"></el-input>
+                </el-form-item>
+                <el-form-item label="工号" :label-width="formLabelWidth" prop="staffNo">
+                    <el-input v-model="form.staffNo"></el-input>
+                </el-form-item>
+                <el-form-item label="人员状态：" :label-width="formLabelWidth" prop="status">
+                    <el-select v-model="searchForm.status" placeholder="请选择">
+                        <el-option label="待审批" value="Pending"></el-option>
+                        <el-option label="启用" value="Enabled"></el-option>
+                        <el-option label="停用" value="Disable"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="resetForm('form')">取 消</el-button>
+                <el-button type="primary" @click="submitAgent('form')">确 定</el-button>
+            </div>
+        </el-dialog>
+
+        <el-dialog
+                title="停用"
+                :visible.sync="dialogVisible1"
+                size="tiny">
+            <span>此操作将停用选中人员，是否继续？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible1 = false">取 消</el-button>
+                <el-button type="primary" @click="multipleDisable">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog
+                title="审批通过"
+                :visible.sync="dialogVisible2"
+                size="tiny">
+            <span>此操作将审批通过选中人员，是否继续？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible2 = false">取 消</el-button>
+                <el-button type="primary" @click="multiplePass">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog
+                title="审批不通过"
+                :visible.sync="dialogVisible3"
+                size="tiny">
+            <span>此操作将审批不通过选中人员，是否继续？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible3 = false">取 消</el-button>
+                <el-button type="primary" @click="multipleNoPass">确 定</el-button>
+            </span>
+        </el-dialog>
 
     </div>
 </template>
@@ -96,11 +173,38 @@
                 cur_page: 1,
                 size: 10,
                 totalElements: 0,
-                form: {}
+                agencyList: {},
+                branchList: {},
+                searchForm: {
+                    name: '',
+                    agencyId: '',
+                    branchId: '',
+                    tel: '',
+                    status: ''
+                },
+                form: {
+                    name: '',
+                    tel: '',
+                    staffNo: '',
+                    status: ''
+                },
+                formVisible: false,
+                dialogVisible1: false,
+                dialogVisible2: false,
+                dialogVisible3: false,
+                formLabelWidth: '80px',
+                rules: {
+                    name: [{required: true, message: '请输入经纪人姓名', trigger: 'blur'}],
+                    tel: [{required: true, message: '请输入经纪人电话', trigger: 'blur'}],
+                    staffNo: [{required: true, message: '请输入经纪人工号', trigger: 'blur'}],
+                    status: [{required: true, message: '请选择状态', trigger: 'change'}]
+                }
             }
         },
         created(){
             this.getData();
+            this.getAgencyList();
+            this.getBranchList();
         },
         methods: {
             handleCurrentChange(val){
@@ -109,7 +213,7 @@
             },
             getData(){
                 let self = this;
-                this.axios.post('/api/v1/agency/getAgencyPage', {
+                this.axios.post('/api/v1/agent/getAgentPage', {
                     params: {
                         page: self.cur_page - 1,
                         size: self.size
@@ -119,14 +223,89 @@
                     self.totalElements = res.data.totalElements;
                 })
             },
-            handleEdit(index, row) {
-                this.$message('编辑第' + (index + 1) + '行');
+            getAgencyList() {
+                this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
+                    this.agencyList = res.data;
+                }).catch((error) => {
+                    console.log(error);
+                })
             },
-            handleDelete(index, row) {
-                this.$message.error('删除第' + (index + 1) + '行');
+            getBranchList() {
+                this.axios.get('/api/v1/branch/getBranchList').then((res) => {
+                    this.branchList = res.data;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            },
+            handleEdit(row) {
+                this.form.id = row.id;
+                this.form.tel = row.tel;
+                this.form.name = row.name;
+                this.form.staffNo = row.staffNo;
+                this.form.status = row.status;
+                this.form.branchName = row.branchName;
+                this.formVisible = true;
             },
             Search() {
-                console.log("Search")
+                let self = this;
+                this.axios.post('/api/v1/agent/getAgentPage', {
+                    name: self.searchForm.name,
+                    branchId: self.searchForm.branchId,
+                    tel: self.searchForm.tel,
+                    status: self.searchForm.status,
+                    page: self.cur_page - 1,
+                    size: self.size
+                }).then((res) => {
+                    self.tableData = res.data.content;
+                    self.totalElements = res.data.totalElements;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            },
+            multipleDisable() {
+                let ids = this.multipleSelection.map(row => {
+                    return row.id
+                });
+                if (ids.length === 0) {
+                    console.log('ids is null');
+                } else {
+                    this.axios.put('/api/v1/agent/disable', ids).then((res) => {
+                        this.getData();
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                }
+                this.dialogVisible1 = false;
+            },
+            multiplePass() {
+                let ids = this.multipleSelection.map(row => {
+                    return row.id
+                });
+                if (ids.length === 0) {
+                    console.log('ids is null');
+                } else {
+                    this.axios.put('/api/v1/agent/pass', ids).then((res) => {
+                        this.getData();
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                }
+                this.dialogVisible2 = false;
+            },
+            multipleNoPass() {
+                let ids = this.multipleSelection.map(row => {
+                    return row.id
+                });
+                if (ids.length === 0) {
+                    console.log('ids is null');
+                } else {
+                    this.axios.put('/api/v1/agent/noPass', ids).then((res) => {
+                        this.getData();
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                }
+                this.dialogVisible3 = false;
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;

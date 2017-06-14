@@ -15,6 +15,11 @@
         </el-row>
         <el-row>
             <el-form :inline="true" :model="searchForm">
+                <el-form-item label="所属中介：">
+                    <el-select v-model="searchForm.agencyId">
+                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="门店编号：">
                     <el-input v-model="searchForm.code" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
@@ -43,7 +48,7 @@
                 <el-table-column type="selection" width="80">
                 </el-table-column>
                 <el-table-column
-                        prop="agencyId"
+                        prop="agencyName"
                         label="所属中介">
                 </el-table-column>
                 <el-table-column
@@ -182,6 +187,7 @@
                 totalElements: 0,
                 agencyList: {},
                 searchForm: {
+                    agencyId: '',
                     code: '',
                     name: '',
                     enabled: 'true'
@@ -194,6 +200,7 @@
                 },
                 form2: {
                     id: '',
+                    agencyId: '',
                     code: '',
                     name: '',
                     enabled: 'true'
@@ -339,6 +346,7 @@
             Search() {
                 let self = this;
                 this.axios.post('/api/v1/branch/getBranchPage', {
+                    agencyId: self.searchForm.agencyId,
                     code: self.searchForm.code,
                     name: self.searchForm.name,
                     enabled: self.searchForm.enabled,

@@ -2,8 +2,8 @@
     <div>
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 控制台</el-breadcrumb-item>
-                <el-breadcrumb-item>门店管理</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 内部管理</el-breadcrumb-item>
+                <el-breadcrumb-item>资金端管理</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
 
@@ -15,16 +15,13 @@
         </el-row>
         <el-row>
             <el-form :inline="true" :model="searchForm">
-                <el-form-item label="门店编号：">
-                    <el-input v-model="searchForm.code" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
-                <el-form-item label="门店名称：">
+                <el-form-item label="资金端名称：">
                     <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
-                <el-form-item label="状态：">
+                <el-form-item label="还款方式：">
                     <el-select v-model="searchForm.enabled">
-                        <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
+                        <el-option label="等额本息" value="true"></el-option>
+                        <el-option label="等额本金" value="false"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -44,23 +41,27 @@
                 </el-table-column>
                 <el-table-column
                         prop="agencyId"
-                        label="所属中介">
+                        label="资金端名称">
                 </el-table-column>
                 <el-table-column
                         prop="code"
-                        label="门店编号">
+                        label="还款方式">
                 </el-table-column>
                 <el-table-column
                         prop="name"
-                        label="门店名称">
+                        label="银行帐号（收款)">
                 </el-table-column>
                 <el-table-column
-                        prop="enabled"
-                        label="门店状态"
-                        show-overflow-tooltip>
-                    <template scope="scope">
-                        {{ scope.row.enabled ? '启用':'禁用' }}
-                    </template>
+                        prop="name"
+                        label="开户行（收款）">
+                </el-table-column>
+                <el-table-column
+                        prop="name"
+                        label="银行账号（付款至LIB)">
+                </el-table-column>
+                <el-table-column
+                        prop="name"
+                        label="开户行（收款）">
                 </el-table-column>
                 <el-table-column label="操作">
                     <template scope="scope">
