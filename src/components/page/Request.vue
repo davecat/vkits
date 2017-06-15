@@ -222,6 +222,47 @@
                     </el-form-item>
                 </el-col>
             </el-row>
+            <el-row :gutter="20">
+                <el-col :span="3">
+                    <el-form-item label="身份证照片：">
+                    </el-form-item>
+                </el-col>
+                <el-col :span="4">
+                    <el-card :body-style="{ padding: '0px' }">
+                        <img :src="photo(currentRow.idCardFrontPhoto)" class="image">
+                        <div style="padding: 14px;">
+                            <span>身份证正面</span>
+                        </div>
+                    </el-card>
+                </el-col>
+                <el-col :span="4">
+                    <el-card :body-style="{ padding: '0px' }">
+                        <img :src="photo(currentRow.idCardVersoPhoto)" class="image">
+                        <div style="padding: 14px;">
+                            <span>身份证反面</span>
+                        </div>
+                    </el-card>
+                </el-col>
+                <el-col :span="4">
+                    <el-card :body-style="{ padding: '0px' }">
+                        <img :src="photo(currentRow.idCardAndPersonPhoto)" class="image">
+                        <div style="padding: 14px;">
+                            <span>手持身份证照片</span>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20">
+                <el-col :span="3">
+                    <el-form-item label="租房合同照片：">
+                    </el-form-item>
+                </el-col>
+                <el-col :span="4" v-for="(o, index) in currentRow.contractPhotos" :key="o">
+                    <el-card :body-style="{ padding: '0px' }">
+                        <img :src="photo(currentRow.contractPhotos[index])" class="image">
+                    </el-card>
+                </el-col>
+            </el-row>
         </el-form>
 
         <el-dialog title="补充／修改分期申请" :visible.sync="formVisible">
@@ -292,7 +333,11 @@
                 <el-row>
                     <el-col :span="8">
                         <el-form-item label="最高学历：" :label-width="formLabelWidth" prop="education">
-                            <span>{{ form.education | educationFormat }}</span>
+                            <el-select v-model="form.education">
+                                <el-option label="专科及以下" value="CollegeDown"></el-option>
+                                <el-option label="本科" value="Undergraduate"></el-option>
+                                <el-option label="硕士及以上" value="PostgraduateUp"></el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
@@ -367,6 +412,7 @@
                     branchId: '',
                     status: 'Unchecked'
                 },
+                qiniu: 'http://7xt1kq.com1.z0.glb.clouddn.com/',
                 form: {
                     responsibleAgent: '',
                     applyDate: '',
@@ -448,6 +494,10 @@
                     emergencyContact: '',
                     emergencyContactMobile: '',
                     relation: '',
+                    idCardFrontPhoto: '',
+                    idCardVersoPhoto: '',
+                    idCardAndPersonPhoto: '',
+                    contractPhotos: []
                 },
                 rules: {
                     name: [{required: true, message: '请输入经纪人姓名', trigger: 'blur'}],
@@ -477,24 +527,12 @@
                 }
             },
             educationFormat: function (value) {
-                if (value === "PrimarySchool") {
-                    return "小学";
-                } else if (value === "MiddleSchool") {
-                    return "初中";
-                } else if (value === "HighSchool") {
-                    return "高中";
-                } else if (value === "Secondary") {
-                    return "中专";
-                } else if (value === "VocationalSchool") {
-                    return "高职";
-                } else if (value === "College") {
-                    return "专科";
+                if (value === "CollegeDown") {
+                    return "专科及以下";
                 } else if (value === "Undergraduate") {
                     return "本科";
-                } else if (value === "Postgraduate") {
-                    return "硕士";
-                } else if (value === "DoctorPostgraduate") {
-                    return "博士";
+                } else if (value === "PostgraduateUp") {
+                    return "硕士及以上";
                 }
             },
             relationFormat: function (value) {
@@ -505,7 +543,7 @@
                 } else if (value === "Friend") {
                     return "朋友";
                 } else if (value === "Relatives") {
-                    return "其他亲属";
+                    return "其他";
                 }
             },
             dateFormat: function (value) {
@@ -518,6 +556,11 @@
             handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();
+            },
+            photo(token) {
+                if(token !== undefined) {
+                    return this.qiniu + token;
+                }
             },
             getData(){
                 let self = this;
@@ -595,5 +638,18 @@
 </script>
 
 <style>
+    .image {
+        width: 100%;
+        display: block;
+    }
 
+    .clearfix:before,
+    .clearfix:after {
+        display: table;
+        content: "";
+    }
+
+    .clearfix:after {
+        clear: both
+    }
 </style>
