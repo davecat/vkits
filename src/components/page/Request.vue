@@ -54,14 +54,16 @@
                     border
                     tooltip-effect="dark"
                     style="width: 100%">
-                </el-table-column>
                 <el-table-column
                         prop="id"
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
-                        prop="applyDate"
+                        prop="startDate"
                         label="起租日期">
+                    <template scope="scope">
+                        {{ scope.row.startDate.substring(0, scope.row.startDate.length - 9) }}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="customerName"
@@ -126,7 +128,7 @@
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="申请日期：">
-                        <span>{{ currentRow.applyDate }}</span>
+                        <span>{{ currentRow.applyDate.substring(0, currentRow.applyDate.length - 9) }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
@@ -149,7 +151,7 @@
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="起租日期：">
-                        <span>{{ currentRow.startDate }}</span>
+                        <span>{{ currentRow.startDate.substring(0, currentRow.startDate.length - 9) }}</span>
                     </el-form-item>
                 </el-col>
             </el-row>
