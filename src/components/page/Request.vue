@@ -37,15 +37,13 @@
             </el-form>
         </el-row>
         <el-row>
-            <el-radio-group v-model="searchForm.status" @change="handleChange">
-                <el-radio label="Unchecked">待补充</el-radio>
-                <el-radio label="Returned">待修改</el-radio>
-                <el-radio label="Unconfirmed">待审核</el-radio>
-                <el-radio label="Accepted">审批通过</el-radio>
-                <el-radio label="Rejected">审批不通过</el-radio>
-            </el-radio-group>
-        </el-row>
-        <el-row>
+            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange">
+                <el-tab-pane label="待补充" name="Unchecked"></el-tab-pane>
+                <el-tab-pane label="待修改" name="Returned"></el-tab-pane>
+                <el-tab-pane label="待审核" name="Unconfirmed"></el-tab-pane>
+                <el-tab-pane label="审批通过" name="Accepted"></el-tab-pane>
+                <el-tab-pane label="审批不通过" name="Rejected"></el-tab-pane>
+            </el-tabs>
             <el-table
                     ref="multipleTable"
                     :data="tableData"
@@ -62,7 +60,7 @@
                         prop="startDate"
                         label="起租日期">
                     <template scope="scope">
-                        {{ scope.row.startDate.substring(0, scope.row.startDate.length - 9) }}
+                        {{ scope.row.startDate | dateFormat }}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -128,7 +126,7 @@
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="申请日期：">
-                        <span>{{ currentRow.applyDate.substring(0, currentRow.applyDate.length - 9) }}</span>
+                        <span>{{ currentRow.applyDate | dateFormat }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
@@ -151,7 +149,7 @@
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="起租日期：">
-                        <span>{{ currentRow.startDate.substring(0, currentRow.startDate.length - 9) }}</span>
+                        <span>{{ currentRow.startDate | dateFormat }}</span>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -230,17 +228,17 @@
             <el-form :model="form" ref="form" :rules="rules">
                 <el-row>
                     <el-col :span="8">
-                        <el-form-item label="经纪人：">
+                        <el-form-item label="经纪人：" :label-width="formLabelWidth">
                             <span>{{ form.responsibleAgent }}</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="申请日期：">
-                            <span>{{ form.applyDate }}</span>
+                        <el-form-item label="申请日期：" :label-width="formLabelWidth">
+                            <span>{{ form.applyDate | dateFormat }}</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="申请状态：">
+                        <el-form-item label="申请状态：" :label-width="formLabelWidth">
                             <span>{{ form.status | appStatusFormat }}</span>
                         </el-form-item>
                     </el-col>
@@ -248,87 +246,97 @@
                 </el-row>
                 <el-row>
                     <el-col :span="8">
-                        <el-form-item label="月租金：">
-                            <span>{{ form.monthlyRent }} 元／月</span>
+                        <el-form-item label="月租金：" :label-width="formLabelWidth" prop="monthlyRent">
+                            <el-input v-model="form.monthlyRent"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="租期：">
-                            <span>{{ form.rentPeriod }} 个月</span>
+                        <el-form-item label="租期：" :label-width="formLabelWidth" prop="rentPeriod">
+                            <el-input v-model="form.rentPeriod"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="起租日期：">
-                            <span>{{ form.startDate }}</span>
+                        <el-form-item label="起租日期：" :label-width="formLabelWidth" prop="startDate">
+                            <el-date-picker
+                                    v-model="form.startDate"
+                                    type="date"
+                                    placeholder="选择日期"
+                                    :default-value="form.startDate">
+                            </el-date-picker>
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-form-item label="房屋信息：">
-                        <span>{{ form.address }}</span>
+                    <el-form-item label="房屋信息：" :label-width="formLabelWidth" prop="address">
+                        <el-input v-model="form.address"></el-input>
                     </el-form-item>
                     <hr style="border-bottom-color: #d9d9d9; border-top: none;">
                 </el-row>
                 <el-row>
                     <el-col :span="8">
-                        <el-form-item label="租客姓名：">
+                        <el-form-item label="租客姓名：" :label-width="formLabelWidth">
                             <span>{{ form.customerName }}</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="身份证号：">
+                        <el-form-item label="身份证号：" :label-width="formLabelWidth">
                             <span>{{ form.idCardNo }}</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="手机号：">
+                        <el-form-item label="手机号：" :label-width="formLabelWidth">
                             <span>{{ form.mobile }}</span>
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="8">
-                        <el-form-item label="最高学历：">
+                        <el-form-item label="最高学历：" :label-width="formLabelWidth" prop="education">
                             <span>{{ form.education | educationFormat }}</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="工作单位：">
-                            <span>{{ form.companyName }}</span>
+                        <el-form-item label="工作单位：" :label-width="formLabelWidth" prop="companyName">
+                            <el-input v-model="form.companyName"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="单位地址：">
-                            <span>{{ form.companyAddress }}</span>
+                        <el-form-item label="单位地址：" :label-width="formLabelWidth" prop="companyAddress">
+                            <el-input v-model="form.companyAddress"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="8">
-                        <el-form-item label="开户银行：">
+                        <el-form-item label="开户银行：" :label-width="formLabelWidth" prop="bankAccount">
                             <span>{{ form.bankAccount }}</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="银行卡号：">
+                        <el-form-item label="银行卡号：" :label-width="formLabelWidth" prop="bankCard">
                             <span>{{ form.bankCard }}</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="应急联系人：">
-                            <span>{{ form.emergencyContact }}</span>
+                        <el-form-item label="应急联系人：" :label-width="formLabelWidth" prop="emergencyContact">
+                            <el-input v-model="form.emergencyContact"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="8">
-                        <el-form-item label="手机号：">
-                            <span>{{ form.emergencyContactMobile }}</span>
+                        <el-form-item label="手机号：" :label-width="formLabelWidth" prop="emergencyContactMobile">
+                            <el-input v-model="form.emergencyContactMobile"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="关系：">
-                            <span>{{ form.relation | relationFormat }}</span>
+                        <el-form-item label="关系：" :label-width="formLabelWidth" prop="relation">
+                            <el-select v-model="form.relation">
+                                <el-option label="父母" value="Parent"></el-option>
+                                <el-option label="同事" value="Fellow"></el-option>
+                                <el-option label="朋友" value="Friend"></el-option>
+                                <el-option label="其他" value="Relatives"></el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -359,8 +367,28 @@
                     branchId: '',
                     status: 'Unchecked'
                 },
-                form: {},
+                form: {
+                    responsibleAgent: '',
+                    applyDate: '',
+                    status: '',
+                    monthlyRent: '',
+                    rentPeriod: '',
+                    startDate: '',
+                    address: '',
+                    customerName: '',
+                    idCardNo: '',
+                    mobile: '',
+                    education: '',
+                    companyName: '',
+                    companyAddress: '',
+                    bankAccount: '',
+                    bankCard: '',
+                    emergencyContact: '',
+                    emergencyContactMobile: '',
+                    relation: '',
+                },
                 branchList: {},
+                formLabelWidth: '100px',
                 pickerOptions: {
                     shortcuts: [
                         {
@@ -478,6 +506,11 @@
                     return "朋友";
                 } else if (value === "Relatives") {
                     return "其他亲属";
+                }
+            },
+            dateFormat: function (value) {
+                if(typeof value === "string") {
+                    return value.substring(0, value.length - 9)
                 }
             },
         },
