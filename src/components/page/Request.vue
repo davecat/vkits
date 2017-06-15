@@ -18,6 +18,7 @@
                             align="right"
                             type="daterange"
                             placeholder="选择日期范围"
+                            @change="selectedData"
                             :picker-options="pickerOptions">
                     </el-date-picker>
                 </el-form-item>
@@ -397,6 +398,7 @@
 
 <script>
     import ElRow from "element-ui/packages/row/src/row";
+    import format from 'date-fns/format'
     export default {
         components: {ElRow},
         data() {
@@ -408,6 +410,8 @@
                 searchForm: {
                     applictionNo: '',
                     applyDate: '',
+                    startDate: '',
+                    endDate: '',
                     customerName: '',
                     branchId: '',
                     status: 'Unchecked'
@@ -558,7 +562,7 @@
                 this.getData();
             },
             photo(token) {
-                if(token !== undefined) {
+                if(token !== undefined && token !== '' && token !== null) {
                     return this.qiniu + token;
                 }
             },
@@ -566,7 +570,8 @@
                 let self = this;
                 this.axios.post('/api/v1/application/getApplicationPage', {
                     applictionNo: self.searchForm.applictionNo,
-                    applyDate: self.searchForm.applyDate,
+                    startDate: self.searchForm.startDate,
+                    endDate: self.searchForm.endDate,
                     customerName: self.searchForm.customerName,
                     branchId: self.searchForm.branchId,
                     status: self.searchForm.status,
@@ -602,7 +607,7 @@
                 this.formVisible = false;
             },
             Search() {
-                console.log("Search")
+                this.getData();
             },
             handleChange() {
                 this.getData();
@@ -631,6 +636,15 @@
                     }
                 } else {
                     this.currentRow = val;
+                }
+            },
+            selectedData() {
+                if(this.searchForm.applyDate[0] !== null) {
+                    this.searchForm.startDate = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
+                    this.searchForm.endDate = format(this.searchForm.applyDate[1], 'YYYY-MM-DD');
+                } else {
+                    this.searchForm.startDate = '';
+                    this.searchForm.endDate = '';
                 }
             }
         }
