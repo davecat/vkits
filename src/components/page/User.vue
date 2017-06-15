@@ -8,6 +8,10 @@
         </div>
 
         <el-row>
+            <el-button type="primary" @click="formVisible = true">新增</el-button>
+        </el-row>
+
+        <el-row>
             <el-col :span="14">
                 <el-table :data="tableData" border>
                     <el-table-column prop="staffName" label="用户昵称">
@@ -28,7 +32,7 @@
                         <template scope="scope">
                             <el-tooltip class="item" effect="dark" content="修改" placement="top-end">
                                 <el-button size="small" type="primary"
-                                           @click="handleEdit(scope.$index, scope.row)"><i class="fa fa-pencil-square-o"></i>
+                                           @click="handleEdit(scope.row)"><i class="fa fa-pencil-square-o"></i>
                                 </el-button>
                             </el-tooltip>
                             <el-tooltip class="item" effect="dark" content="重置密码" placement="top-end">
@@ -58,6 +62,84 @@
                 </div>
             </el-col>
         </el-row>
+
+        <el-dialog title="新增用户" :visible.sync="formVisible">
+            <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="昵称" :label-width="formLabelWidth" prop="name">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="登录名" :label-width="formLabelWidth" prop="username">
+                    <el-input v-model="form.username"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
+                    <el-input v-model="form.password"></el-input>
+                </el-form-item>
+                <el-form-item label="员工类型" :label-width="formLabelWidth" prop="type">
+                    <el-select v-model="form.type">
+                        <el-option label="内部员工" value="Interior"></el-option>
+                        <el-option label="中介公司负责人" value="Boss"></el-option>
+                        <el-option label="门店管理员" value="Branch"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="角色" :label-width="formLabelWidth" prop="roleId">
+                    <el-select v-model="form.roleId">
+                        <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="管辖中介：">
+                    <el-select v-model="form.agencies" multiple @change="getBranchList(form.agencies)">
+                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="管辖门店：">
+                    <el-select v-model="form.branches" multiple>
+                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="resetForm('form')">取 消</el-button>
+                <el-button type="primary" @click="submitUser('form')">确 定</el-button>
+            </div>
+        </el-dialog>
+
+        <el-dialog title="修改用户" :visible.sync="formVisible2">
+            <el-form :model="form2" ref="form2" :rules="rules">
+                <el-form-item label="昵称" :label-width="formLabelWidth" prop="name">
+                    <el-input v-model="form2.name"></el-input>
+                </el-form-item>
+                <el-form-item label="登录名" :label-width="formLabelWidth" prop="username">
+                    <el-input v-model="form2.username"></el-input>
+                </el-form-item>
+                <el-form-item label="员工类型" :label-width="formLabelWidth" prop="type">
+                    <el-select v-model="form2.type">
+                        <el-option label="内部员工" value="Interior"></el-option>
+                        <el-option label="中介公司负责人" value="Boss"></el-option>
+                        <el-option label="门店管理员" value="Branch"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="角色" :label-width="formLabelWidth" prop="roleId">
+                    <el-select v-model="form2.roleId">
+                        <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="管辖中介：">
+                    <el-select v-model="form2.agencies" multiple @change="getBranchList(form.agencies)">
+                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="管辖门店：">
+                    <el-select v-model="form2.branches" multiple>
+                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="resetForm2('form2')">取 消</el-button>
+                <el-button type="primary" @click="submitUser2('form2')">确 定</el-button>
+            </div>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -68,11 +150,46 @@
                 tableData: [],
                 cur_page: 1,
                 size: 10,
-                totalElements: 0
+                totalElements: 0,
+                formVisible: false,
+                formVisible2: false,
+                formLabelWidth: '80px',
+                roleList: {},
+                agencyList: {},
+                branchList: {},
+                form: {
+                    name: '',
+                    username: '',
+                    password: '',
+                    type: '',
+                    roleId: '',
+                    branches: [],
+                    agencies: [],
+                },
+                form2: {
+                    id: '',
+                    staffId: '',
+                    name: '',
+                    username: '',
+                    password: '',
+                    type: '',
+                    roleId: '',
+                    branches: [],
+                    agencies: [],
+                },
+                rules: {
+                    name: [{required: true, message: '请输入昵称', trigger: 'blur'}],
+                    username: [{required: true, message: '请输入登录名', trigger: 'blur'}],
+                    password: [{required: true, message: '请输入密码', trigger: 'blur'}],
+                    type: [{required: true, message: '请输入员工类型', trigger: 'change'}],
+                    roleId: [{required: true, message: '请选择角色', trigger: 'change'}]
+                },
             }
         },
         created(){
             this.getData();
+            this.getRoleList();
+            this.getAgencyList();
         },
         filters: {
             staffTypeFormat: function (value) {
@@ -102,8 +219,35 @@
                     self.totalElements = res.data.totalElements;
                 })
             },
-            handleEdit(index, row) {
-                this.$message('编辑第' + (index + 1) + '行');
+            getRoleList() {
+                this.axios.get('/api/v1/role/getRoleAll').then((res) => {
+                    this.roleList = res.data;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            },
+            getAgencyList() {
+                this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
+                    this.agencyList = res.data;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            },
+            getBranchList(agencies) {
+                this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencies[0]).then((res) => {
+                    this.branchList = res.data;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            },
+            handleEdit(row) {
+                this.form2.id = row.id;
+                this.form2.name = row.staffName;
+                this.form2.username = row.username;
+                this.form2.staffId = row.staffId;
+                this.form2.type = row.staffType;
+                this.form2.status = row.status;
+                this.formVisible2 = true;
             },
             resetPwd(staffId) {
                 let self = this;
@@ -127,7 +271,47 @@
                     self.tableData = res.data.content;
                     self.totalElements = res.data.totalElements;
                 })
-            }
+            },
+            submitUser(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.axios.post('/api/v1/user/admin/addUser', this.form).then((res) => {
+                            this.getData();
+                            this.$refs[formName].resetFields();
+                            this.formVisible = false;
+                        }).catch((error) => {
+                            console.log(error);
+                        })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+                this.formVisible = false;
+            },
+            submitUser2(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.axios.put('/api/v1/user/admin/updateUser', this.form2).then((res) => {
+                            this.getData();
+                            this.$refs[formName].resetFields();
+                            this.formVisible2 = false;
+                        }).catch((error) => {
+                            console.log(error);
+                        })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            resetForm2(formName) {
+                this.$refs[formName].resetFields();
+                this.formVisible2 = false;
+            },
         }
     }
 </script>
