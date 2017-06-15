@@ -97,7 +97,7 @@
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
                     <el-select v-model="form.enabled">
                         <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
+                        <el-option label="停用" value="false"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -116,10 +116,7 @@
                     <el-input v-model="form2.name"></el-input>
                 </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
-                    <el-select v-model="form2.enabled">
-                        <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
-                    </el-select>
+                    <span>{{ form2.enabled ? '启用':'停用' }}</span>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -265,10 +262,7 @@
                 this.formVisible2 = false;
             },
             handleEdit(row) {
-                this.form2.id = row.id;
-                this.form2.code = row.code;
-                this.form2.name = row.name;
-                this.form2.enabled = String(row.enabled);
+                this.form2 = row;
                 this.formVisible2 = true;
             },
             rowDelete(id) {
