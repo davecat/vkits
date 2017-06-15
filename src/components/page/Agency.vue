@@ -11,6 +11,7 @@
             <el-button type="primary" @click="formVisible = true">新增</el-button>
             <el-button type="primary" :disabled="multipleEditButton" @click="multipleEdit" >修改</el-button>
             <el-button type="primary" @click="dialogVisible = true">删除</el-button>
+            <el-button type="primary" @click="dialogVisible4 = true">启用</el-button>
             <el-button type="primary" @click="dialogVisible2 = true">停用</el-button>
         </el-row>
         <el-row>
@@ -115,7 +116,7 @@
                 <el-form-item label="中介名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form2.name"></el-input>
                 </el-form-item>
-                <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
+                <el-form-item label="状态" :label-width="formLabelWidth">
                     <span>{{ form2.enabled ? '启用':'停用' }}</span>
                 </el-form-item>
             </el-form>
@@ -158,6 +159,17 @@
             </span>
         </el-dialog>
 
+        <el-dialog
+                title="启用"
+                :visible.sync="dialogVisible4"
+                size="tiny">
+            <span>此操作将启用选中中介，是否继续？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible4 = false">取 消</el-button>
+                <el-button type="primary" @click="multipleEnable">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -192,12 +204,12 @@
                 dialogVisible: false,
                 dialogVisible2: false,
                 dialogVisible3: false,
+                dialogVisible4: false,
                 deleteId: '',
                 formLabelWidth: '80px',
                 rules: {
                     code: [{required: true, message: '请输入中介编号', trigger: 'blur'}],
-                    name: [{required: true, message: '请输入中介名称', trigger: 'blur'}],
-                    enabled: [{required: true, message: '请选择状态', trigger: 'change'}]
+                    name: [{required: true, message: '请输入中介名称', trigger: 'blur'}]
                 }
             }
         },
@@ -312,6 +324,21 @@
                     })
                 }
                 this.dialogVisible2 = false;
+            },
+            multipleEnable() {
+                let ids = this.multipleSelection.map(row => {
+                    return row.id
+                });
+                if (ids.length === 0) {
+                    console.log('ids is null');
+                } else {
+                    this.axios.put('/api/v1/agency/enabled', ids).then((res) => {
+                        this.getData();
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                }
+                this.dialogVisible4 = false;
             },
             Search() {
                 let self = this;
