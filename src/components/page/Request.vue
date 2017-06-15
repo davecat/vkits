@@ -81,12 +81,15 @@
                         label="租期">
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
+                        prop=""
                         label="手续费（元／期）" width="200">
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
+                        prop=""
                         label="总金额">
+                    <template scope="scope">
+                        {{ scope.row.monthlyRent * scope.row.rentPeriod }}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="responsibleAgent"
@@ -233,6 +236,9 @@
                         <img :src="photo(currentRow.idCardFrontPhoto)" class="image">
                         <div style="padding: 14px;">
                             <span>身份证正面</span>
+                            <div class="bottom clearfix">
+                                <el-button type="text" class="button" @click="showBigPhoto(currentRow.idCardFrontPhoto)">看大图</el-button>
+                            </div>
                         </div>
                     </el-card>
                 </el-col>
@@ -241,6 +247,9 @@
                         <img :src="photo(currentRow.idCardVersoPhoto)" class="image">
                         <div style="padding: 14px;">
                             <span>身份证反面</span>
+                            <div class="bottom clearfix">
+                                <el-button type="text" class="button" @click="showBigPhoto(currentRow.idCardVersoPhoto)">看大图</el-button>
+                            </div>
                         </div>
                     </el-card>
                 </el-col>
@@ -249,6 +258,9 @@
                         <img :src="photo(currentRow.idCardAndPersonPhoto)" class="image">
                         <div style="padding: 14px;">
                             <span>手持身份证照片</span>
+                            <div class="bottom clearfix">
+                                <el-button type="text" class="button" @click="showBigPhoto(currentRow.idCardAndPersonPhoto)">看大图</el-button>
+                            </div>
                         </div>
                     </el-card>
                 </el-col>
@@ -261,6 +273,12 @@
                 <el-col :span="4" v-for="(o, index) in currentRow.contractPhotos" :key="o">
                     <el-card :body-style="{ padding: '0px' }">
                         <img :src="photo(currentRow.contractPhotos[index])" class="image">
+                        <div style="padding: 14px;">
+                            <span>租房合同照片</span>
+                            <div class="bottom clearfix">
+                                <el-button type="text" class="button" @click="showBigPhoto(currentRow.contractPhotos[index])">看大图</el-button>
+                            </div>
+                        </div>
                     </el-card>
                 </el-col>
             </el-row>
@@ -393,6 +411,16 @@
             </div>
         </el-dialog>
 
+        <el-dialog
+                title="大图"
+                :visible.sync="dialogBigPhoto"
+                size="large">
+            <span><img :src="bigPhotoUrl" width="100%"></span>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="dialogBigPhoto = false">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -478,7 +506,9 @@
                         }
                     ]
                 },
+                bigPhotoUrl: '',
                 formVisible: false,
+                dialogBigPhoto: false,
                 currentRow: {
                     responsibleAgent: '',
                     applyDate: '',
@@ -566,6 +596,10 @@
                     return this.qiniu + token;
                 }
             },
+            showBigPhoto(token) {
+                this.bigPhotoUrl = this.qiniu + token;
+                this.dialogBigPhoto = true;
+            },
             getData(){
                 let self = this;
                 this.axios.post('/api/v1/application/getApplicationPage', {
@@ -652,6 +686,15 @@
 </script>
 
 <style>
+    .bottom {
+        margin-top: 13px;
+        line-height: 12px;
+    }
+
+    .button {
+        padding: 0;
+        float: right;
+    }
     .image {
         width: 100%;
         display: block;
