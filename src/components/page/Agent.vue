@@ -8,10 +8,10 @@
         </div>
 
         <el-row>
-            <el-button type="primary" @click="dialogVisible = true">启用</el-button>
-            <el-button type="primary" @click="dialogVisible1 = true">停用</el-button>
             <el-button type="primary" @click="dialogVisible2 = true">审批通过</el-button>
             <el-button type="primary" @click="dialogVisible3 = true">审批不通过</el-button>
+            <el-button type="primary" @click="dialogVisible = true">启用</el-button>
+            <el-button type="primary" @click="dialogVisible1 = true">停用</el-button>
         </el-row>
         <el-row>
             <el-form :inline="true" :model="form">
