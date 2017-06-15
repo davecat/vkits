@@ -182,7 +182,7 @@
                 title="门店二维码"
                 :visible.sync="dialogQRCode"
                 size="tiny">
-            <span><img :src="qrCodeUrl" width="550"></span>
+            <span><img :src="qrCodeUrl" width="100%"></span>
             <span style="text-align:center;display:block;">经纪人注册专用</span>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="dialogQRCode = false">确 定</el-button>
