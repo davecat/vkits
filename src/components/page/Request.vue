@@ -82,10 +82,6 @@
                 </el-table-column>
                 <el-table-column
                         prop=""
-                        label="手续费（元／期）" width="200">
-                </el-table-column>
-                <el-table-column
-                        prop=""
                         label="总金额">
                     <template scope="scope">
                         {{ scope.row.monthlyRent * scope.row.rentPeriod }}
@@ -96,14 +92,15 @@
                         label="经纪人">
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
+                        prop="responsibleBranch"
                         label="门店名称">
                 </el-table-column>
                 <el-table-column
                         prop="enabled"
                         label="操作">
                     <template scope="scope">
-                        <el-tooltip v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'" class="item" effect="dark" content="补充／修改分期申请" placement="top-end">
+                        <el-tooltip v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
+                                    class="item" effect="dark" content="补充／修改分期申请" placement="top-end">
                             <el-button size="small" type="primary"
                                        @click="handleEdit(scope.row)"><i
                                     class="fa fa-pencil-square-o"></i>
@@ -121,7 +118,8 @@
             </div>
         </el-row>
 
-        <el-form v-if="searchForm.status != 'Unchecked' && searchForm.status != 'Returned'" label-position="left" inline class="demo-table-expand">
+        <el-form v-if="searchForm.status != 'Unchecked' && searchForm.status != 'Returned'" label-position="left" inline
+                 class="demo-table-expand">
             <el-row>
                 <el-col :span="8">
                     <el-form-item label="经纪人：">
@@ -158,9 +156,16 @@
                 </el-col>
             </el-row>
             <el-row>
-                <el-form-item label="房屋信息：">
-                    <span>{{ currentRow.address }}</span>
-                </el-form-item>
+                <el-col :span="8">
+                    <el-form-item label="房源编号：">
+                        <span>{{ currentRow.apartmentNo }}</span>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="16">
+                    <el-form-item label="房屋信息：">
+                        <span>{{ currentRow.address }}</span>
+                    </el-form-item>
+                </el-col>
                 <hr style="border-bottom-color: #d9d9d9; border-top: none;">
             </el-row>
             <el-row>
@@ -237,7 +242,9 @@
                         <div style="padding: 14px;">
                             <span>身份证正面</span>
                             <div class="bottom clearfix">
-                                <el-button type="text" class="button" @click="showBigPhoto(currentRow.idCardFrontPhoto)">看大图</el-button>
+                                <el-button type="text" class="button"
+                                           @click="showBigPhoto(currentRow.idCardFrontPhoto)">看大图
+                                </el-button>
                             </div>
                         </div>
                     </el-card>
@@ -248,7 +255,9 @@
                         <div style="padding: 14px;">
                             <span>身份证反面</span>
                             <div class="bottom clearfix">
-                                <el-button type="text" class="button" @click="showBigPhoto(currentRow.idCardVersoPhoto)">看大图</el-button>
+                                <el-button type="text" class="button"
+                                           @click="showBigPhoto(currentRow.idCardVersoPhoto)">看大图
+                                </el-button>
                             </div>
                         </div>
                     </el-card>
@@ -259,7 +268,9 @@
                         <div style="padding: 14px;">
                             <span>手持身份证照片</span>
                             <div class="bottom clearfix">
-                                <el-button type="text" class="button" @click="showBigPhoto(currentRow.idCardAndPersonPhoto)">看大图</el-button>
+                                <el-button type="text" class="button"
+                                           @click="showBigPhoto(currentRow.idCardAndPersonPhoto)">看大图
+                                </el-button>
                             </div>
                         </div>
                     </el-card>
@@ -276,7 +287,9 @@
                         <div style="padding: 14px;">
                             <span>租房合同照片</span>
                             <div class="bottom clearfix">
-                                <el-button type="text" class="button" @click="showBigPhoto(currentRow.contractPhotos[index])">看大图</el-button>
+                                <el-button type="text" class="button"
+                                           @click="showBigPhoto(currentRow.contractPhotos[index])">看大图
+                                </el-button>
                             </div>
                         </div>
                     </el-card>
@@ -327,9 +340,16 @@
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-form-item label="房屋信息：" :label-width="formLabelWidth" prop="address">
-                        <el-input v-model="form.address"></el-input>
-                    </el-form-item>
+                    <el-col :span="8">
+                        <el-form-item label="房源编号：" :label-width="formLabelWidth" prop="apartmentNo">
+                            <el-input v-model="form.apartmentNo"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="16">
+                        <el-form-item label="房屋信息：" :label-width="formLabelWidth" prop="address">
+                            <el-input v-model="form.address"></el-input>
+                        </el-form-item>
+                    </el-col>
                     <hr style="border-bottom-color: #d9d9d9; border-top: none;">
                 </el-row>
                 <el-row>
@@ -581,7 +601,7 @@
                 }
             },
             dateFormat: function (value) {
-                if(typeof value === "string") {
+                if (typeof value === "string") {
                     return value.substring(0, value.length - 9)
                 }
             },
@@ -592,7 +612,7 @@
                 this.getData();
             },
             photo(token) {
-                if(token !== undefined && token !== '' && token !== null) {
+                if (token !== undefined && token !== '' && token !== null) {
                     return this.qiniu + token;
                 }
             },
@@ -647,7 +667,7 @@
                 this.getData();
             },
             handleCurrentRow(val) {
-                if(val === null) {
+                if (val === null) {
                     this.currentRow = {
                         responsibleAgent: '',
                         applyDate: '',
@@ -673,7 +693,7 @@
                 }
             },
             selectedData() {
-                if(this.searchForm.applyDate[0] !== null) {
+                if (this.searchForm.applyDate[0] !== null) {
                     this.searchForm.startDate = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
                     this.searchForm.endDate = format(this.searchForm.applyDate[1], 'YYYY-MM-DD');
                 } else {
@@ -695,6 +715,7 @@
         padding: 0;
         float: right;
     }
+
     .image {
         width: 100%;
         display: block;
