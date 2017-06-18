@@ -44,6 +44,7 @@
                 <el-tab-pane label="待审核" name="Unconfirmed"></el-tab-pane>
                 <el-tab-pane label="审批通过" name="Accepted"></el-tab-pane>
                 <el-tab-pane label="审批不通过" name="Rejected"></el-tab-pane>
+                <el-tab-pane label="已取消" name="Canceled"></el-tab-pane>
             </el-tabs>
             <el-table
                     ref="multipleTable"
@@ -54,10 +55,13 @@
                     tooltip-effect="dark"
                     style="width: 100%">
                 <el-table-column
+                        fixed
+                        min-width="180"
                         prop="id"
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
+                        min-width="150"
                         prop="startDate"
                         label="起租日期">
                     <template scope="scope">
@@ -65,22 +69,27 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="150"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
+                        min-width="180"
                         prop="mobile"
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         prop="monthlyRent"
                         label="月租金">
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         prop="rentPeriod"
                         label="租期">
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         prop=""
                         label="总金额">
                     <template scope="scope">
@@ -88,14 +97,18 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         prop="responsibleAgent"
                         label="经纪人">
                 </el-table-column>
                 <el-table-column
+                        min-width="150"
                         prop="responsibleBranch"
                         label="门店名称">
                 </el-table-column>
                 <el-table-column
+                        fixed="right"
+                        min-width="110"
                         prop="enabled"
                         label="操作">
                     <template scope="scope">
@@ -118,7 +131,7 @@
             </div>
         </el-row>
 
-        <el-form v-if="searchForm.status != 'Unchecked' && searchForm.status != 'Returned'" label-position="left" inline
+        <el-form label-position="left" inline
                  class="demo-table-expand">
             <el-row>
                 <el-col :span="8">
@@ -236,7 +249,7 @@
                     <el-form-item label="身份证照片：">
                     </el-form-item>
                 </el-col>
-                <el-col :span="4">
+                <el-col :span="7">
                     <el-card :body-style="{ padding: '0px' }">
                         <img :src="photo(currentRow.idCardFrontPhoto)" class="image">
                         <div style="padding: 14px;">
@@ -249,7 +262,7 @@
                         </div>
                     </el-card>
                 </el-col>
-                <el-col :span="4">
+                <el-col :span="7">
                     <el-card :body-style="{ padding: '0px' }">
                         <img :src="photo(currentRow.idCardVersoPhoto)" class="image">
                         <div style="padding: 14px;">
@@ -262,7 +275,7 @@
                         </div>
                     </el-card>
                 </el-col>
-                <el-col :span="4">
+                <el-col :span="7">
                     <el-card :body-style="{ padding: '0px' }">
                         <img :src="photo(currentRow.idCardAndPersonPhoto)" class="image">
                         <div style="padding: 14px;">
@@ -424,6 +437,73 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="3">
+                        <el-form-item label="身份证照片：">
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="7">
+                        <el-upload
+                                class="avatar-uploader"
+                                action="http://upload.qiniu.com"
+                                :data="postData"
+                                :show-file-list="false"
+                                :before-upload="beforeUpload"
+                                :on-success="uploadFrontSuccess"
+                                :on-error="handleUploadError">
+                            <img v-show="idCardFrontPhoto" :src="photo(idCardFrontPhoto)" class="avatar">
+                            <i v-show="!idCardFrontPhoto" class="el-icon-plus avatar-uploader-icon"></i>
+                            <div class="el-upload__tip" slot="tip">身份证正面</div>
+                        </el-upload>
+                    </el-col>
+                    <el-col :span="7">
+                        <el-upload
+                                class="avatar-uploader"
+                                action="http://upload.qiniu.com"
+                                :data="postData"
+                                :show-file-list="false"
+                                :before-upload="beforeUpload"
+                                :on-success="uploadVersoSuccess"
+                                :on-error="handleUploadError">
+                            <img v-show="idCardVersoPhoto" :src="photo(idCardVersoPhoto)" class="avatar">
+                            <i v-show="!idCardVersoPhoto" class="el-icon-plus avatar-uploader-icon"></i>
+                            <div class="el-upload__tip" slot="tip">身份证反面</div>
+                        </el-upload>
+                    </el-col>
+                    <el-col :span="7">
+                        <el-upload
+                                class="avatar-uploader"
+                                action="http://upload.qiniu.com"
+                                :data="postData"
+                                :show-file-list="false"
+                                :before-upload="beforeUpload"
+                                :on-success="uploadPersonSuccess"
+                                :on-error="handleUploadError">
+                            <img v-show="idCardAndPersonPhoto" :src="photo(idCardAndPersonPhoto)" class="avatar">
+                            <i v-show="!idCardAndPersonPhoto" class="el-icon-plus avatar-uploader-icon"></i>
+                            <div class="el-upload__tip" slot="tip">手持身份证照片</div>
+                        </el-upload>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="4">
+                        <el-form-item label="租房合同照片：">
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="20">
+                        <el-upload
+                                action="http://upload.qiniu.com"
+                                :data="postData"
+                                list-type="picture-card"
+                                :on-preview="handlePreview"
+                                :before-upload="beforeUpload"
+                                :on-success="uploadContractSuccess"
+                                :on-error="handleUploadError"
+                                :on-remove="handleRemove">
+                            <i class="el-icon-plus"></i>
+                        </el-upload>
+                    </el-col>
+                </el-row>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="resetForm('form')">取 消</el-button>
@@ -434,7 +514,7 @@
         <el-dialog
                 title="大图"
                 :visible.sync="dialogBigPhoto"
-                size="large">
+                size="small">
             <span><img :src="bigPhotoUrl" width="100%"></span>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="dialogBigPhoto = false">确 定</el-button>
@@ -484,6 +564,10 @@
                     emergencyContact: '',
                     emergencyContactMobile: '',
                     relation: '',
+                    idCardFrontPhoto: '',
+                    idCardVersoPhoto: '',
+                    idCardAndPersonPhoto: '',
+                    contractPhotos: []
                 },
                 branchList: {},
                 formLabelWidth: '100px',
@@ -529,6 +613,9 @@
                 bigPhotoUrl: '',
                 formVisible: false,
                 dialogBigPhoto: false,
+                postData: {
+                    token: ''
+                },
                 currentRow: {
                     responsibleAgent: '',
                     applyDate: '',
@@ -558,7 +645,11 @@
                     tel: [{required: true, message: '请输入经纪人电话', trigger: 'blur'}],
                     staffNo: [{required: true, message: '请输入经纪人工号', trigger: 'blur'}],
                     status: [{required: true, message: '请选择状态', trigger: 'change'}]
-                }
+                },
+                idCardFrontPhoto: '',
+                idCardVersoPhoto: '',
+                idCardAndPersonPhoto: '',
+                contractPhotos: []
             }
         },
         created(){
@@ -613,11 +704,11 @@
             },
             photo(token) {
                 if (token !== undefined && token !== '' && token !== null) {
-                    return this.qiniu + token;
+                    return this.qiniu + token + '?imageMogr2/auto-orient&imageView2/1/w/600/h/600';
                 }
             },
             showBigPhoto(token) {
-                this.bigPhotoUrl = this.qiniu + token;
+                this.bigPhotoUrl = this.qiniu + token + '?imageMogr2/auto-orient';
                 this.dialogBigPhoto = true;
             },
             getData(){
@@ -643,7 +734,7 @@
             submitApp(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.axios.put('/api/v1/agent', this.form).then((res) => {
+                        this.axios.put('/api/v1/application', this.form).then((res) => {
                             this.getData();
                             this.$refs[formName].resetFields();
                             this.formVisible = false;
@@ -700,6 +791,37 @@
                     this.searchForm.startDate = '';
                     this.searchForm.endDate = '';
                 }
+            },
+            getUploadToken() {
+                return this.axios.get('/api/upload/getToken').then((res) => {
+                    this.postData.token = res.data;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            },
+            beforeUpload(file) {
+                return this.getUploadToken();
+            },
+            uploadFrontSuccess(response, file) {
+                this.idCardFrontPhoto = response.key;
+            },
+            uploadVersoSuccess(response, file) {
+                this.idCardVersoPhoto = response.key;
+            },
+            uploadPersonSuccess(response, file) {
+                this.idCardAndPersonPhoto = response.key;
+            },
+            handleUploadError(err, file) {
+                console.log(err)
+            },
+            uploadContractSuccess(response, file) {
+                this.contractPhotos.push(response.key);
+            },
+            handleRemove(file, fileList) {
+                this.contractPhotos = this.contractPhotos.filter(item => item !== file.response.key);
+            },
+            handlePreview(file) {
+                console.log(file);
             }
         }
     }
@@ -729,5 +851,29 @@
 
     .clearfix:after {
         clear: both
+    }
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+    }
+    .avatar-uploader .el-upload:hover {
+        border-color: #20a0ff;
+    }
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 178px;
+        height: 178px;
+        line-height: 178px;
+        text-align: center;
+    }
+    .avatar {
+        width: 178px;
+        height: 178px;
+        display: block;
     }
 </style>
