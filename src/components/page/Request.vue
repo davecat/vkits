@@ -507,7 +507,8 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="resetForm('form')">取 消</el-button>
-                <el-button type="primary" @click="submitApp('form')">确 定</el-button>
+                <el-button type="primary" @click="submitApp('form')">保 存</el-button>
+                <el-button type="primary" @click="submitApp2('form')">提交审核</el-button>
             </div>
         </el-dialog>
 
@@ -729,12 +730,43 @@
             },
             handleEdit(row) {
                 this.form = row;
+                this.idCardFrontPhoto = row.idCardFrontPhoto;
+                this.idCardVersoPhoto = row.idCardVersoPhoto;
+                this.idCardAndPersonPhoto = row.idCardAndPersonPhoto;
+                this.contractPhotos = row.contractPhotos;
                 this.formVisible = true;
             },
             submitApp(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.axios.put('/api/v1/application', this.form).then((res) => {
+                        let application = this.form;
+                        application.idCardFrontPhoto = this.idCardFrontPhoto;
+                        application.idCardVersoPhoto = this.idCardVersoPhoto;
+                        application.idCardAndPersonPhoto = this.idCardAndPersonPhoto;
+                        application.contractPhotos = this.contractPhotos;
+                        this.axios.put('/api/v1/application', application).then((res) => {
+                            this.getData();
+                            this.$refs[formName].resetFields();
+                            this.formVisible = false;
+                        }).catch((error) => {
+                            console.log(error);
+                        })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            submitApp2(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let application = this.form;
+                        application.idCardFrontPhoto = this.idCardFrontPhoto;
+                        application.idCardVersoPhoto = this.idCardVersoPhoto;
+                        application.idCardAndPersonPhoto = this.idCardAndPersonPhoto;
+                        application.contractPhotos = this.contractPhotos;
+                        application.commit = true;
+                        this.axios.put('/api/v1/application', application).then((res) => {
                             this.getData();
                             this.$refs[formName].resetFields();
                             this.formVisible = false;
