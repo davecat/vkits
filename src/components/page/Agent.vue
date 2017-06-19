@@ -254,11 +254,16 @@
                 })
             },
             getBranchList(agencyId) {
-                this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencyId).then((res) => {
-                    this.branchList = res.data;
-                }).catch((error) => {
-                    console.log(error);
-                })
+                if(agencyId !== '') {
+                    this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencyId).then((res) => {
+                        this.branchList = res.data;
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                } else {
+                    this.searchForm.branchId = '';
+                    this.branchList = [];
+                }
             },
             handleEdit(row) {
                 this.form.id = row.id;
