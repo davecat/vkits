@@ -11,31 +11,34 @@
             <el-button type="primary">提交分期申请</el-button>
         </el-row>
         <el-row>
-            <el-form :inline="true" :model="form">
-                <el-form-item label="中介名称：">
-                    <el-select v-model="form.enabled">
-                        <el-option label="秘制中介" value="1"></el-option>
+            <el-form :inline="true" :model="searchForm">
+                <el-form-item label="所属中介：">
+                    <el-select v-model="searchForm.agencyId" @change="getBranchList(searchForm.agencyId)">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="门店名称：">
-                    <el-select v-model="form.enabled">
-                        <el-option label="秘制门店" value="1"></el-option>
+                <el-form-item label="所属门店：">
+                    <el-select v-model="searchForm.branchId">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="申请编号：">
-                    <el-input v-model="form.name" placeholder="支持模糊查询"></el-input>
+                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="起租日期：">
-                    <el-select v-model="form.enabled">
-                        <el-option label="全部" value="1"></el-option>
-                        <el-option label="今日" value="2"></el-option>
-                        <el-option label="最近三天" value="3"></el-option>
-                        <el-option label="本周" value="4"></el-option>
-                        <el-option label="本月" value="5"></el-option>
-                    </el-select>
+                    <el-date-picker
+                            v-model="searchForm.applyDate"
+                            align="right"
+                            type="daterange"
+                            placeholder="选择日期范围"
+                            @change="selectedData"
+                            :picker-options="pickerOptions">
+                    </el-date-picker>
                 </el-form-item>
                 <el-form-item label="租客姓名：">
-                    <el-input v-model="form.name" placeholder="支持模糊查询"></el-input>
+                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
@@ -43,14 +46,15 @@
             </el-form>
         </el-row>
         <el-row>
-            <el-radio-group v-model="radio">
-                <el-radio-button label="待审核"></el-radio-button>
-                <el-radio-button label="已提交"></el-radio-button>
-                <el-radio-button label="审批通过"></el-radio-button>
-                <el-radio-button label="审批不通过"></el-radio-button>
-            </el-radio-group>
-        </el-row>
-        <el-row>
+            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange">
+                <el-tab-pane label="待审核" name="Unconfirmed"></el-tab-pane>
+                <el-tab-pane label="已提交" name="Commited"></el-tab-pane>
+                <el-tab-pane label="审批通过" name="Accepted"></el-tab-pane>
+                <el-tab-pane label="审批不通过（待确认）" name="LoanerRejected"></el-tab-pane>
+                <el-tab-pane label="审批不通过（已确认）" name="LibRejected"></el-tab-pane>
+                <el-tab-pane label="待修改（待确认）" name="LoanerReturned"></el-tab-pane>
+                <el-tab-pane label="待修改（已确认）" name="LibReturned"></el-tab-pane>
+            </el-tabs>
             <el-table
                     ref="multipleTable"
                     :data="tableData"
@@ -122,21 +126,22 @@
                 </el-pagination>
             </div>
         </el-row>
-        <el-form label-position="left" inline class="demo-table-expand" ref="form" :model="form">
+        <el-form label-position="left" inline
+                 class="demo-table-expand">
             <el-row>
                 <el-col :span="8">
                     <el-form-item label="经纪人：">
-                        <span>小李</span>
+                        <span>{{ currentRow.responsibleAgent }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="申请日期：">
-                        <span>2017-06-04</span>
+                        <span>{{ currentRow.applyDate | dateFormat }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="申请状态：">
-                        <span>待审核</span>
+                        <span>{{ currentRow.status | appStatusFormat }}</span>
                     </el-form-item>
                 </el-col>
                 <hr style="border-bottom-color: #d9d9d9; border-top: none;">
@@ -144,87 +149,158 @@
             <el-row>
                 <el-col :span="8">
                     <el-form-item label="月租金：">
-                        <span>6000 元／月</span>
+                        <span>{{ currentRow.monthlyRent }} 元／月</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="租期：">
-                        <span>6 个月</span>
+                        <span>{{ currentRow.rentPeriod }} 个月</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="起租日期：">
-                        <span>2016-12-15</span>
+                        <span>{{ currentRow.startDate | dateFormat }}</span>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
-                <el-form-item label="房屋信息：">
-                    <span>北京市朝阳区望京Soho T1 C座702室</span>
-                </el-form-item>
+                <el-col :span="8">
+                    <el-form-item label="房源编号：">
+                        <span>{{ currentRow.apartmentNo }}</span>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="16">
+                    <el-form-item label="房屋信息：">
+                        <span>{{ currentRow.address }}</span>
+                    </el-form-item>
+                </el-col>
                 <hr style="border-bottom-color: #d9d9d9; border-top: none;">
             </el-row>
             <el-row>
                 <el-col :span="8">
                     <el-form-item label="租客姓名：">
-                        <span>小王</span>
+                        <span>{{ currentRow.customerName }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="身份证号：">
-                        <span>110108xxxxxxxxxxxx</span>
+                        <span>{{ currentRow.idCardNo }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="手机号：">
-                        <span>1580xxxxxxx</span>
+                        <span>{{ currentRow.mobile }}</span>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="8">
                     <el-form-item label="最高学历：">
-                        <span>本科</span>
+                        <span>{{ currentRow.education | educationFormat }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="工作单位：">
-                        <span>GM</span>
+                        <span>{{ currentRow.companyName }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="单位地址：">
-                        <span>xxxxxxx</span>
+                        <span>{{ currentRow.companyAddress }}</span>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="8">
                     <el-form-item label="开户银行：">
-                        <span>中国银行</span>
+                        <span>{{ currentRow.bankAccount }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="银行卡号：">
-                        <span>6222 2222 2222 2222</span>
+                        <span>{{ currentRow.bankCard }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="应急联系人：">
-                        <span>小赵</span>
+                        <span>{{ currentRow.emergencyContact }}</span>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="8">
                     <el-form-item label="手机号：">
-                        <span>1580xxxxxxx</span>
+                        <span>{{ currentRow.emergencyContactMobile }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="关系：">
-                        <span>同事</span>
+                        <span>{{ currentRow.relation | relationFormat }}</span>
                     </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20">
+                <el-col :span="3">
+                    <el-form-item label="身份证照片：">
+                    </el-form-item>
+                </el-col>
+                <el-col :span="7">
+                    <el-card :body-style="{ padding: '0px' }">
+                        <img :src="photo(currentRow.idCardFrontPhoto)" class="image">
+                        <div style="padding: 14px;">
+                            <span>身份证正面</span>
+                            <div class="bottom clearfix">
+                                <el-button type="text" class="button"
+                                           @click="showBigPhoto(currentRow.idCardFrontPhoto)">看大图
+                                </el-button>
+                            </div>
+                        </div>
+                    </el-card>
+                </el-col>
+                <el-col :span="7">
+                    <el-card :body-style="{ padding: '0px' }">
+                        <img :src="photo(currentRow.idCardVersoPhoto)" class="image">
+                        <div style="padding: 14px;">
+                            <span>身份证反面</span>
+                            <div class="bottom clearfix">
+                                <el-button type="text" class="button"
+                                           @click="showBigPhoto(currentRow.idCardVersoPhoto)">看大图
+                                </el-button>
+                            </div>
+                        </div>
+                    </el-card>
+                </el-col>
+                <el-col :span="7">
+                    <el-card :body-style="{ padding: '0px' }">
+                        <img :src="photo(currentRow.idCardAndPersonPhoto)" class="image">
+                        <div style="padding: 14px;">
+                            <span>手持身份证照片</span>
+                            <div class="bottom clearfix">
+                                <el-button type="text" class="button"
+                                           @click="showBigPhoto(currentRow.idCardAndPersonPhoto)">看大图
+                                </el-button>
+                            </div>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20">
+                <el-col :span="3">
+                    <el-form-item label="租房合同照片：">
+                    </el-form-item>
+                </el-col>
+                <el-col :span="4" v-for="(o, index) in currentRow.contractPhotos" :key="o">
+                    <el-card :body-style="{ padding: '0px' }">
+                        <img :src="photo(currentRow.contractPhotos[index])" class="image">
+                        <div style="padding: 14px;">
+                            <span>租房合同照片</span>
+                            <div class="bottom clearfix">
+                                <el-button type="text" class="button"
+                                           @click="showBigPhoto(currentRow.contractPhotos[index])">看大图
+                                </el-button>
+                            </div>
+                        </div>
+                    </el-card>
                 </el-col>
             </el-row>
         </el-form>
@@ -247,29 +323,191 @@
                 cur_page: 1,
                 size: 10,
                 totalElements: 0,
-                form: {},
-                radio: ''
+                agencyList: {},
+                branchList: {},
+                searchForm: {
+                    applictionNo: '',
+                    applyDate: '',
+                    startDate: '',
+                    endDate: '',
+                    customerName: '',
+                    agencyId: '',
+                    branchId: '',
+                    status: 'Unconfirmed'
+                },
+                currentRow: {
+                    responsibleAgent: '',
+                    applyDate: '',
+                    status: '',
+                    monthlyRent: '',
+                    rentPeriod: '',
+                    startDate: '',
+                    address: '',
+                    customerName: '',
+                    idCardNo: '',
+                    mobile: '',
+                    education: '',
+                    companyName: '',
+                    companyAddress: '',
+                    bankAccount: '',
+                    bankCard: '',
+                    emergencyContact: '',
+                    emergencyContactMobile: '',
+                    relation: '',
+                    idCardFrontPhoto: '',
+                    idCardVersoPhoto: '',
+                    idCardAndPersonPhoto: '',
+                    contractPhotos: []
+                },
+                qiniu: 'http://7xt1kq.com1.z0.glb.clouddn.com/',
+                pickerOptions: {
+                    shortcuts: [
+                        {
+                            text: '今日',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                picker.$emit('pick', [start, end]);
+                            }
+                        },
+                        {
+                            text: '最近三天',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 3);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        },
+                        {
+                            text: '最近七天',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        },
+                        {
+                            text: '最近三十天',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }
+                    ]
+                },
+                bigPhotoUrl: '',
+                dialogBigPhoto: false,
             }
         },
         created(){
             this.getData();
+            this.getAgencyList();
+        },
+        filters: {
+            appStatusFormat: function (value) {
+                if (value === "Unconfirmed") {
+                    return "待审核";
+                } else if (value === "Accepted") {
+                    return "审核通过";
+                } else if (value === "Returned") {
+                    return "待修改";
+                } else if (value === "Canceled") {
+                    return "已取消";
+                } else if (value === "Rejected") {
+                    return "审核不通过";
+                }
+            },
+            educationFormat: function (value) {
+                if (value === "CollegeDown") {
+                    return "专科及以下";
+                } else if (value === "Undergraduate") {
+                    return "本科";
+                } else if (value === "PostgraduateUp") {
+                    return "硕士及以上";
+                }
+            },
+            relationFormat: function (value) {
+                if (value === "Parent") {
+                    return "父母";
+                } else if (value === "Fellow") {
+                    return "同事";
+                } else if (value === "Friend") {
+                    return "朋友";
+                } else if (value === "Relatives") {
+                    return "其他";
+                }
+            },
+            dateFormat: function (value) {
+                if (typeof value === "string") {
+                    return value.substring(0, value.length - 9)
+                }
+            },
         },
         methods: {
             handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();
             },
+            selectedData() {
+                if (this.searchForm.applyDate[0] !== null) {
+                    this.searchForm.startDate = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
+                    this.searchForm.endDate = format(this.searchForm.applyDate[1], 'YYYY-MM-DD');
+                } else {
+                    this.searchForm.startDate = '';
+                    this.searchForm.endDate = '';
+                }
+            },
+            photo(token) {
+                if (token !== undefined && token !== '' && token !== null) {
+                    return this.qiniu + token + '?imageMogr2/auto-orient&imageView2/1/w/600/h/600';
+                }
+            },
+            showBigPhoto(token) {
+                this.bigPhotoUrl = this.qiniu + token + '?imageMogr2/auto-orient';
+                this.dialogBigPhoto = true;
+            },
             getData(){
                 let self = this;
-                this.axios.post('/api/v1/agency/getAgencyPage', {
-                    params: {
-                        page: self.cur_page - 1,
-                        size: self.size
-                    }
+                this.axios.post('/riskcontrol/lib/api/v1/application/getApplicationPage', {
+                    applictionNo: self.searchForm.applictionNo,
+                    startDate: self.searchForm.startDate,
+                    endDate: self.searchForm.endDate,
+                    customerName: self.searchForm.customerName,
+                    agencyId: self.searchForm.agencyId,
+                    branchId: self.searchForm.branchId,
+                    status: self.searchForm.status,
+                    page: self.cur_page - 1,
+                    size: self.size
                 }).then((res) => {
                     self.tableData = res.data.content;
                     self.totalElements = res.data.totalElements;
                 })
+            },
+            handleChange() {
+                this.getData();
+            },
+            getAgencyList() {
+                this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
+                    this.agencyList = res.data;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            },
+            getBranchList(agencyId) {
+                if(agencyId !== '') {
+                    this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencyId).then((res) => {
+                        this.branchList = res.data;
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                } else {
+                    this.searchForm.branchId = '';
+                    this.branchList = [];
+                }
             },
             handleEdit(index, row) {
                 this.$message('编辑第' + (index + 1) + '行');
