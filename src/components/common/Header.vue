@@ -2,7 +2,7 @@
     <div class="header">
         <div class="logo">后台管理系统</div>
         <div class="user-info">
-                <span class="username">你好，{{ staffName }}</span>
+            <span class="username">你好，{{staff.staffName}}</span>
             <i class="fa fa-sign-out logout" @click="doLogout"></i>
         </div>
     </div>
@@ -10,21 +10,18 @@
 <script>
     export default {
         data() {
-            return {
-                staffName: ''
+            return {}
+        },
+        computed: {
+            staff (){
+                return this.$store.state.staff.staff
             }
         },
         created: function () {
-            this.getUserInfo();
+            //vuex存储数据
+            this.$store.commit('get_staff');
         },
         methods: {
-            getUserInfo() {
-                this.axios.get("/api/v1/user/current").then((response) => {
-                    this.staffName = response.data.staffName;
-                }).catch((error) => {
-                    console.log(error);
-                })
-            },
             doLogout() {
                 this.axios.get("/anon/logout").then((response) => {
                     localStorage.removeItem('token');
@@ -69,13 +66,15 @@
         height: 40px;
         border-radius: 50%;
     }
+
     .username {
         height: 60px;
         line-height: 60px;
         cursor: pointer;
     }
-    .logout{
-        width:60px;
+
+    .logout {
+        width: 60px;
         height: 60px;
         line-height: 70px;
         text-align: center;
