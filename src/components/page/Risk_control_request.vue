@@ -8,7 +8,9 @@
         </div>
 
         <el-row>
-            <el-button type="primary">提交分期申请</el-button>
+            <el-button type="primary">提交</el-button>
+            <el-button type="primary">驳回修改</el-button>
+            <el-button type="primary">拒绝</el-button>
         </el-row>
         <el-row>
             <el-form :inline="true" :model="searchForm">
@@ -58,58 +60,81 @@
             <el-table
                     ref="multipleTable"
                     :data="tableData"
+                    highlight-current-row
+                    @current-change="handleCurrentRow"
                     border
                     tooltip-effect="dark"
                     style="width: 100%"
                     @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="80">
+                <el-table-column
+                        fixed
+                        type="selection"
+                        width="80">
                 </el-table-column>
                 <el-table-column
-                        prop="code"
+                        min-width="180"
+                        prop="id"
+                        label="中介名称">
+                </el-table-column>
+                <el-table-column
+                        min-width="180"
+                        prop="id"
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
-                        prop="code"
+                        min-width="150"
+                        prop="startDate"
                         label="起租日期">
+                    <template scope="scope">
+                        {{ scope.row.startDate | dateFormat }}
+                    </template>
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        min-width="150"
+                        prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
+                        min-width="180"
+                        prop="mobile"
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
+                        min-width="120"
+                        prop="monthlyRent"
                         label="月租金">
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
+                        min-width="120"
+                        prop="rentPeriod"
                         label="租期">
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
-                        label="手续费(元/期)"
-                        width="180">
-                </el-table-column>
-                <el-table-column
-                        prop="branchAmount"
+                        min-width="120"
+                        prop=""
                         label="总金额">
+                    <template scope="scope">
+                        {{ scope.row.monthlyRent * scope.row.rentPeriod }}
+                    </template>
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
+                        min-width="120"
+                        prop="responsibleAgent"
                         label="经纪人">
                 </el-table-column>
                 <el-table-column
-                        prop="branchAmount"
+                        min-width="150"
+                        prop="responsibleBranch"
                         label="门店名称">
                 </el-table-column>
                 <el-table-column
+                        fixed="right"
+                        min-width="110"
                         prop="enabled"
                         label="操作">
                     <template scope="scope">
-                        <el-tooltip class="item" effect="dark" content="提交" placement="top-end">
+                        <el-tooltip v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
+                                    class="item" effect="dark" content="补充／修改分期申请" placement="top-end">
                             <el-button size="small" type="primary"
                                        @click="handleEdit(scope.row)"><i
                                     class="fa fa-pencil-square-o"></i>
@@ -509,6 +534,32 @@
                     this.branchList = [];
                 }
             },
+            handleCurrentRow(val) {
+                if (val === null) {
+                    this.currentRow = {
+                        responsibleAgent: '',
+                        applyDate: '',
+                        status: '',
+                        monthlyRent: '',
+                        rentPeriod: '',
+                        startDate: '',
+                        address: '',
+                        customerName: '',
+                        idCardNo: '',
+                        mobile: '',
+                        education: '',
+                        companyName: '',
+                        companyAddress: '',
+                        bankAccount: '',
+                        bankCard: '',
+                        emergencyContact: '',
+                        emergencyContactMobile: '',
+                        relation: '',
+                    }
+                } else {
+                    this.currentRow = val;
+                }
+            },
             handleEdit(index, row) {
                 this.$message('编辑第' + (index + 1) + '行');
             },
@@ -516,7 +567,7 @@
                 this.$message.error('删除第' + (index + 1) + '行');
             },
             Search() {
-                console.log("Search")
+                this.getData();
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
