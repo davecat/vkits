@@ -19,9 +19,6 @@
 
 <script>
     export default {
-        data: function () {
-            return {}
-        },
         computed: {
             onRoutes(){
                 return this.$route.path.replace('/', '');
@@ -30,9 +27,12 @@
                 return this.$store.state.menus.menus;
             }
         },
-        methods: {}
+        methods: {
+
+        }
     }
 </script>
+
 
 <style scoped>
     .sidebar {
