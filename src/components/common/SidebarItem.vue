@@ -1,22 +1,15 @@
 <template>
     <div>
-        <template v-for="item in routes">
-            <router-link v-if="!item.hidden&&item.noDropdown&&item.children.length>0" :to="item.path+'/'+item.children[0].path">
-                <el-menu-item :index="item.path+'/'+item.children[0].path">
-                    <wscn-icon-svg v-if='item.icon' :icon-class="item.icon" /> {{item.children[0].name}}
-                </el-menu-item>
-            </router-link>
-            <el-submenu :index="item.name" v-if="!item.noDropdown&&!item.hidden">
-                <template slot="title">
-                    <wscn-icon-svg v-if='item.icon' :icon-class="item.icon" /> {{item.name}}
-                </template>
-                <template v-for="child in item.children" v-if='!child.hidden'>
-                    <sidebar-item class='menu-indent' v-if='child.children&&child.children.length>0' :routes='[child]'> </sidebar-item>
-                    <router-link v-else class="menu-indent" :to="item.path+'/'+child.path">
-                        <el-menu-item :index="item.path+'/'+child.path">
-                            {{child.name}}
-                        </el-menu-item>
-                    </router-link>
+        <template v-for="menu in routes">
+            <el-menu-item v-if='menu.type=="Menu"' :index="menu.url"><i :class="menu.icon"></i>{{menu.name}}
+            </el-menu-item>
+            <el-submenu v-else :index="menu.id">
+                <template slot="title"><i :class="menu.icon"></i>{{menu.name}}</template>
+                <template v-for="child in menu.children">
+                    <sidebar-item class='menu-indent' v-if='child.children&&child.children.length>0' :routes='[child]'></sidebar-item>
+                    <el-menu-item  :key="child.id" :index='child.url'>
+                        <i :class="child.icon"></i>{{child.name}}
+                    </el-menu-item>
                 </template>
             </el-submenu>
         </template>
@@ -34,12 +27,8 @@
     }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
-    .wscn-icon {
+<style scoped>
+    .fa {
         margin-right: 10px;
-    }
-    .hideSidebar .menu-indent{
-        display: block;
-        text-indent: 10px;
     }
 </style>
