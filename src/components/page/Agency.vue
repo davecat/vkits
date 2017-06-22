@@ -56,6 +56,26 @@
                         label="门店数量">
                 </el-table-column>
                 <el-table-column
+                        prop="serviceTariffing"
+                        label="服务费率">
+                </el-table-column>
+                <el-table-column
+                        prop="payeeBank"
+                        label="开户行（收款）">
+                </el-table-column>
+                <el-table-column
+                        prop="payeeAccountNumber"
+                        label="银行卡号（收款）">
+                </el-table-column>
+                <el-table-column
+                        prop="payerBank"
+                        label="开户行（付款）">
+                </el-table-column>
+                <el-table-column
+                        prop="payerAccountNumber"
+                        label="银行卡号（付款）">
+                </el-table-column>
+                <el-table-column
                         label="状态"
                         show-overflow-tooltip>
                     <template scope="scope">
@@ -95,6 +115,21 @@
                 <el-form-item label="中介名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
+                <el-form-item label="服务费率" :label-width="formLabelWidth" prop="serviceTariffing">
+                    <el-input v-model="form.serviceTariffing"></el-input>
+                </el-form-item>
+                <el-form-item label="开户行（收款）" :label-width="formLabelWidth" prop="payeeBank">
+                    <el-input v-model="form.payeeBank"></el-input>
+                </el-form-item>
+                <el-form-item label="银行卡号（收款）" :label-width="formLabelWidth" prop="payeeAccountNumber">
+                    <el-input v-model="form.payeeAccountNumber"></el-input>
+                </el-form-item>
+                <el-form-item label="开户行（付款）" :label-width="formLabelWidth" prop="payerBank">
+                    <el-input v-model="form.payerBank"></el-input>
+                </el-form-item>
+                <el-form-item label="银行卡号（付款）" :label-width="formLabelWidth" prop="payerAccountNumber">
+                    <el-input v-model="form.payerAccountNumber"></el-input>
+                </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
                     <el-select v-model="form.enabled">
                         <el-option label="启用" value="true"></el-option>
@@ -115,6 +150,21 @@
                 </el-form-item>
                 <el-form-item label="中介名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form2.name"></el-input>
+                </el-form-item>
+                <el-form-item label="服务费率" :label-width="formLabelWidth" prop="serviceTariffing">
+                    <el-input v-model="form2.serviceTariffing"></el-input>
+                </el-form-item>
+                <el-form-item label="开户行（收款）" :label-width="formLabelWidth" prop="payeeBank">
+                    <el-input v-model="form2.payeeBank"></el-input>
+                </el-form-item>
+                <el-form-item label="银行卡号（收款）" :label-width="formLabelWidth" prop="payeeAccountNumber">
+                    <el-input v-model="form2.payeeAccountNumber"></el-input>
+                </el-form-item>
+                <el-form-item label="开户行（付款）" :label-width="formLabelWidth" prop="payerBank">
+                    <el-input v-model="form2.payerBank"></el-input>
+                </el-form-item>
+                <el-form-item label="银行卡号（付款）" :label-width="formLabelWidth" prop="payerAccountNumber">
+                    <el-input v-model="form2.payerAccountNumber"></el-input>
                 </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth">
                     <span>{{ form2.enabled ? '启用':'停用' }}</span>
@@ -191,12 +241,21 @@
                 form: {
                     code: '',
                     name: '',
+                    serviceTariffing: '',
+                    payeeBank: '',
+                    payeeAccountNumber: '',
+                    payerBank: '',
+                    payerAccountNumber: '',
                     enabled: 'true'
                 },
                 form2: {
-                    id: '',
                     code: '',
                     name: '',
+                    serviceTariffing: '',
+                    payeeBank: '',
+                    payeeAccountNumber: '',
+                    payerBank: '',
+                    payerAccountNumber: '',
                     enabled: 'true'
                 },
                 formVisible: false,
@@ -206,10 +265,16 @@
                 dialogVisible3: false,
                 dialogVisible4: false,
                 deleteId: '',
-                formLabelWidth: '80px',
+                formLabelWidth: '180px',
                 rules: {
                     code: [{required: true, message: '请输入中介编号', trigger: 'blur'}],
-                    name: [{required: true, message: '请输入中介名称', trigger: 'blur'}]
+                    name: [{required: true, message: '请输入中介名称', trigger: 'blur'}],
+                    serviceTariffing: [{required: true, message: '请输入费率', trigger: 'blur'}],
+                    payeeBank: [{required: true, message: '请输入开户行', trigger: 'blur'}],
+                    payeeAccountNumber: [{required: true, message: '请输入账号', trigger: 'blur'}],
+                    payerBank: [{required: true, message: '请输入开户行', trigger: 'blur'}],
+                    payerAccountNumber: [{required: true, message: '请输入账号', trigger: 'blur'}],
+                    enabled: [{required: true, message: '请选择状态', trigger: 'blur'}],
                 }
             }
         },
