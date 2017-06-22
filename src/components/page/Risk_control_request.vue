@@ -8,9 +8,9 @@
         </div>
 
         <el-row>
-            <el-button type="primary">提交</el-button>
-            <el-button type="primary">驳回修改</el-button>
-            <el-button type="primary">拒绝</el-button>
+            <el-button type="primary" @click="dialogVisible = true">提交</el-button>
+            <el-button type="primary" @click="dialogVisible2 = true">驳回修改</el-button>
+            <el-button type="primary" @click="dialogVisible3 = true">拒绝</el-button>
         </el-row>
         <el-row>
             <el-form :inline="true" :model="searchForm">
@@ -330,6 +330,45 @@
             </el-row>
         </el-form>
 
+        <el-dialog
+                title="提交"
+                :visible.sync="dialogVisible"
+                size="tiny">
+            <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="资金端：" prop="loanerId">
+                    <el-select v-model="form.loanerId">
+                        <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="dialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="multipleCommit">确 定</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
+        <el-dialog
+                title="驳回修改分期申请"
+                :visible.sync="dialogVisible2"
+                size="tiny">
+            <span>此操作会将选中分期申请返回房屋中介处进行修改，是否确认？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible2 = false">取 消</el-button>
+                <el-button type="primary" @click="multipleReturn">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog
+                title="拒绝分期申请"
+                :visible.sync="dialogVisible3"
+                size="tiny">
+            <span>此操作会将选中分期申请拒绝审批，是否确认？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible3 = false">取 消</el-button>
+                <el-button type="primary" @click="multipleReject">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -350,6 +389,7 @@
                 totalElements: 0,
                 agencyList: {},
                 branchList: {},
+                loanerList: {},
                 searchForm: {
                     applictionNo: '',
                     applyDate: '',
@@ -359,6 +399,13 @@
                     agencyId: '',
                     branchId: '',
                     status: 'Unconfirmed'
+                },
+                form: {
+                    loanerId: '',
+                    applicationIds: []
+                },
+                rules: {
+                    loanerId: [{required: true, message: '请选择资金端', trigger: 'change'}],
                 },
                 currentRow: {
                     responsibleAgent: '',
@@ -426,11 +473,15 @@
                 },
                 bigPhotoUrl: '',
                 dialogBigPhoto: false,
+                dialogVisible: false,
+                dialogVisible2: false,
+                dialogVisible3: false,
             }
         },
         created(){
             this.getData();
             this.getAgencyList();
+            this.getLoanerList();
         },
         filters: {
             appStatusFormat: function (value) {
@@ -534,6 +585,17 @@
                     this.branchList = [];
                 }
             },
+            getLoanerList() {
+                let self = this;
+                this.axios.post('/riskcontrol/api/v1/loaner/getLoanerPage', {
+                    page: self.cur_page - 1,
+                    size: self.size
+                }).then((res) => {
+                    self.loanerList = res.data.content;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            },
             handleCurrentRow(val) {
                 if (val === null) {
                     this.currentRow = {
@@ -571,6 +633,52 @@
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
+            },
+            multipleCommit() {
+                let ids = this.multipleSelection.map(row => {
+                    return row.id
+                });
+                if (ids.length === 0) {
+                    console.log('ids is null');
+                } else {
+                    this.form.applicationIds = ids;
+                    this.axios.post('/riskcontrol/lib/api/v1/application/commitToLoaner', this.form).then((res) => {
+                        this.getData();
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                }
+                this.dialogVisible = false;
+            },
+            multipleReturn() {
+                let ids = this.multipleSelection.map(row => {
+                    return row.id
+                });
+                if (ids.length === 0) {
+                    console.log('ids is null');
+                } else {
+                    this.axios.post('/riskcontrol/lib/api/v1/application/libReturn', ids).then((res) => {
+                        this.getData();
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                }
+                this.dialogVisible2 = false;
+            },
+            multipleReject() {
+                let ids = this.multipleSelection.map(row => {
+                    return row.id
+                });
+                if (ids.length === 0) {
+                    console.log('ids is null');
+                } else {
+                    this.axios.post('/riskcontrol/lib/api/v1/application/libReject', ids).then((res) => {
+                        this.getData();
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                }
+                this.dialogVisible3 = false;
             }
         }
     }
