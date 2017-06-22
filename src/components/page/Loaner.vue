@@ -19,9 +19,9 @@
                     <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="还款方式：">
-                    <el-select v-model="searchForm.enabled">
-                        <el-option label="等额本息" value="true"></el-option>
-                        <el-option label="等额本金" value="false"></el-option>
+                    <el-select v-model="searchForm.repaymentType">
+                        <el-option label="等额本息" value="EqualityPrincipal"></el-option>
+                        <el-option label="等额本金" value="EqualityCorpus"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -40,28 +40,39 @@
                 <el-table-column type="selection" width="80">
                 </el-table-column>
                 <el-table-column
-                        prop="agencyId"
+                        prop="name"
                         label="资金端名称">
                 </el-table-column>
                 <el-table-column
-                        prop="code"
+                        prop="repaymentType"
                         label="还款方式">
+                    <template scope="scope">
+                        {{ scope.row.repaymentType == 'EqualityCorpus' ? '等额本金':'等额本息' }}
+                    </template>
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        prop="collectionBankCard"
                         label="银行帐号（收款)">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        prop="collectionBankAccount"
                         label="开户行（收款）">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        prop="paymentBankAccount"
                         label="银行账号（付款至LIB)">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="开户行（收款）">
+                        prop="paymentBankCard"
+                        label="开户行（付款）">
+                </el-table-column>
+                <el-table-column
+                        prop="enabled"
+                        label="状态"
+                        show-overflow-tooltip>
+                    <template scope="scope">
+                        {{ scope.row.enabled ? '启用':'停用' }}
+                    </template>
                 </el-table-column>
                 <el-table-column label="操作">
                     <template scope="scope">
@@ -88,50 +99,75 @@
             </div>
         </el-row>
 
-        <el-dialog title="新增门店" :visible.sync="formVisible">
+        <el-dialog title="新增" :visible.sync="formVisible">
             <el-form :model="form" ref="form" :rules="rules">
-                <el-form-item label="所属中介" :label-width="formLabelWidth" prop="agencyId">
-                    <el-select v-model="form.agencyId">
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
+                <el-form-item label="资金端名称" :label-width="formLabelWidth" prop="name">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="还款方式" :label-width="formLabelWidth" prop="repaymentType">
+                    <el-select v-model="form.repaymentType">
+                        <el-option label="等额本金" value="EqualityCorpus"></el-option>
+                        <el-option label="等额本息" value="EqualityPrincipal"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="门店编号" :label-width="formLabelWidth" prop="code">
-                    <el-input v-model="form.code"></el-input>
+                <el-form-item label="银行帐号（收款)" :label-width="formLabelWidth" prop="collectionBankCard">
+                    <el-input v-model="form.collectionBankCard"></el-input>
                 </el-form-item>
-                <el-form-item label="门店名称" :label-width="formLabelWidth" prop="name">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="开户行（收款）" :label-width="formLabelWidth" prop="collectionBankAccount">
+                    <el-input v-model="form.collectionBankAccount"></el-input>
+                </el-form-item>
+                <el-form-item label="银行账号（付款至LIB)" :label-width="formLabelWidth" prop="paymentBankAccount">
+                    <el-input v-model="form.paymentBankAccount"></el-input>
+                </el-form-item>
+                <el-form-item label="开户行（付款）" :label-width="formLabelWidth" prop="paymentBankCard">
+                    <el-input v-model="form.paymentBankCard"></el-input>
                 </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
                     <el-select v-model="form.enabled">
                         <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
+                        <el-option label="停用" value="false"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="resetForm('form')">取 消</el-button>
-                <el-button type="primary" @click="submitBranch('form')">确 定</el-button>
+                <el-button type="primary" @click="submitLoaner('form')">确 定</el-button>
             </div>
         </el-dialog>
 
         <el-dialog title="修改门店" :visible.sync="formVisible2">
             <el-form :model="form2" ref="form2" :rules="rules">
-                <el-form-item label="门店编号" :label-width="formLabelWidth" prop="code">
-                    <el-input v-model="form2.code"></el-input>
-                </el-form-item>
-                <el-form-item label="门店名称" :label-width="formLabelWidth" prop="name">
+                <el-form-item label="资金端名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form2.name"></el-input>
+                </el-form-item>
+                <el-form-item label="还款方式" :label-width="formLabelWidth" prop="repaymentType">
+                    <el-select v-model="form2.repaymentType">
+                        <el-option label="等额本金" value="EqualityCorpus"></el-option>
+                        <el-option label="等额本息" value="EqualityPrincipal"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="银行帐号（收款)" :label-width="formLabelWidth" prop="collectionBankCard">
+                    <el-input v-model="form2.collectionBankCard"></el-input>
+                </el-form-item>
+                <el-form-item label="开户行（收款）" :label-width="formLabelWidth" prop="collectionBankAccount">
+                    <el-input v-model="form2.collectionBankAccount"></el-input>
+                </el-form-item>
+                <el-form-item label="银行账号（付款至LIB)" :label-width="formLabelWidth" prop="paymentBankAccount">
+                    <el-input v-model="form2.paymentBankAccount"></el-input>
+                </el-form-item>
+                <el-form-item label="开户行（付款）" :label-width="formLabelWidth" prop="paymentBankCard">
+                    <el-input v-model="form2.paymentBankCard"></el-input>
                 </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
                     <el-select v-model="form2.enabled">
                         <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
+                        <el-option label="停用" value="false"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="resetForm2('form2')">取 消</el-button>
-                <el-button type="primary" @click="submitBranch2('form2')">确 定</el-button>
+                <el-button type="primary" @click="submitLoaner2('form2')">确 定</el-button>
             </div>
         </el-dialog>
 
@@ -139,7 +175,7 @@
                 title="删除"
                 :visible.sync="dialogVisible"
                 size="tiny">
-            <span>此操作将删除选中门店，是否继续？</span>
+            <span>此操作将删除选中资金端，是否继续？</span>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="multipleDelete">确 定</el-button>
@@ -150,7 +186,7 @@
                 title="停用"
                 :visible.sync="dialogVisible2"
                 size="tiny">
-            <span>此操作将停用选中门店，是否继续？</span>
+            <span>此操作将停用选中资金端，是否继续？</span>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible2 = false">取 消</el-button>
                 <el-button type="primary" @click="multipleDisable">确 定</el-button>
@@ -161,7 +197,7 @@
                 title="删除"
                 :visible.sync="dialogVisible3"
                 size="tiny">
-            <span>此操作将删除选中门店，是否继续？</span>
+            <span>此操作将删除选中资金端，是否继续？</span>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible3 = false">取 消</el-button>
                 <el-button type="primary" @click="handleDelete">确 定</el-button>
@@ -183,20 +219,25 @@
                 totalElements: 0,
                 agencyList: {},
                 searchForm: {
-                    code: '',
                     name: '',
-                    enabled: 'true'
+                    repaymentType: 'EqualityCorpus'
                 },
                 form: {
-                    agencyId: '',
-                    code: '',
                     name: '',
+                    repaymentType: '',
+                    collectionBankCard: '',
+                    collectionBankAccount: '',
+                    paymentBankAccount: '',
+                    paymentBankCard: '',
                     enabled: 'true'
                 },
                 form2: {
-                    id: '',
-                    code: '',
                     name: '',
+                    repaymentType: '',
+                    collectionBankCard: '',
+                    collectionBankAccount: '',
+                    paymentBankAccount: '',
+                    paymentBankCard: '',
                     enabled: 'true'
                 },
                 formVisible: false,
@@ -205,18 +246,20 @@
                 dialogVisible2: false,
                 dialogVisible3: false,
                 deleteId: '',
-                formLabelWidth: '80px',
+                formLabelWidth: '180px',
                 rules: {
-                    agencyId: [{required: true, message: '请选择中介', trigger: 'change'}],
-                    code: [{required: true, message: '请输入门店编号', trigger: 'blur'}],
-                    name: [{required: true, message: '请输入门店名称', trigger: 'blur'}],
+                    name: [{required: true, message: '请输入资金端名称', trigger: 'blur'}],
+                    repaymentType: [{required: true, message: '请选择还款方式', trigger: 'change'}],
+                    collectionBankCard: [{required: true, message: '请输入银行帐号', trigger: 'blur'}],
+                    collectionBankAccount: [{required: true, message: '请输入开户行', trigger: 'blur'}],
+                    paymentBankAccount: [{required: true, message: '请输入银行帐号', trigger: 'blur'}],
+                    paymentBankCard: [{required: true, message: '请输入银行帐号', trigger: 'blur'}],
                     enabled: [{required: true, message: '请选择状态', trigger: 'change'}]
                 }
             }
         },
         created(){
             this.getData();
-            this.getAgencyList();
         },
         methods: {
             handleCurrentChange(val){
@@ -225,7 +268,9 @@
             },
             getData(){
                 let self = this;
-                this.axios.post('/api/v1/branch/getBranchPage', {
+                this.axios.post('/riskcontrol/api/v1/loaner/getLoanerPage', {
+                    name: self.searchForm.name,
+                    repaymentType: self.searchForm.repaymentType,
                     page: self.cur_page - 1,
                     size: self.size
                 }).then((res) => {
@@ -235,17 +280,10 @@
                     console.log(error);
                 })
             },
-            getAgencyList() {
-                this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
-                    this.agencyList = res.data;
-                }).catch((error) => {
-                    console.log(error);
-                })
-            },
-            submitBranch(formName) {
+            submitLoaner(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.axios.post('/api/v1/branch', this.form).then((res) => {
+                        this.axios.post('/riskcontrol/api/v1/loaner', this.form).then((res) => {
                             this.getData();
                             this.$refs[formName].resetFields();
                             this.formVisible = false;
@@ -258,10 +296,10 @@
                     }
                 });
             },
-            submitBranch2(formName) {
+            submitLoaner2(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.axios.put('/api/v1/branch', this.form2).then((res) => {
+                        this.axios.put('/riskcontrol/api/v1/loaner', this.form2).then((res) => {
                             this.getData();
                             this.$refs[formName].resetFields();
                             this.formVisible2 = false;
@@ -283,9 +321,7 @@
                 this.formVisible2 = false;
             },
             handleEdit(row) {
-                this.form2.id = row.id;
-                this.form2.code = row.code;
-                this.form2.name = row.name;
+                this.form2 = row;
                 this.form2.enabled = String(row.enabled);
                 this.formVisible2 = true;
             },
@@ -294,7 +330,7 @@
                 this.deleteId = id;
             },
             handleDelete() {
-                this.axios.put('/api/v1/branch/delete', [this.deleteId]).then((res) => {
+                this.axios.put('/riskcontrol/api/v1/loaner/delete', [this.deleteId]).then((res) => {
                     this.getData();
                     this.dialogVisible3 = false;
                 }).catch((error) => {
@@ -314,7 +350,7 @@
                 if (ids.length === 0) {
                     console.log('ids is null');
                 } else {
-                    this.axios.put('/api/v1/branch/delete', ids).then((res) => {
+                    this.axios.put('/riskcontrol/api/v1/loaner/delete', ids).then((res) => {
                         this.getData();
                     }).catch((error) => {
                         console.log(error);
@@ -329,7 +365,7 @@
                 if (ids.length === 0) {
                     console.log('ids is null');
                 } else {
-                    this.axios.put('/api/v1/branch/disable', ids).then((res) => {
+                    this.axios.put('/riskcontrol/api/v1/loaner/disable', ids).then((res) => {
                         this.getData();
                     }).catch((error) => {
                         console.log(error);
@@ -338,19 +374,7 @@
                 this.dialogVisible2 = false;
             },
             Search() {
-                let self = this;
-                this.axios.post('/api/v1/branch/getBranchPage', {
-                    code: self.searchForm.code,
-                    name: self.searchForm.name,
-                    enabled: self.searchForm.enabled,
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                }).catch((error) => {
-                    console.log(error);
-                })
+                this.getData();
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;

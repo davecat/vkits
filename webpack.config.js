@@ -55,6 +55,10 @@ module.exports = {
                 target: 'http://localhost:5001',
                 secure: false
             },
+            '/riskcontrol/api/v1/*': {
+                target: 'http://localhost:5001',
+                secure: false
+            },
             '/anon/*': {
                 target: 'http://localhost:5001',
                 secure: false
