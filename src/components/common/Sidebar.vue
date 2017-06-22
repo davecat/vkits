@@ -2,26 +2,18 @@
     <div class="sidebar">
         <!-- Sidebar Menu -->
         <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="dark" unique-opened router>
-            <template v-for="(menu,index) in menus">
-                <el-menu-item v-if='menu.type=="Menu"' :index="menu.url"><i :class="menu.icon"></i>{{menu.name}}
-                </el-menu-item>
-                <el-submenu v-else :index="menu.id">
-                    <template slot="title"><i :class="menu.icon"></i>{{menu.name}}</template>
-                    <el-menu-item v-for="(menu,cindex) in menu.children" :key="menu.id" :index='menu.url'>
-                        <i :class="menu.icon"></i>{{menu.name}}
-                    </el-menu-item>
-                </el-submenu>
-            </template>
+            <sidebar-item :routes='menus'></sidebar-item>
         </el-menu>
+
+
         <!-- /.sidebar-menu -->
     </div>
 </template>
 
 <script>
+    import SidebarItem from "./SidebarItem.vue";
     export default {
-        data: function () {
-            return {}
-        },
+        components: { SidebarItem },
         computed: {
             onRoutes(){
                 return this.$route.path.replace('/', '');
@@ -30,9 +22,12 @@
                 return this.$store.state.menus.menus;
             }
         },
-        methods: {}
+        methods: {
+
+        }
     }
 </script>
+
 
 <style scoped>
     .sidebar {
@@ -49,7 +44,4 @@
         height: 100%;
     }
 
-    .fa {
-        margin-right: 10px;
-    }
 </style>
