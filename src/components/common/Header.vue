@@ -1,5 +1,6 @@
 <template>
     <div class="header">
+        <i class="fa fa-bars"></i>
         <div class="logo">后台管理系统</div>
         <div class="user-info">
             <span class="username">你好，{{staff.staffName}}</span>
