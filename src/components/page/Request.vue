@@ -749,7 +749,7 @@
                             this.$refs[formName].resetFields();
                             this.formVisible = false;
                         }).catch((error) => {
-                            console.log(error);
+                            this.$message.error(error.response.data.message);
                         })
                     } else {
                         console.log('error submit!!');
@@ -771,7 +771,7 @@
                             this.$refs[formName].resetFields();
                             this.formVisible = false;
                         }).catch((error) => {
-                            console.log(error);
+                            this.$message.error(error.response.data.message);
                         })
                     } else {
                         console.log('error submit!!');
@@ -828,7 +828,7 @@
                 return this.axios.get('/api/upload/getToken').then((res) => {
                     this.postData.token = res.data;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);;
                 })
             },
             beforeUpload(file) {

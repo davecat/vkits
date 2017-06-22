@@ -113,7 +113,6 @@
                         }).then((response) => {
                             this.sendMsg();
                         }).catch((error) => {
-                            console.log(error);
                             this.sendError(error.response.data.message);
                         })
                     }

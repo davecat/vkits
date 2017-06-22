@@ -137,7 +137,7 @@
                 this.axios.post("/api/v1/button", postForm).then((response) => {
                     console.log(response.data);
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             delButton(id) {

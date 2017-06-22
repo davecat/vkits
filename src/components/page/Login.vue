@@ -66,7 +66,7 @@
                             localStorage.setItem('token', response.data.token);
                             self.$router.push('/home');
                         }).catch((error) => {
-                            console.log(error);
+                            this.$message.error(error.response.data.message);
                             this.getCaptcha();
                             this.error = error.response.data.message;
                         });
@@ -84,7 +84,7 @@
                     this.captchaUrl = response.data.captchaURL;
                     this.ruleForm.captchaId = response.data.captchaId;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             }
         }

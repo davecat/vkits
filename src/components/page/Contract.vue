@@ -139,7 +139,7 @@
                     self.tableData = res.data.content;
                     self.totalElements = res.data.totalElements;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             Search() {
@@ -154,7 +154,7 @@
                     self.tableData = res.data.content;
                     self.totalElements = res.data.totalElements;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             }
         }

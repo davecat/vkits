@@ -61,28 +61,28 @@
                 this.axios.get("/api/v1/menu").then((response) => {
                     console.log(response.data);
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             test2() {
                 this.axios.get("/api/v1/user/current").then((response) => {
                     console.log(response.data);
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             test3() {
                 this.axios.all([this.getUserAccount(), this.getUserPermissions()]).then((response) => {
                     console.log(response.data);
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             getMenu() {
                 this.axios.get("/api/menus").then((response) => {
                     console.log(response.data);
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             getUserAccount() {

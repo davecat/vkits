@@ -231,14 +231,14 @@
                     self.tableData = res.data.content;
                     self.totalElements = res.data.totalElements;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             submitBranch(formName) {
@@ -249,7 +249,7 @@
                             this.$refs[formName].resetFields();
                             this.formVisible = false;
                         }).catch((error) => {
-                            console.log(error);
+                            this.$message.error(error.response.data.message);
                         })
                     } else {
                         console.log('error submit!!');
@@ -265,7 +265,7 @@
                             this.$refs[formName].resetFields();
                             this.formVisible2 = false;
                         }).catch((error) => {
-                            console.log(error);
+                            this.$message.error(error.response.data.message);
                         })
                     } else {
                         console.log('error submit!!');
@@ -297,7 +297,7 @@
                     this.getData();
                     this.dialogVisible3 = false;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             multipleEdit() {
@@ -316,7 +316,7 @@
                     this.axios.put('/api/v1/branch/delete', ids).then((res) => {
                         this.getData();
                     }).catch((error) => {
-                        console.log(error);
+                        this.$message.error(error.response.data.message);
                     })
                 }
                 this.dialogVisible = false;
@@ -331,7 +331,7 @@
                     this.axios.put('/api/v1/branch/disable', ids).then((res) => {
                         this.getData();
                     }).catch((error) => {
-                        console.log(error);
+                        this.$message.error(error.response.data.message);
                     })
                 }
                 this.dialogVisible2 = false;
@@ -348,7 +348,7 @@
                     self.tableData = res.data.content;
                     self.totalElements = res.data.totalElements;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             handleSelectionChange(val) {

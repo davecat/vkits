@@ -570,7 +570,7 @@
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             getBranchList(agencyId) {
@@ -578,7 +578,7 @@
                     this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencyId).then((res) => {
                         this.branchList = res.data;
                     }).catch((error) => {
-                        console.log(error);
+                        this.$message.error(error.response.data.message);
                     })
                 } else {
                     this.searchForm.branchId = '';
@@ -593,7 +593,7 @@
                 }).then((res) => {
                     self.loanerList = res.data.content;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             handleCurrentRow(val) {
@@ -645,7 +645,7 @@
                     this.axios.post('/riskcontrol/lib/api/v1/application/commitToLoaner', this.form).then((res) => {
                         this.getData();
                     }).catch((error) => {
-                        console.log(error);
+                        this.$message.error(error.response.data.message);
                     })
                 }
                 this.dialogVisible = false;
@@ -660,7 +660,7 @@
                     this.axios.post('/riskcontrol/lib/api/v1/application/libReturn', ids).then((res) => {
                         this.getData();
                     }).catch((error) => {
-                        console.log(error);
+                        this.$message.error(error.response.data.message);
                     })
                 }
                 this.dialogVisible2 = false;
@@ -675,7 +675,7 @@
                     this.axios.post('/riskcontrol/lib/api/v1/application/libReject', ids).then((res) => {
                         this.getData();
                     }).catch((error) => {
-                        console.log(error);
+                        this.$message.error(error.response.data.message);
                     })
                 }
                 this.dialogVisible3 = false;
