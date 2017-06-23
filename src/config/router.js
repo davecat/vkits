@@ -94,6 +94,11 @@ export default new Router({
                     path: '/request_handling',
                     meta: { requiresAuth: true },
                     component: resolve => require(['../components/page/Request_handling.vue'], resolve)
+                },
+                {
+                    path: '/eod_report',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Eod_report.vue'], resolve)
                 }
             ]
         },
