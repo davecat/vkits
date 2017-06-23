@@ -73,7 +73,7 @@
                 </el-table-column>
                 <el-table-column
                         min-width="180"
-                        prop="id"
+                        prop="agencyName"
                         label="中介名称">
                 </el-table-column>
                 <el-table-column
@@ -601,11 +601,8 @@
             },
             getLoanerList() {
                 let self = this;
-                this.axios.post('/riskcontrol/api/v1/loaner/getLoanerPage', {
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.loanerList = res.data.content;
+                this.axios.get('/riskcontrol/api/v1/loaner/getLoanerList').then((res) => {
+                    self.loanerList = res.data;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 })
@@ -635,12 +632,6 @@
                 } else {
                     this.currentRow = val;
                 }
-            },
-            handleEdit(index, row) {
-                this.$message('编辑第' + (index + 1) + '行');
-            },
-            handleDelete(index, row) {
-                this.$message.error('删除第' + (index + 1) + '行');
             },
             Search() {
                 this.getData();
