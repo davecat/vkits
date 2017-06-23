@@ -38,7 +38,7 @@
             </el-form>
         </el-row>
         <el-row>
-            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange">
+            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChangeTab">
                 <el-tab-pane label="待补充" name="Unchecked"></el-tab-pane>
                 <el-tab-pane label="待修改" name="Returned"></el-tab-pane>
                 <el-tab-pane label="待审核" name="Unconfirmed"></el-tab-pane>
@@ -174,7 +174,12 @@
                         <span>{{ currentRow.apartmentNo }}</span>
                     </el-form-item>
                 </el-col>
-                <el-col :span="16">
+                <el-col :span="8">
+                    <el-form-item label="省市区（县）：">
+                        <span>{{ currentRow.provinceName }}/{{ currentRow.cityName }}/{{ currentRow.districtName }}</span>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="8">
                     <el-form-item label="房屋信息：">
                         <span>{{ currentRow.address }}</span>
                     </el-form-item>
@@ -359,11 +364,23 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="16">
+                        <el-form-item label="省市区（县）：" :label-width="formLabelWidthCity" prop="selectedOptions">
+                            <el-cascader
+                                    :options="options"
+                                    v-model="selectedOptions"
+                                    @change="handleChange">
+                            </el-cascader>
+                        </el-form-item>
+                    </el-col>
+                    <!--<hr style="border-bottom-color: #d9d9d9; border-top: none;">-->
+                </el-row>
+                <el-row>
+                    <el-col :span="16">
                         <el-form-item label="房屋信息：" :label-width="formLabelWidth" prop="address">
                             <el-input v-model="form.address"></el-input>
                         </el-form-item>
                     </el-col>
-                    <hr style="border-bottom-color: #d9d9d9; border-top: none;">
+                    <!--<hr style="border-bottom-color: #d9d9d9; border-top: none;">-->
                 </el-row>
                 <el-row>
                     <el-col :span="8">
@@ -526,12 +543,17 @@
 </template>
 
 <script>
+    import json from "../../../static/city.json";
     import ElRow from "element-ui/packages/row/src/row";
     import format from 'date-fns/format'
     export default {
         components: {ElRow},
+
         data() {
             return {
+                //省市县
+                selectedOptions: [],
+                options: [],
                 tableData: [],
                 cur_page: 1,
                 size: 10,
@@ -572,6 +594,7 @@
                 },
                 branchList: {},
                 formLabelWidth: '100px',
+                formLabelWidthCity: '156px',
                 pickerOptions: {
                     shortcuts: [
                         {
@@ -655,6 +678,7 @@
         },
         created(){
             this.getData();
+            this.init();
         },
         filters: {
             appStatusFormat: function (value) {
@@ -699,6 +723,16 @@
             },
         },
         methods: {
+            init: function () {
+                this.options = json;
+            },
+            //切换省市区
+            handleChange(value) {
+                //把省市县的值带到后台
+                this.form.province = this.selectedOptions[0];
+                this.form.city = this.selectedOptions[1];
+                this.form.district = this.selectedOptions[2];
+            },
             handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();
@@ -786,10 +820,12 @@
             Search() {
                 this.getData();
             },
-            handleChange() {
+            handleChangeTab() {
                 this.getData();
             },
+            //点击每一行显示下面内容
             handleCurrentRow(val) {
+                let that = this;
                 if (val === null) {
                     this.currentRow = {
                         responsibleAgent: '',
@@ -813,6 +849,26 @@
                     }
                 } else {
                     this.currentRow = val;
+                    //这里处理省市县的id
+                    json.forEach((item) => {
+                        //省
+                        if(that.currentRow.province === item.value){
+                            that.currentRow.provinceName = item.label;
+                            //市
+                            item.children.forEach((item) => {
+                                if(that.currentRow.city === item.value){
+                                    that.currentRow.cityName = item.label;
+                                    //县
+                                    item.children.forEach((item) => {
+                                        if(that.currentRow.district === item.value){
+                                            that.currentRow.districtName = item.label;
+                                        }
+                                    })
+                                }
+                            })
+                        }
+
+                    });
                 }
             },
             selectedData() {
