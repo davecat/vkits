@@ -2,8 +2,8 @@
     <div>
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 分期管理</el-breadcrumb-item>
-                <el-breadcrumb-item>分期申请</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 资金端</el-breadcrumb-item>
+                <el-breadcrumb-item>分期申请审批</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
 
