@@ -20,6 +20,7 @@
                 </el-form-item>
                 <el-form-item label="还款方式：">
                     <el-select v-model="searchForm.repaymentType">
+                        <el-option label="全部" value=""></el-option>
                         <el-option label="等额本息" value="EqualityPrincipal"></el-option>
                         <el-option label="等额本金" value="EqualityCorpus"></el-option>
                     </el-select>
@@ -220,7 +221,7 @@
                 agencyList: {},
                 searchForm: {
                     name: '',
-                    repaymentType: 'EqualityCorpus'
+                    repaymentType: ''
                 },
                 form: {
                     name: '',
