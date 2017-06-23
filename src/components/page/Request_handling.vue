@@ -8,21 +8,15 @@
         </div>
 
         <el-row>
-            <el-button type="primary">批量通过申请</el-button>
-            <el-button type="primary">生成日结确认</el-button>
+            <el-button type="primary" @click="dialogVisible = true">批量通过申请</el-button>
+            <el-button type="primary" @click="showEodInfo">生成日结确认</el-button>
         </el-row>
         <el-row>
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="所属中介：">
-                    <el-select v-model="searchForm.agencyId" @change="getBranchList(searchForm.agencyId)">
+                    <el-select v-model="searchForm.agencyId">
                         <el-option label="全部" value=""></el-option>
                         <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="所属门店：">
-                    <el-select v-model="searchForm.branchId">
-                        <el-option label="全部" value=""></el-option>
-                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="申请编号：">
@@ -40,6 +34,15 @@
                 </el-form-item>
                 <el-form-item label="租客姓名：">
                     <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="状态：">
+                    <el-select v-model="searchForm.status">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option label="待处理" value="Unconfirmed"></el-option>
+                        <el-option label="驳回-待确认" value="UnconfirmedReturned"></el-option>
+                        <el-option label="拒绝-待确认" value="UnconfirmedRejected"></el-option>
+                        <el-option label="通过-待确认" value="UnconfirmedAccepted"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
@@ -68,7 +71,7 @@
                 </el-table-column>
                 <el-table-column
                         min-width="180"
-                        prop="id"
+                        prop="applictionNo"
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
@@ -330,6 +333,32 @@
             </span>
         </el-dialog>
 
+        <el-dialog
+                title="审批通过"
+                :visible.sync="dialogVisible"
+                size="tiny">
+            <span>此操作会将选中分期申请通过审批，是否继续？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="multipleAccept">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog
+                title="日结确认"
+                :visible.sync="dialogVisible2"
+                size="tiny">
+            <el-row>今日共审批 {{ eodInfo.acceptedCount + eodInfo.rejectedCount + eodInfo.returnedCount }} 条申请：</el-row>
+            <el-row>审批通过：{{ eodInfo.acceptedCount }} 条</el-row>
+            <el-row>驳回修改：{{ eodInfo.rejectedCount }} 条</el-row>
+            <el-row>拒绝申请：{{ eodInfo.returnedCount }} 条</el-row>
+            <el-row>确认后不可修改审批结果，是否确认？</el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible2 = false">取 消</el-button>
+                <el-button type="primary" @click="eod">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -354,9 +383,12 @@
                     customerName: '',
                     agencyId: '',
                     branchId: '',
-                    status: 'Unconfirmed'
+                    status: ''
                 },
                 form: {},
+                eodInfo: {},
+                dialogVisible: false,
+                dialogVisible2: false,
                 pickerOptions: {
                     shortcuts: [
                         {
@@ -435,18 +467,14 @@
         },
         filters: {
             appStatusFormat: function (value) {
-                if (value === "Unchecked") {
-                    return "待补充";
-                } else if (value === "Unconfirmed") {
-                    return "待审核";
-                } else if (value === "Accepted") {
-                    return "审核通过";
-                } else if (value === "Returned") {
-                    return "待修改";
-                } else if (value === "Canceled") {
-                    return "已取消";
-                } else if (value === "Rejected") {
-                    return "审核不通过";
+                if (value === "Unconfirmed") {
+                    return "待处理";
+                } else if (value === "UnconfirmedReturned") {
+                    return "驳回-待确认";
+                } else if (value === "UnconfirmedRejected") {
+                    return "拒绝-待确认";
+                } else if (value === "UnconfirmedAccepted") {
+                    return "通过-待确认";
                 }
             },
             educationFormat: function (value) {
@@ -548,30 +576,43 @@
                     this.$message.error(error.response.data.message);
                 })
             },
-            getBranchList(agencyId) {
-                if(agencyId !== '') {
-                    this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencyId).then((res) => {
-                        this.branchList = res.data;
-                    }).catch((error) => {
-                        this.$message.error(error.response.data.message);
-                    })
-                } else {
-                    this.searchForm.branchId = '';
-                    this.branchList = [];
-                }
-            },
-            handleEdit(index, row) {
-                this.$message('编辑第' + (index + 1) + '行');
-            },
-            handleDelete(index, row) {
-                this.$message.error('删除第' + (index + 1) + '行');
-            },
             Search() {
                 this.getData();
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
-            }
+            },
+            multipleAccept() {
+                let ids = this.multipleSelection.map(row => {
+                    return row.id
+                });
+                if (ids.length === 0) {
+                    console.log('ids is null');
+                } else {
+                    this.axios.post('/riskcontrol/loaner/api/v1/application/loanerAccept', ids).then((res) => {
+                        this.getData();
+                    }).catch((error) => {
+                        this.$message.error(error.response.data.message);
+                    })
+                }
+                this.dialogVisible = false;
+            },
+            showEodInfo() {
+                this.axios.get('/riskcontrol/loaner/api/v1/application/eod/info').then((res) => {
+                    this.eodInfo = res.data;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                });
+                this.dialogVisible2 = true;
+            },
+            eod() {
+                this.axios.post('/riskcontrol/loaner/api/v1/application/eod').then((res) => {
+                    this.getData();
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                });
+                this.dialogVisible2 = false;
+            },
         }
     }
 </script>
