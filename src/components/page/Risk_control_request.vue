@@ -369,6 +369,16 @@
             </span>
         </el-dialog>
 
+        <el-dialog
+                title="大图"
+                :visible.sync="dialogBigPhoto"
+                size="small">
+            <span><img :src="bigPhotoUrl" width="100%"></span>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="dialogBigPhoto = false">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -476,6 +486,10 @@
                 dialogVisible: false,
                 dialogVisible2: false,
                 dialogVisible3: false,
+                idCardFrontPhoto: '',
+                idCardVersoPhoto: '',
+                idCardAndPersonPhoto: '',
+                contractPhotos: []
             }
         },
         created(){
