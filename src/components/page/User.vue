@@ -216,7 +216,7 @@
                     return "中介公司负责人";
                 } else if(value === "Loaner"){
                    return "资金端"
-                } else {
+                } else if(value === "Branch"){
                     return "门店管理员";
                 }
             }
