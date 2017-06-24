@@ -12,27 +12,33 @@
         </el-row>
 
         <el-row>
-                <el-table :data="tableData"
-                          border
-                          style="width: 100%"
-                          highlight-current-row
-                          @current-change="handleCurrentRow">
-                    <el-table-column prop="id" label="ID">
-                    </el-table-column>
-                    <el-table-column prop="name" label="角色名称">
-                    </el-table-column>
-                    <el-table-column prop="description" label="描述">
-                    </el-table-column>
-                    <el-table-column label="操作">
-                        <template scope="scope">
-                            <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
-                                <el-button size="small" type="warning"
-                                           @click="rowDelete(scope.row.id)"><i class="fa fa-trash"></i>
-                                </el-button>
-                            </el-tooltip>
-                        </template>
-                    </el-table-column>
-                </el-table>
+            <el-table :data="tableData"
+                      border
+                      style="width: 100%"
+                      highlight-current-row
+                      @current-change="handleCurrentRow">
+                <el-table-column prop="id" label="ID">
+                </el-table-column>
+                <el-table-column prop="name" label="角色名称">
+                </el-table-column>
+                <el-table-column prop="description" label="描述">
+                </el-table-column>
+                <el-table-column label="操作">
+                    <template scope="scope">
+                        <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
+                            <el-button size="small" type="warning"
+                                       @click="rowDelete(scope.row.id)"><i class="fa fa-trash"></i>
+                            </el-button>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="授权" placement="top-end">
+                            <el-button size="small" type="info"
+                                       @click="rowWarrant(scope.row.id)"><i class="fa fa-user-circle-o"></i>
+                            </el-button>
+                        </el-tooltip>
+                    </template>
+
+                </el-table-column>
+            </el-table>
         </el-row>
 
         <el-dialog title="新增角色" :visible.sync="formVisible">
@@ -61,10 +67,32 @@
             </span>
         </el-dialog>
 
+        <!--授权弹窗-->
+        <el-dialog
+                title="授权"
+                :visible.sync="warrant"
+                size="tiny">
+            <el-tree
+                    :data="menus"
+                    :props="defaultProps"
+                    ref="tree"
+                    show-checkbox
+                    node-key="id"
+                    :default-checked-keys='permissionId'
+                    :highlight-current="true"
+                    accordion
+            ></el-tree>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="warrant = false">取 消</el-button>
+                <el-button type="primary" @click="getCheckedNodes">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
 <script>
+    import Vue from "vue"
     import ElRow from "element-ui/packages/row/src/row";
     export default {
         components: {
@@ -72,9 +100,21 @@
         },
         data() {
             return {
+                //授权选择的对象
+                permission: {
+                    id: '',
+                    permissions: []
+                },
+                //已有权限的id
+                permissionId: [],
                 tableData: [],
+                defaultProps: {
+                    children: 'children',
+                    label: 'name'
+                },
                 formVisible: false,
                 dialogVisible: false,
+                warrant: false,
                 formLabelWidth: '80px',
                 deleteId: '',
                 currentRow: {},
@@ -92,26 +132,64 @@
                 },
             }
         },
-        created(){
-            this.getData();
-        },
         computed: {
             menus() {
                 return this.$store.state.menus.menus;
             }
         },
+        created(){
+            this.getData();
+        },
         methods: {
+            //授权
+            getCheckedNodes() {
+                let that = this;
+                let checked = this.$refs.tree.getCheckedNodes();
+                if (checked.length > 0) {
+                    checked.forEach((item) => {
+                        that.permission.permissions.push(item.permission)
+                    });
+                    console.log(that.permission);
+                    this.axios.put('/api/v1/role/setPermission', that.permission).then((res) => {
+                        if (res.data.status === 200) {
+                            this.$message({
+                                message: '授权成功！',
+                                type: 'success'
+                            });
+                        }
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                }
+                this.warrant = false;
+            },
+            //获取数据
             getData(){
                 let self = this;
                 this.axios.get('/api/v1/role/getRoleAll').then((res) => {
                     self.tableData = res.data;
+                    console.log(self.tableData);
                 }).catch((error) => {
                     console.log(error);
                 })
             },
+            //删除
             rowDelete(id) {
                 this.dialogVisible = true;
                 this.deleteId = id;
+            },
+            //授权
+            rowWarrant(id) {
+                this.permission.id = id;
+//                获取用户已有权限
+                this.axios.get('/api/v1/role/getRolePermission/' + id).then((res) => {
+                    this.permissionId = res.data.map(item => {
+                        return item.id
+                    });
+                    this.warrant = true;
+                }).catch((error) => {
+                    console.log(error);
+                });
             },
             handleDelete() {
                 this.axios.delete('/api/v1/role/' + this.deleteId).then((res) => {

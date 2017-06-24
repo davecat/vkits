@@ -65,7 +65,7 @@
 
         <el-dialog title="新增用户" :visible.sync="formVisible">
             <el-form :model="form" ref="form" :rules="rules">
-                <el-form-item label="昵称" :label-width="formLabelWidth" prop="name">
+                <el-form-item label="昵称" :label-width="formLabelWidth" prop="staffName">
                     <el-input v-model="form.staffName"></el-input>
                 </el-form-item>
                 <el-form-item label="登录名" :label-width="formLabelWidth" prop="username">
@@ -74,31 +74,32 @@
                 <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
                     <el-input v-model="form.password"></el-input>
                 </el-form-item>
-                <el-form-item label="员工类型" :label-width="formLabelWidth" prop="type">
-                    <el-select v-model="form.staffType">
+                <el-form-item label="员工类型" :label-width="formLabelWidth" prop="staffType">
+                    <el-select v-model="form.staffType" @change="staffChange(form.staffType)">
                         <el-option label="内部员工" value="Interior"></el-option>
                         <el-option label="中介公司负责人" value="Boss"></el-option>
                         <el-option label="门店管理员" value="Branch"></el-option>
+                        <el-option label="资金端" value="Loaner"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="角色" :label-width="formLabelWidth" prop="roleId">
-                    <el-select v-model="form.roleId">
-                        <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.id"></el-option>
+                <el-form-item label="角色" :label-width="formLabelWidth" prop="role">
+                    <el-select v-model="form.role">
+                        <el-option v-for="role in roleList" :key="role.id"  :value="role" :label="role.name"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="所属资金端" :label-width="formLabelWidth">
-                    <el-select v-model="form.loanerId">
-                        <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
+                <el-form-item label="所属资金端" :label-width="formLabelWidth" prop="loanerId">
+                    <el-select v-model="form.loanerId" :disabled="loanerDisable">
+                        <el-option v-for="loaner in loanerList" :value="loaner.id" :key="loaner.id" :label="loaner.name"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="管辖中介：">
-                    <el-select v-model="form.agencies" multiple @change="getBranchList(form.agencies)">
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
+                <el-form-item label="管辖中介：" :label-width="formLabelWidth" prop="agencies">
+                    <el-select v-model="form.agencies" multiple @change="getBranchList(form.agencies)" :disabled="agenciesDisable">
+                        <el-option v-for="agency in agencyList" :value="agency" :label="agency.name"  :key="agency.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="管辖门店：">
-                    <el-select v-model="form.branches" multiple>
-                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
+                <el-form-item label="管辖门店：" :label-width="formLabelWidth" prop="branches">
+                    <el-select v-model="form.branches" multiple :disabled="agenciesDisable">
+                        <el-option v-for="branch in branchList" :key="branch.id" :value="branch" :label="branch.name"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -157,6 +158,9 @@
     export default {
         data() {
             return {
+                loanerDisable: true,//用来控制资金端是否能选择
+                agenciesDisable: false,//用来控制中介和门店是否能选择
+                agenciesIds: [],//存放选择的中介id
                 tableData: [],
                 cur_page: 1,
                 size: 10,
@@ -164,19 +168,19 @@
                 formVisible: false,
                 formVisible2: false,
                 formLabelWidth: '120px',
-                roleList: {},
+                roleList: [],
                 agencyList: {},
                 branchList: {},
                 loanerList: {},
                 form: {
-                    name: '',
+                    staffName: '',//昵称
                     username: '',
                     password: '',
-                    type: '',
-                    roleId: '',
-                    loanerId: '',
-                    branches: [],
-                    agencies: [],
+                    staffType: '',
+                    role: {},//角色
+                    loanerId: '',//所属资金端
+                    branches: [],//管理门店
+                    agencies: [],//中介
                 },
                 form2: {
                     id: '',
@@ -187,7 +191,7 @@
                     roleId: '',
                     loanerId: '',
                     branches: [],
-                    agencies: [],
+                    agencies: []
                 },
                 rules: {
                     name: [{required: true, message: '请输入昵称', trigger: 'blur'}],
@@ -210,6 +214,8 @@
                     return "内部员工";
                 } else if (value === "Boss") {
                     return "中介公司负责人";
+                } else if(value === "Loaner"){
+                   return "资金端"
                 } else {
                     return "门店管理员";
                 }
@@ -229,6 +235,7 @@
                     }
                 }).then((res) => {
                     self.tableData = res.data.content;
+                    console.log(self.tableData);
                     self.totalElements = res.data.totalElements;
                 })
             },
@@ -246,8 +253,22 @@
                     this.$message.error(error.response.data.message);
                 })
             },
-            getBranchList(agencies) {
-                this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencies[0]).then((res) => {
+            //当员工选项变化时
+            staffChange(value) {
+                if(value === "Loaner"){
+                    this.loanerDisable = false;
+                    this.agenciesDisable = true;
+                } else {
+                    this.loanerDisable = true;
+                    this.agenciesDisable = false;
+                }
+            },
+            //只有当选择了中介，才能选择门店
+            getBranchList(item) {
+                this.agenciesIds = item.map(item => {
+                    return item.id
+                });
+                this.axios.post('/api/v1/branch/getBranchListByAgencyIdList', this.agenciesIds).then((res) => {
                     this.branchList = res.data;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
@@ -302,6 +323,10 @@
                             this.getData();
                             this.$refs[formName].resetFields();
                             this.formVisible = false;
+                            this.$message({
+                                message: '新增成功！',
+                                type: 'success'
+                            });
                         }).catch((error) => {
                             this.$message.error(error.response.data.message);
                         })
