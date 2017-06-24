@@ -11,18 +11,17 @@
             <el-button type="primary" @click="formVisible = true">新增</el-button>
         </el-row>
 
-        <el-row :gutter="20">
-            <el-col :span="16">
+        <el-row>
                 <el-table :data="tableData"
                           border
-                          style="width: 50%"
+                          style="width: 100%"
                           highlight-current-row
                           @current-change="handleCurrentRow">
-                    <!--<el-table-column prop="id" label="ID" width="120">-->
-                    <!--</el-table-column>-->
-                    <el-table-column prop="name" label="角色名称" width="180">
+                    <el-table-column prop="id" label="ID">
                     </el-table-column>
-                    <el-table-column prop="description" label="描述" width="220">
+                    <el-table-column prop="name" label="角色名称">
+                    </el-table-column>
+                    <el-table-column prop="description" label="描述">
                     </el-table-column>
                     <el-table-column label="操作">
                         <template scope="scope">
@@ -34,15 +33,6 @@
                         </template>
                     </el-table-column>
                 </el-table>
-            </el-col>
-            <el-col :span="8">
-                <el-tree
-                        :data="menus"
-                        :props="props"
-                        show-checkbox
-                        @check-change="handleCheckChange">
-                </el-tree>
-            </el-col>
         </el-row>
 
         <el-dialog title="新增角色" :visible.sync="formVisible">
@@ -76,10 +66,8 @@
 
 <script>
     import ElRow from "element-ui/packages/row/src/row";
-    import ElCol from "element-ui/packages/col/src/col";
     export default {
         components: {
-            ElCol,
             ElRow
         },
         data() {

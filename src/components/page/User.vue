@@ -66,7 +66,7 @@
         <el-dialog title="新增用户" :visible.sync="formVisible">
             <el-form :model="form" ref="form" :rules="rules">
                 <el-form-item label="昵称" :label-width="formLabelWidth" prop="name">
-                    <el-input v-model="form.name"></el-input>
+                    <el-input v-model="form.staffName"></el-input>
                 </el-form-item>
                 <el-form-item label="登录名" :label-width="formLabelWidth" prop="username">
                     <el-input v-model="form.username"></el-input>
@@ -75,7 +75,7 @@
                     <el-input v-model="form.password"></el-input>
                 </el-form-item>
                 <el-form-item label="员工类型" :label-width="formLabelWidth" prop="type">
-                    <el-select v-model="form.type">
+                    <el-select v-model="form.staffType">
                         <el-option label="内部员工" value="Interior"></el-option>
                         <el-option label="中介公司负责人" value="Boss"></el-option>
                         <el-option label="门店管理员" value="Branch"></el-option>
@@ -84,6 +84,11 @@
                 <el-form-item label="角色" :label-width="formLabelWidth" prop="roleId">
                     <el-select v-model="form.roleId">
                         <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="所属资金端" :label-width="formLabelWidth">
+                    <el-select v-model="form.loanerId">
+                        <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="管辖中介：">
@@ -123,16 +128,21 @@
                         <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="管辖中介：">
-                    <el-select v-model="form2.agencies" multiple @change="getBranchList(form.agencies)">
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
+                <el-form-item label="所属资金端" :label-width="formLabelWidth" prop="loanerId">
+                    <el-select v-model="form2.loanerId">
+                        <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="管辖门店：">
-                    <el-select v-model="form2.branches" multiple>
-                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
-                    </el-select>
-                </el-form-item>
+                <!--<el-form-item label="管辖中介：">-->
+                    <!--<el-select v-model="form2.agencies" multiple @change="getBranchList(form.agencies)">-->
+                        <!--<el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>-->
+                    <!--</el-select>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="管辖门店：">-->
+                    <!--<el-select v-model="form2.branches" multiple>-->
+                        <!--<el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>-->
+                    <!--</el-select>-->
+                <!--</el-form-item>-->
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="resetForm2('form2')">取 消</el-button>
@@ -153,16 +163,18 @@
                 totalElements: 0,
                 formVisible: false,
                 formVisible2: false,
-                formLabelWidth: '80px',
+                formLabelWidth: '120px',
                 roleList: {},
                 agencyList: {},
                 branchList: {},
+                loanerList: {},
                 form: {
                     name: '',
                     username: '',
                     password: '',
                     type: '',
                     roleId: '',
+                    loanerId: '',
                     branches: [],
                     agencies: [],
                 },
@@ -171,9 +183,9 @@
                     staffId: '',
                     name: '',
                     username: '',
-                    password: '',
                     type: '',
                     roleId: '',
+                    loanerId: '',
                     branches: [],
                     agencies: [],
                 },
@@ -190,6 +202,7 @@
             this.getData();
             this.getRoleList();
             this.getAgencyList();
+            this.getLoanerList();
         },
         filters: {
             staffTypeFormat: function (value) {
@@ -223,30 +236,40 @@
                 this.axios.get('/api/v1/role/getRoleAll').then((res) => {
                     this.roleList = res.data;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
                 })
             },
             getBranchList(agencies) {
                 this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencies[0]).then((res) => {
                     this.branchList = res.data;
                 }).catch((error) => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message);
+                })
+            },
+            getLoanerList() {
+                let self = this;
+                this.axios.post('/riskcontrol/api/v1/loaner/getLoanerPage', {
+                    page: self.cur_page - 1,
+                    size: self.size
+                }).then((res) => {
+                    self.loanerList = res.data.content;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
                 })
             },
             handleEdit(row) {
-                this.form2.id = row.id;
+                this.form2 = row;
+                this.form2.loanerId = '';
+                this.form2.type = 'Loaner';
                 this.form2.name = row.staffName;
-                this.form2.username = row.username;
-                this.form2.staffId = row.staffId;
-                this.form2.type = row.staffType;
-                this.form2.status = row.status;
+                this.form2.roleId = '';
                 this.formVisible2 = true;
             },
             resetPwd(staffId) {
@@ -280,7 +303,7 @@
                             this.$refs[formName].resetFields();
                             this.formVisible = false;
                         }).catch((error) => {
-                            console.log(error);
+                            this.$message.error(error.response.data.message);
                         })
                     } else {
                         console.log('error submit!!');
@@ -300,7 +323,7 @@
                             this.$refs[formName].resetFields();
                             this.formVisible2 = false;
                         }).catch((error) => {
-                            console.log(error);
+                            this.$message.error(error.response.data.message);
                         })
                     } else {
                         console.log('error submit!!');
