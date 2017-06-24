@@ -187,7 +187,12 @@
                         <span>{{ currentRow.apartmentNo }}</span>
                     </el-form-item>
                 </el-col>
-                <el-col :span="16">
+                <el-col :span="8">
+                    <el-form-item label="省市区（县）：">
+                        <span>{{ currentRow.provinceName }}{{ currentRow.cityName }}{{ currentRow.districtName }}</span>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="8">
                     <el-form-item label="房屋信息：">
                         <span>{{ currentRow.address }}</span>
                     </el-form-item>
@@ -363,6 +368,7 @@
 </template>
 
 <script>
+    import json from "../../../static/city.json";
     import ElRow from "element-ui/packages/row/src/row";
     export default {
         components: {ElRow},
@@ -514,6 +520,7 @@
                 }
             },
             handleCurrentRow(val) {
+                let that = this;
                 if (val === null) {
                     this.currentRow = {
                         responsibleAgent: '',
@@ -537,6 +544,26 @@
                     }
                 } else {
                     this.currentRow = val;
+                    //这里处理省市县的id
+                    json.forEach((item) => {
+                        //省
+                        if(that.currentRow.province === item.value){
+                            that.currentRow.provinceName = item.label+'/';
+                            //市
+                            item.children.forEach((item) => {
+                                if(that.currentRow.city === item.value){
+                                    that.currentRow.cityName = item.label+'/';
+                                    //县
+                                    item.children.forEach((item) => {
+                                        if(that.currentRow.district === item.value){
+                                            that.currentRow.districtName = item.label;
+                                        }
+                                    })
+                                }
+                            })
+                        }
+
+                    });
                 }
             },
             photo(token) {
