@@ -23,7 +23,13 @@
   "devDependencies": {
     "babel-core": "^6.0.0",
     "babel-loader": "^6.0.0",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.5.2",
     "babel-preset-latest": "^6.0.0",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.24.1",
     "cross-env": "^3.0.0",
     "css-loader": "^0.28.4",
     "faker": "^4.1.0",
