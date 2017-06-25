@@ -2,17 +2,11 @@
     <div>
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 控制台</el-breadcrumb-item>
-                <el-breadcrumb-item>门店管理</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 内部管理</el-breadcrumb-item>
+                <el-breadcrumb-item>分期合同</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
 
-        <el-row>
-            <el-button type="primary" @click="formVisible = true">新增</el-button>
-            <el-button type="primary" :disabled="multipleEditButton" @click="multipleEdit" >修改</el-button>
-            <el-button type="primary" @click="dialogVisible = true">删除</el-button>
-            <el-button type="primary" @click="dialogVisible2 = true">停用</el-button>
-        </el-row>
         <el-row>
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="门店编号：">
@@ -171,15 +165,13 @@
 </template>
 
 <script>
+    import { pagination } from '../mixins/pagination.js'
     export default {
+        mixins: [pagination],
         data() {
             return {
-                tableData: [],
                 multipleSelection: [],
                 multipleEditButton: false,
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
                 agencyList: {},
                 searchForm: {
                     code: '',
@@ -210,30 +202,14 @@
                     code: [{required: true, message: '请输入门店编号', trigger: 'blur'}],
                     name: [{required: true, message: '请输入门店名称', trigger: 'blur'}],
                     enabled: [{required: true, message: '请选择状态', trigger: 'change'}]
-                }
+                },
+                url: '/api/v1/branch/getBranchPage'
             }
         },
         created(){
-            this.getData();
             this.getAgencyList();
         },
         methods: {
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
-            getData(){
-                let self = this;
-                this.axios.post('/api/v1/branch/getBranchPage', {
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
-            },
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
@@ -335,21 +311,6 @@
                     })
                 }
                 this.dialogVisible2 = false;
-            },
-            Search() {
-                let self = this;
-                this.axios.post('/api/v1/branch/getBranchPage', {
-                    code: self.searchForm.code,
-                    name: self.searchForm.name,
-                    enabled: self.searchForm.enabled,
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
