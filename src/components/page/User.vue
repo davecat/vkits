@@ -42,12 +42,12 @@
                             </el-tooltip>
                             <el-tooltip class="item" effect="dark" content="锁定" placement="top-end">
                                 <el-button size="small" type="warning"
-                                           @click="unlock(scope.row.staffId)"><i class="fa fa-lock"></i>
+                                           @click="lock(scope.row.staffId)"><i class="fa fa-lock"></i>
                                 </el-button>
                             </el-tooltip>
                             <el-tooltip class="item" effect="dark" content="解锁" placement="top-end">
                                 <el-button size="small" type="danger"
-                                           @click="lock(scope.row.staffId)"><i class="fa fa-unlock-alt"></i>
+                                           @click="unlock(scope.row.staffId)"><i class="fa fa-unlock-alt"></i>
                                 </el-button>
                             </el-tooltip>
                         </template>
@@ -87,9 +87,9 @@
                         <el-option v-for="role in roleList" :key="role.id"  :value="role" :label="role.name"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="所属资金端" :label-width="formLabelWidth" prop="loanerId">
-                    <el-select v-model="form.loanerId" :disabled="loanerDisable">
-                        <el-option v-for="loaner in loanerList" :value="loaner.id" :key="loaner.id" :label="loaner.name"></el-option>
+                <el-form-item label="所属资金端" :label-width="formLabelWidth" prop="loaner">
+                    <el-select v-model="form.loaner" :disabled="loanerDisable">
+                        <el-option v-for="loaner in loanerList" :value="loaner" :key="loaner.id" :label="loaner.name"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="管辖中介：" :label-width="formLabelWidth" prop="agencies">
@@ -111,39 +111,40 @@
 
         <el-dialog title="修改用户" :visible.sync="formVisible2">
             <el-form :model="form2" ref="form2" :rules="rules">
-                <el-form-item label="昵称" :label-width="formLabelWidth" prop="name">
-                    <el-input v-model="form2.name"></el-input>
+                <el-form-item label="昵称" :label-width="formLabelWidth" prop="staffName">
+                    <el-input v-model="form2.staffName"></el-input>
                 </el-form-item>
                 <el-form-item label="登录名" :label-width="formLabelWidth" prop="username">
-                    <el-input v-model="form2.username"></el-input>
+                    <el-input v-model="form2.username" disabled></el-input>
                 </el-form-item>
-                <el-form-item label="员工类型" :label-width="formLabelWidth" prop="type">
-                    <el-select v-model="form2.type">
+                <el-form-item label="员工类型" :label-width="formLabelWidth" prop="staffType">
+                    <el-select v-model="form2.staffType" disabled>
                         <el-option label="内部员工" value="Interior"></el-option>
                         <el-option label="中介公司负责人" value="Boss"></el-option>
                         <el-option label="门店管理员" value="Branch"></el-option>
+                        <el-option label="资金端" value="Loaner"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="角色" :label-width="formLabelWidth" prop="roleId">
-                    <el-select v-model="form2.roleId">
-                        <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.id"></el-option>
+                <el-form-item label="角色" :label-width="formLabelWidth" prop="role">
+                    <el-select v-model="form2.role">
+                        <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="所属资金端" :label-width="formLabelWidth" prop="loanerId">
-                    <el-select v-model="form2.loanerId">
-                        <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
+                <el-form-item label="所属资金端" :label-width="formLabelWidth" prop="loanerId" v-show="editShow">
+                    <el-select v-model="form2.loaner.id">
+                        <el-option v-for="item in loanerList" :value="item.id" :key="item.id"  :label="item.name"></el-option>
                     </el-select>
                 </el-form-item>
-                <!--<el-form-item label="管辖中介：">-->
-                    <!--<el-select v-model="form2.agencies" multiple @change="getBranchList(form.agencies)">-->
-                        <!--<el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>-->
-                    <!--</el-select>-->
-                <!--</el-form-item>-->
-                <!--<el-form-item label="管辖门店：">-->
-                    <!--<el-select v-model="form2.branches" multiple>-->
-                        <!--<el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>-->
-                    <!--</el-select>-->
-                <!--</el-form-item>-->
+                <el-form-item label="管辖中介：" :label-width="formLabelWidth" v-show="!editShow" prop="agencies">
+                    <el-select v-model="form2.agencies" multiple @change="getBranchList(form.agencies)">
+                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="管辖门店：" :label-width="formLabelWidth" v-show="!editShow" prop="branches">
+                    <el-select v-model="form2.branches" multiple>
+                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch"></el-option>
+                    </el-select>
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="resetForm2('form2')">取 消</el-button>
@@ -155,55 +156,55 @@
 </template>
 
 <script>
+    import { pagination } from '../mixins/pagination.js'
     export default {
+        mixins: [pagination],
         data() {
             return {
                 loanerDisable: true,//用来控制资金端是否能选择
                 agenciesDisable: false,//用来控制中介和门店是否能选择
+                editShow: true,//用来控制修改时候资金端是否显示
                 agenciesIds: [],//存放选择的中介id
-                tableData: [],
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
                 formVisible: false,
                 formVisible2: false,
                 formLabelWidth: '120px',
                 roleList: [],
-                agencyList: {},
-                branchList: {},
-                loanerList: {},
+                agencyList: [],
+                branchList: [],
+                loanerList: [],
                 form: {
                     staffName: '',//昵称
                     username: '',
                     password: '',
                     staffType: '',
                     role: {},//角色
-                    loanerId: '',//所属资金端
+                    loaner: {},//所属资金端
                     branches: [],//管理门店
                     agencies: [],//中介
                 },
                 form2: {
-                    id: '',
-                    staffId: '',
-                    name: '',
+                    staffName: '',//昵称
                     username: '',
-                    type: '',
-                    roleId: '',
-                    loanerId: '',
-                    branches: [],
-                    agencies: []
+                    password: '',
+                    staffType: '',
+                    role: {},//角色
+                    loaner: {
+                        id: '',
+                        name: ''
+                    },//所属资金端
+                    branches: [],//管理门店
+                    agencies: [],//中介
                 },
                 rules: {
-                    name: [{required: true, message: '请输入昵称', trigger: 'blur'}],
+                    staffName: [{required: true, message: '请输入昵称', trigger: 'blur'}],
                     username: [{required: true, message: '请输入登录名', trigger: 'blur'}],
                     password: [{required: true, message: '请输入密码', trigger: 'blur'}],
-                    type: [{required: true, message: '请输入员工类型', trigger: 'change'}],
-                    roleId: [{required: true, message: '请选择角色', trigger: 'change'}]
+                    staffType: [{required: true, message: '请输入员工类型', trigger: 'change'}],
                 },
+                url: '/api/v1/user/getList'
             }
         },
         created(){
-            this.getData();
             this.getRoleList();
             this.getAgencyList();
             this.getLoanerList();
@@ -222,23 +223,7 @@
             }
         },
         methods: {
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
-            getData(){
-                let self = this;
-                this.axios.post('/api/v1/user/getList', {
-                    params: {
-                        page: self.cur_page - 1,
-                        size: self.size
-                    }
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    console.log(self.tableData);
-                    self.totalElements = res.data.totalElements;
-                })
-            },
+            //获取角色
             getRoleList() {
                 this.axios.get('/api/v1/role/getRoleAll').then((res) => {
                     this.roleList = res.data;
@@ -246,6 +231,7 @@
                     this.$message.error(error.response.data.message);
                 })
             },
+            //获取中介
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
@@ -274,25 +260,30 @@
                     this.$message.error(error.response.data.message);
                 })
             },
+            //获取资金端
             getLoanerList() {
                 let self = this;
-                this.axios.post('/riskcontrol/api/v1/loaner/getLoanerPage', {
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.loanerList = res.data.content;
+                this.axios.get('/riskcontrol/api/v1/loaner/getLoanerList').then((res) => {
+                    self.loanerList = res.data;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 })
             },
+            //修改
             handleEdit(row) {
-                this.form2 = row;
-                this.form2.loanerId = '';
-                this.form2.type = 'Loaner';
-                this.form2.name = row.staffName;
-                this.form2.roleId = '';
-                this.formVisible2 = true;
+                //获取指定用户的详细信息
+                this.axios.get('/api/v1/user/assign/'+row.id).then((res) => {
+                    this.form2 = res.data;
+                    this.formVisible2 = true;
+                    if(this.form2.staffType === 'Loaner'){
+                        this.editShow = true
+                    } else {
+                        this.editShow = false
+                    }
+
+                })
             },
+            //重置密码
             resetPwd(staffId) {
                 let self = this;
                 this.axios.put('/api/v1/user/admin/resetPassword', {
@@ -300,22 +291,37 @@
                 }).then((res) => {
                     self.tableData = res.data.content;
                     self.totalElements = res.data.totalElements;
+                    this.$message({
+                        message: '重置密码成功！',
+                        type: 'success'
+                    });
                 })
             },
+            //锁定
             lock(staffId) {
                 let self = this;
                 this.axios.put('/api/v1/user/admin/blockUser', [staffId]).then((res) => {
                     self.tableData = res.data.content;
                     self.totalElements = res.data.totalElements;
+                    this.$message({
+                        message: '锁定成功！',
+                        type: 'success'
+                    });
                 })
             },
+            //解锁
             unlock(staffId) {
                 let self = this;
                 this.axios.put('/api/v1/user/admin/unblockUser', [staffId]).then((res) => {
                     self.tableData = res.data.content;
                     self.totalElements = res.data.totalElements;
+                    this.$message({
+                        message: '解锁成功！',
+                        type: 'success'
+                    });
                 })
             },
+            //确定新增
             submitUser(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
@@ -336,10 +342,12 @@
                     }
                 });
             },
+            //重置新增form
             resetForm(formName) {
                 this.$refs[formName].resetFields();
                 this.formVisible = false;
             },
+            //修改提交
             submitUser2(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
@@ -347,6 +355,10 @@
                             this.getData();
                             this.$refs[formName].resetFields();
                             this.formVisible2 = false;
+                            this.$message({
+                                message: '修改成功！',
+                                type: 'success'
+                            });
                         }).catch((error) => {
                             this.$message.error(error.response.data.message);
                         })
@@ -356,6 +368,7 @@
                     }
                 });
             },
+            //重置新增form
             resetForm2(formName) {
                 this.$refs[formName].resetFields();
                 this.formVisible2 = false;
