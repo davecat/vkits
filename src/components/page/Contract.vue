@@ -9,14 +9,27 @@
 
         <el-row>
             <el-form :inline="true" :model="searchForm">
+                <el-form-item label="申请编号：">
+                    <el-input v-model="searchForm.applictionNo" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
                 <el-form-item label="合同编号：">
-                    <el-input v-model="searchForm.code" placeholder="支持模糊查询"></el-input>
+                    <el-input v-model="searchForm.contractNo" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="起租日期：">
+                    <el-date-picker
+                            v-model="searchForm.applyDate"
+                            align="right"
+                            type="daterange"
+                            placeholder="选择日期范围"
+                            @change="selectedData"
+                            :picker-options="pickerOptions">
+                    </el-date-picker>
                 </el-form-item>
                 <el-form-item label="租客姓名：">
                     <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="联系方式：">
-                    <el-input v-model="searchForm.contact" placeholder="支持模糊查询"></el-input>
+                    <el-input v-model="searchForm.mobile" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
@@ -24,74 +37,73 @@
             </el-form>
         </el-row>
         <el-row>
-            <el-radio-group v-model="radio">
-                <el-radio-button label="还款中"></el-radio-button>
-                <el-radio-button label="已结束"></el-radio-button>
-                <el-radio-button label="提前退租"></el-radio-button>
-                <el-radio-button label="违约"></el-radio-button>
-            </el-radio-group>
-        </el-row>
-        <el-row>
+            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange">
+                <el-tab-pane label="还款中" name="Repayment"></el-tab-pane>
+                <el-tab-pane label="已结束" name="Finished"></el-tab-pane>
+                <el-tab-pane label="提前退租" name="InAdvanceFinished"></el-tab-pane>
+                <el-tab-pane label="违约" name="Breach"></el-tab-pane>
+            </el-tabs>
             <el-table
-                    ref="multipleTable"
                     :data="tableData"
                     border
                     tooltip-effect="dark"
                     style="width: 100%">
                 <el-table-column
-                        prop="agencyId"
-                        label="申请编号">
+                        fixed
+                        min-width="160"
+                        prop="applicationNo"
+                        label="关联申请编号">
                 </el-table-column>
                 <el-table-column
-                        prop="code"
+                        fixed
+                        min-width="140"
+                        prop="contractNo"
                         label="合同编号">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="最近应还款日期"
-                        width="180">
+                        min-width="140"
+                        prop="contractNo"
+                        label="账单状态">
                 </el-table-column>
                 <el-table-column
-                        prop="enabled"
-                        label="账单状态"
-                        show-overflow-tooltip>
-                    <template scope="scope">
-                        {{ scope.row.enabled ? '正常':'逾期' }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        prop="name"
+                        min-width="140"
+                        prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="联系方式">
+                        min-width="160"
+                        prop="mobile"
+                        label="租客联系方式">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        min-width="120"
+                        prop="monthlyRent"
+                        label="月租金">
+                </el-table-column>
+                <el-table-column
+                        min-width="110"
+                        prop="rentPeriod"
                         label="租期">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        min-width="120"
+                        prop="serviceFee"
+                        label="手续费">
+                </el-table-column>
+                <el-table-column
+                        min-width="120"
+                        prop="totalAmount"
                         label="总金额">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="经纪人">
+                        min-width="180"
+                        prop="responsibleAgent"
+                        label="签单经纪人名称">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="门店名称">
-                </el-table-column>
-                <el-table-column label="操作">
-                    <template scope="scope">
-                        <el-tooltip class="item" effect="dark" content="查看" placement="top-end">
-                            <el-button size="small" type="primary"
-                                       @click="handleEdit(scope.row)"><i
-                                    class="fa fa-pencil-square-o"></i>
-                            </el-button>
-                        </el-tooltip>
-                    </template>
+                        min-width="160"
+                        prop="responsibleBranch"
+                        label="签单门店名称">
                 </el-table-column>
             </el-table>
             <div class="pagination">
@@ -107,56 +119,79 @@
 </template>
 
 <script>
+    import { pagination } from '../mixins/pagination.js'
     export default {
+        mixins: [pagination],
         data() {
             return {
-                tableData: [],
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
-                searchForm: {
-                    code: '',
-                    name: '',
-                    enabled: 'true',
+                pickerOptions: {
+                    shortcuts: [
+                        {
+                            text: '今日',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                picker.$emit('pick', [start, end]);
+                            }
+                        },
+                        {
+                            text: '最近三天',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 3);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        },
+                        {
+                            text: '最近七天',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        },
+                        {
+                            text: '最近三十天',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }
+                    ]
                 },
-                radio: ''
+                url: '/counter/api/v1/contract/getContractPage',
+                searchForm: {
+                    applictionNo: '',
+                    contractNo: '',
+                    applyDate: '',
+                    startDate: '',
+                    endDate: '',
+                    customerName: '',
+                    mobile: '',
+                    status: 'Repayment'
+                },
             }
         },
         created(){
             this.getData();
         },
         methods: {
-            handleCurrentChange(val){
-                this.cur_page = val;
+            selectedData() {
+                if (this.searchForm.applyDate[0] !== null) {
+                    this.searchForm.startDate = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
+                    this.searchForm.endDate = format(this.searchForm.applyDate[1], 'YYYY-MM-DD');
+                } else {
+                    this.searchForm.startDate = '';
+                    this.searchForm.endDate = '';
+                }
+            },
+            handleChange() {
                 this.getData();
             },
-            getData(){
-                let self = this;
-                this.axios.post('/api/v1/branch/getBranchPage', {
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
-            },
-            Search() {
-                let self = this;
-                this.axios.post('/api/v1/branch/getBranchPage', {
-                    code: self.searchForm.code,
-                    name: self.searchForm.name,
-                    enabled: self.searchForm.enabled,
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
-            }
         }
     }
 </script>

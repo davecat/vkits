@@ -40,6 +40,9 @@
                 <el-form-item label="租客姓名：">
                     <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
+                <el-form-item label="联系方式：">
+                    <el-input v-model="searchForm.mobile" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
                 </el-form-item>
@@ -157,6 +160,8 @@
                     endDate: '',
                     customerName: '',
                     agencyId: '',
+                    loanerId: '',
+                    mobile: '',
                     status: 'Signed'
                 },
                 pickerOptions: {
@@ -214,7 +219,9 @@
                     this.searchForm.endDate = '';
                 }
             },
-
+            handleChange() {
+                this.getData();
+            },
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
