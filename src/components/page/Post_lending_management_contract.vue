@@ -208,6 +208,7 @@
         },
         created(){
             this.getAgencyList();
+            this.getLoanerList();
         },
         methods: {
             selectedData() {
