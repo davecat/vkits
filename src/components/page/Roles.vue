@@ -73,17 +73,17 @@
                 :visible.sync="warrant"
                 size="tiny">
             <el-tree
-                    :data="menus"
+                    :data="testMenus"
                     :props="defaultProps"
                     ref="tree"
                     show-checkbox
                     node-key="id"
                     :default-checked-keys='permissionId'
                     :highlight-current="true"
-                    accordion
-            ></el-tree>
+                    accordion>
+            </el-tree>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="warrant = false">取 消</el-button>
+                <el-button @click="handleCancel">取 消</el-button>
                 <el-button type="primary" @click="getCheckedNodes">确 定</el-button>
             </span>
         </el-dialog>
@@ -92,7 +92,6 @@
 </template>
 
 <script>
-    import Vue from "vue"
     import ElRow from "element-ui/packages/row/src/row";
     export default {
         components: {
@@ -130,6 +129,7 @@
                     label: 'name',
                     children: 'children'
                 },
+                testMenus: {}
             }
         },
         computed: {
@@ -144,24 +144,26 @@
             //授权
             getCheckedNodes() {
                 let that = this;
+                that.permission.permissions = [];
                 let checked = this.$refs.tree.getCheckedNodes();
-                if (checked.length > 0) {
-                    checked.forEach((item) => {
-                        that.permission.permissions.push(item.permission)
-                    });
-                    console.log(that.permission);
-                    this.axios.put('/api/v1/role/setPermission', that.permission).then((res) => {
-                        if (res.data.status === 200) {
-                            this.$message({
-                                message: '授权成功！',
-                                type: 'success'
-                            });
-                        }
-                    }).catch((error) => {
-                        console.log(error);
-                    })
-                }
+                console.log(checked);
+                checked.forEach((item) => {
+                    that.permission.permissions.push(item.permission)
+                });
+                console.log(that.permission);
+                this.axios.put('/api/v1/role/setPermission', that.permission).then((res) => {
+                    if (res.data.status === 200) {
+                        this.$message({
+                            message: '授权成功！',
+                            type: 'success'
+                        });
+                    }
+                }).catch((error) => {
+                    console.log(error);
+                });
+
                 this.warrant = false;
+                this.$forceUpdate();
             },
             //获取数据
             getData(){
@@ -178,14 +180,33 @@
                 this.dialogVisible = true;
                 this.deleteId = id;
             },
+            gcd(menu) {
+                let that = this;
+//                return menu.map(item => {
+//                    if(item.hasPermission) {
+//                        return item.id;
+//                    } else {
+//                        return that.gcd(item.children)
+//                    }
+//                })
+
+                return menu.forEach(function (item) {
+                    if(item.hasPermission) {
+//                        return item.id;
+                        console.log(item.id);
+                        that.permissionId.push(item.id);
+                    } else {
+                        that.gcd(item.children)
+                    }
+                })
+            },
             //授权
             rowWarrant(id) {
+                this.testMenus = this.menus;
                 this.permission.id = id;
 //                获取用户已有权限
                 this.axios.get('/api/v1/role/getRolePermission/' + id).then((res) => {
-                    this.permissionId = res.data.map(item => {
-                        return item.id
-                    });
+                    this.gcd(res.data);
                     this.warrant = true;
                 }).catch((error) => {
                     console.log(error);
@@ -224,6 +245,14 @@
             },
             handleCurrentRow(val) {
                 this.currentRow = val;
+            },
+            handleCancel() {
+                this.testMenus = [{
+                    id:"4028b8815cdee019015cdee04b40000d",
+                    name:"控制台首页",
+                    children: []
+                }];
+                this.warrant = false;
             }
 
         }
