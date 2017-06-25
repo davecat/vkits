@@ -115,14 +115,14 @@
                 <el-form-item label="门店名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="省市区（县）：" :label-width="formLabelWidthCity" prop="selectedOptions">
+                <el-form-item label="省市区（县）" :label-width="formLabelWidthCity" prop="selectedOptions">
                     <el-cascader
                             :options="options"
                             v-model="selectedOptions"
                             @change="handleChange">
                     </el-cascader>
                 </el-form-item>
-                <el-form-item label="详细地址：" :label-width="formLabelWidth" prop="address">
+                <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
                     <el-input v-model="form.address"></el-input>
                 </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
@@ -146,14 +146,14 @@
                 <el-form-item label="门店名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form2.name"></el-input>
                 </el-form-item>
-                <el-form-item label="省市区（县）：" :label-width="formLabelWidthCity" prop="selectedOptions">
+                <el-form-item label="省市区（县）" :label-width="formLabelWidthCity" prop="selectedOptions">
                     <el-cascader
                             :options="options"
                             v-model="selectedOptions"
                             @change="handleChange">
                     </el-cascader>
                 </el-form-item>
-                <el-form-item label="详细地址：" :label-width="formLabelWidth" prop="address">
+                <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
                     <el-input v-model="form2.address"></el-input>
                 </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
