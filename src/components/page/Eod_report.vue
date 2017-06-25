@@ -49,13 +49,7 @@
                     @current-change="handleCurrentRow"
                     border
                     tooltip-effect="dark"
-                    style="width: 100%"
-                    @selection-change="handleSelectionChange">
-                <el-table-column
-                        fixed
-                        type="selection"
-                        width="80">
-                </el-table-column>
+                    style="width: 100%">
                 <el-table-column
                         min-width="180"
                         prop="agencyName"
@@ -361,7 +355,6 @@
         data() {
             return {
                 tableData: [],
-                multipleSelection: [],
                 cur_page: 1,
                 size: 10,
                 totalElements: 0,
@@ -571,9 +564,6 @@
             },
             Search() {
                 this.getData();
-            },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
             },
             multipleAccept() {
                 let ids = this.multipleSelection.map(row => {

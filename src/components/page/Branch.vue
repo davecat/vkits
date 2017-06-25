@@ -61,6 +61,10 @@
                         label="门店名称">
                 </el-table-column>
                 <el-table-column
+                        prop="address"
+                        label="门店地址">
+                </el-table-column>
+                <el-table-column
                         prop="enabled"
                         label="门店状态"
                         show-overflow-tooltip>
@@ -111,6 +115,16 @@
                 <el-form-item label="门店名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
+                <el-form-item label="省市区（县）" :label-width="formLabelWidthCity" prop="selectedOptions">
+                    <el-cascader
+                            :options="options"
+                            v-model="selectedOptions"
+                            @change="handleChange">
+                    </el-cascader>
+                </el-form-item>
+                <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
+                    <el-input v-model="form.address"></el-input>
+                </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
                     <el-select v-model="form.enabled">
                         <el-option label="启用" value="true"></el-option>
@@ -131,6 +145,16 @@
                 </el-form-item>
                 <el-form-item label="门店名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form2.name"></el-input>
+                </el-form-item>
+                <el-form-item label="省市区（县）" :label-width="formLabelWidthCity" prop="selectedOptions">
+                    <el-cascader
+                            :options="options"
+                            v-model="selectedOptions"
+                            @change="handleChange">
+                    </el-cascader>
+                </el-form-item>
+                <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
+                    <el-input v-model="form2.address"></el-input>
                 </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
                     <el-select v-model="form2.enabled">
@@ -193,9 +217,13 @@
 </template>
 
 <script>
+    import json from "../../../static/city.json";
     export default {
         data() {
             return {
+                //省市县
+                selectedOptions: [],
+                formLabelWidthCity: '156px',
                 tableData: [],
                 multipleSelection: [],
                 multipleEditButton: false,
@@ -230,20 +258,32 @@
                 dialogQRCode: false,
                 deleteId: '',
                 qrCodeUrl: 'http://images.tmtpost.com/uploads/images/2014/14/report/30519/mac600.jpg',
-                formLabelWidth: '80px',
+                formLabelWidth: '156px',
                 rules: {
                     agencyId: [{required: true, message: '请选择中介', trigger: 'change'}],
                     code: [{required: true, message: '请输入门店编号', trigger: 'blur'}],
                     name: [{required: true, message: '请输入门店名称', trigger: 'blur'}],
+                    address: [{required: true, message: '请输入门店地址', trigger: 'blur'}],
                     enabled: [{required: true, message: '请选择状态', trigger: 'change'}]
                 }
             }
         },
         created(){
+            this.init();
             this.getData();
             this.getAgencyList();
         },
         methods: {
+            init: function () {
+                this.options = json;
+            },
+            //切换省市区
+            handleChange(value) {
+                //把省市县的值带到后台
+                this.form.province = this.selectedOptions[0];
+                this.form.city = this.selectedOptions[1];
+                this.form.district = this.selectedOptions[2];
+            },
             handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();

@@ -2,30 +2,43 @@
     <div>
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 控制台</el-breadcrumb-item>
-                <el-breadcrumb-item>门店管理</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 内部管理</el-breadcrumb-item>
+                <el-breadcrumb-item>分期合同</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
 
         <el-row>
-            <el-button type="primary" @click="formVisible = true">新增</el-button>
-            <el-button type="primary" :disabled="multipleEditButton" @click="multipleEdit" >修改</el-button>
-            <el-button type="primary" @click="dialogVisible = true">删除</el-button>
-            <el-button type="primary" @click="dialogVisible2 = true">停用</el-button>
-        </el-row>
-        <el-row>
             <el-form :inline="true" :model="searchForm">
-                <el-form-item label="门店编号：">
-                    <el-input v-model="searchForm.code" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
-                <el-form-item label="门店名称：">
-                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
-                <el-form-item label="状态：">
-                    <el-select v-model="searchForm.enabled">
-                        <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
+                <el-form-item label="所属中介：">
+                    <el-select v-model="searchForm.agencyId">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item label="资金端：">
+                    <el-select v-model="searchForm.loanerId">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="申请编号：">
+                    <el-input v-model="searchForm.applictionNo" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="合同编号：">
+                    <el-input v-model="searchForm.contractNo" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="起租日期：">
+                    <el-date-picker
+                            v-model="searchForm.applyDate"
+                            align="right"
+                            type="daterange"
+                            placeholder="选择日期范围"
+                            @change="selectedData"
+                            :picker-options="pickerOptions">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="租客姓名：">
+                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
@@ -33,49 +46,85 @@
             </el-form>
         </el-row>
         <el-row>
+            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange">
+                <el-tab-pane label="已签署" name="Signed"></el-tab-pane>
+                <el-tab-pane label="还款中" name="Repayment"></el-tab-pane>
+                <el-tab-pane label="已结束" name="Finished"></el-tab-pane>
+                <el-tab-pane label="提前退租" name="InAdvanceFinished"></el-tab-pane>
+                <el-tab-pane label="违约" name="Breach"></el-tab-pane>
+            </el-tabs>
             <el-table
-                    ref="multipleTable"
                     :data="tableData"
                     border
                     tooltip-effect="dark"
-                    style="width: 100%"
-                    @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="80">
+                    style="width: 100%">
+                <el-table-column
+                        fixed
+                        min-width="140"
+                        prop="agencyName"
+                        label="中介名称">
                 </el-table-column>
                 <el-table-column
-                        prop="agencyId"
-                        label="所属中介">
+                        fixed
+                        min-width="160"
+                        prop="applicationNo"
+                        label="关联申请编号">
                 </el-table-column>
                 <el-table-column
-                        prop="code"
-                        label="门店编号">
+                        fixed
+                        min-width="140"
+                        prop="contractNo"
+                        label="合同编号">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="门店名称">
+                        min-width="140"
+                        prop="contractNo"
+                        label="账单状态">
                 </el-table-column>
                 <el-table-column
-                        prop="enabled"
-                        label="门店状态"
-                        show-overflow-tooltip>
-                    <template scope="scope">
-                        {{ scope.row.enabled ? '启用':'禁用' }}
-                    </template>
+                        min-width="140"
+                        prop="customerName"
+                        label="租客姓名">
                 </el-table-column>
-                <el-table-column label="操作">
-                    <template scope="scope">
-                        <el-tooltip class="item" effect="dark" content="修改" placement="top-end">
-                            <el-button size="small" type="primary"
-                                       @click="handleEdit(scope.row)"><i
-                                    class="fa fa-pencil-square-o"></i>
-                            </el-button>
-                        </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
-                            <el-button size="small" type="warning"
-                                       @click="rowDelete(scope.row.id)"><i class="fa fa-trash"></i>
-                            </el-button>
-                        </el-tooltip>
-                    </template>
+                <el-table-column
+                        min-width="160"
+                        prop="mobile"
+                        label="租客联系方式">
+                </el-table-column>
+                <el-table-column
+                        min-width="120"
+                        prop="monthlyRent"
+                        label="月租金">
+                </el-table-column>
+                <el-table-column
+                        min-width="110"
+                        prop="rentPeriod"
+                        label="租期">
+                </el-table-column>
+                <el-table-column
+                        min-width="120"
+                        prop="serviceFee"
+                        label="手续费">
+                </el-table-column>
+                <el-table-column
+                        min-width="120"
+                        prop="totalAmount"
+                        label="总金额">
+                </el-table-column>
+                <el-table-column
+                        min-width="180"
+                        prop="responsibleAgent"
+                        label="签单经纪人名称">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="responsibleBranch"
+                        label="签单门店名称">
+                </el-table-column>
+                <el-table-column
+                        min-width="150"
+                        prop="loanerName"
+                        label="资金端名称">
                 </el-table-column>
             </el-table>
             <div class="pagination">
@@ -86,154 +135,86 @@
                 </el-pagination>
             </div>
         </el-row>
-
-        <el-dialog title="新增门店" :visible.sync="formVisible">
-            <el-form :model="form" ref="form" :rules="rules">
-                <el-form-item label="所属中介" :label-width="formLabelWidth" prop="agencyId">
-                    <el-select v-model="form.agencyId">
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="门店编号" :label-width="formLabelWidth" prop="code">
-                    <el-input v-model="form.code"></el-input>
-                </el-form-item>
-                <el-form-item label="门店名称" :label-width="formLabelWidth" prop="name">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
-                    <el-select v-model="form.enabled">
-                        <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
-                    </el-select>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="resetForm('form')">取 消</el-button>
-                <el-button type="primary" @click="submitBranch('form')">确 定</el-button>
-            </div>
-        </el-dialog>
-
-        <el-dialog title="修改门店" :visible.sync="formVisible2">
-            <el-form :model="form2" ref="form2" :rules="rules">
-                <el-form-item label="门店编号" :label-width="formLabelWidth" prop="code">
-                    <el-input v-model="form2.code"></el-input>
-                </el-form-item>
-                <el-form-item label="门店名称" :label-width="formLabelWidth" prop="name">
-                    <el-input v-model="form2.name"></el-input>
-                </el-form-item>
-                <el-form-item label="状态" :label-width="formLabelWidth" prop="enabled">
-                    <el-select v-model="form2.enabled">
-                        <el-option label="启用" value="true"></el-option>
-                        <el-option label="禁用" value="false"></el-option>
-                    </el-select>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="resetForm2('form2')">取 消</el-button>
-                <el-button type="primary" @click="submitBranch2('form2')">确 定</el-button>
-            </div>
-        </el-dialog>
-
-        <el-dialog
-                title="删除"
-                :visible.sync="dialogVisible"
-                size="tiny">
-            <span>此操作将删除选中门店，是否继续？</span>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="multipleDelete">确 定</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog
-                title="停用"
-                :visible.sync="dialogVisible2"
-                size="tiny">
-            <span>此操作将停用选中门店，是否继续？</span>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible2 = false">取 消</el-button>
-                <el-button type="primary" @click="multipleDisable">确 定</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog
-                title="删除"
-                :visible.sync="dialogVisible3"
-                size="tiny">
-            <span>此操作将删除选中门店，是否继续？</span>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible3 = false">取 消</el-button>
-                <el-button type="primary" @click="handleDelete">确 定</el-button>
-            </span>
-        </el-dialog>
-
     </div>
 </template>
 
 <script>
+    import { pagination } from '../mixins/pagination.js'
     export default {
+        mixins: [pagination],
         data() {
             return {
-                tableData: [],
                 multipleSelection: [],
                 multipleEditButton: false,
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
                 agencyList: {},
+                branchList: {},
+                loanerList: {},
                 searchForm: {
-                    code: '',
-                    name: '',
-                    enabled: 'true'
-                },
-                form: {
+                    applictionNo: '',
+                    contractNo: '',
+                    applyDate: '',
+                    startDate: '',
+                    endDate: '',
+                    customerName: '',
                     agencyId: '',
-                    code: '',
-                    name: '',
-                    enabled: 'true'
+                    status: 'Signed'
                 },
-                form2: {
-                    id: '',
-                    code: '',
-                    name: '',
-                    enabled: 'true'
+                pickerOptions: {
+                    shortcuts: [
+                        {
+                            text: '今日',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                picker.$emit('pick', [start, end]);
+                            }
+                        },
+                        {
+                            text: '最近三天',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 3);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        },
+                        {
+                            text: '最近七天',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        },
+                        {
+                            text: '最近三十天',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }
+                    ]
                 },
-                formVisible: false,
-                formVisible2: false,
-                dialogVisible: false,
-                dialogVisible2: false,
-                dialogVisible3: false,
-                deleteId: '',
-                formLabelWidth: '80px',
-                rules: {
-                    agencyId: [{required: true, message: '请选择中介', trigger: 'change'}],
-                    code: [{required: true, message: '请输入门店编号', trigger: 'blur'}],
-                    name: [{required: true, message: '请输入门店名称', trigger: 'blur'}],
-                    enabled: [{required: true, message: '请选择状态', trigger: 'change'}]
-                }
+                url: '/postlending/api/v1/contract/getContractPage'
             }
         },
         created(){
-            this.getData();
             this.getAgencyList();
         },
         methods: {
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
+            selectedData() {
+                if (this.searchForm.applyDate[0] !== null) {
+                    this.searchForm.startDate = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
+                    this.searchForm.endDate = format(this.searchForm.applyDate[1], 'YYYY-MM-DD');
+                } else {
+                    this.searchForm.startDate = '';
+                    this.searchForm.endDate = '';
+                }
             },
-            getData(){
-                let self = this;
-                this.axios.post('/api/v1/branch/getBranchPage', {
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
-            },
+
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
@@ -241,120 +222,14 @@
                     this.$message.error(error.response.data.message);
                 })
             },
-            submitBranch(formName) {
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        this.axios.post('/api/v1/branch', this.form).then((res) => {
-                            this.getData();
-                            this.$refs[formName].resetFields();
-                            this.formVisible = false;
-                        }).catch((error) => {
-                            this.$message.error(error.response.data.message);
-                        })
-                    } else {
-                        console.log('error submit!!');
-                        return false;
-                    }
-                });
-            },
-            submitBranch2(formName) {
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        this.axios.put('/api/v1/branch', this.form2).then((res) => {
-                            this.getData();
-                            this.$refs[formName].resetFields();
-                            this.formVisible2 = false;
-                        }).catch((error) => {
-                            this.$message.error(error.response.data.message);
-                        })
-                    } else {
-                        console.log('error submit!!');
-                        return false;
-                    }
-                });
-            },
-            resetForm(formName) {
-                this.$refs[formName].resetFields();
-                this.formVisible = false;
-            },
-            resetForm2(formName) {
-                this.$refs[formName].resetFields();
-                this.formVisible2 = false;
-            },
-            handleEdit(row) {
-                this.form2.id = row.id;
-                this.form2.code = row.code;
-                this.form2.name = row.name;
-                this.form2.enabled = String(row.enabled);
-                this.formVisible2 = true;
-            },
-            rowDelete(id) {
-                this.dialogVisible3 = true;
-                this.deleteId = id;
-            },
-            handleDelete() {
-                this.axios.put('/api/v1/branch/delete', [this.deleteId]).then((res) => {
-                    this.getData();
-                    this.dialogVisible3 = false;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
-            },
-            multipleEdit() {
-                let row = this.multipleSelection[0];
-                if(row !== undefined) {
-                    this.handleEdit(row);
-                }
-            },
-            multipleDelete() {
-                let ids = this.multipleSelection.map(row => {
-                    return row.id
-                });
-                if (ids.length === 0) {
-                    console.log('ids is null');
-                } else {
-                    this.axios.put('/api/v1/branch/delete', ids).then((res) => {
-                        this.getData();
-                    }).catch((error) => {
-                        this.$message.error(error.response.data.message);
-                    })
-                }
-                this.dialogVisible = false;
-            },
-            multipleDisable() {
-                let ids = this.multipleSelection.map(row => {
-                    return row.id
-                });
-                if (ids.length === 0) {
-                    console.log('ids is null');
-                } else {
-                    this.axios.put('/api/v1/branch/disable', ids).then((res) => {
-                        this.getData();
-                    }).catch((error) => {
-                        this.$message.error(error.response.data.message);
-                    })
-                }
-                this.dialogVisible2 = false;
-            },
-            Search() {
+            getLoanerList() {
                 let self = this;
-                this.axios.post('/api/v1/branch/getBranchPage', {
-                    code: self.searchForm.code,
-                    name: self.searchForm.name,
-                    enabled: self.searchForm.enabled,
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
+                this.axios.get('/riskcontrol/api/v1/loaner/getLoanerList').then((res) => {
+                    self.loanerList = res.data;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 })
             },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-                this.multipleEditButton = val.length > 1;
-            }
         }
     }
 </script>
