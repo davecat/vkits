@@ -7,13 +7,13 @@
             </el-breadcrumb>
         </div>
 
-        <el-row>
+        <el-row v-if="staff.staffType !== 'Branch'">
             <el-button type="primary" @click="formVisible = true">新增</el-button>
             <el-button type="primary" :disabled="multipleEditButton" @click="multipleEdit" >修改</el-button>
             <el-button type="primary" @click="dialogVisible = true">删除</el-button>
             <el-button type="primary" @click="dialogVisible2 = true">停用</el-button>
         </el-row>
-        <el-row>
+        <el-row v-if="staff.staffType !== 'Branch'">
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="所属中介：">
                     <el-select v-model="searchForm.agencyId">
@@ -74,13 +74,13 @@
                 </el-table-column>
                 <el-table-column label="操作">
                     <template scope="scope">
-                        <el-tooltip class="item" effect="dark" content="修改" placement="top-end">
+                        <el-tooltip v-if="staff.staffType !== 'Branch'" class="item" effect="dark" content="修改" placement="top-end">
                             <el-button size="small" type="primary"
                                        @click="handleEdit(scope.row)"><i
                                     class="fa fa-pencil-square-o"></i>
                             </el-button>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
+                        <el-tooltip v-if="staff.staffType !== 'Branch'" class="item" effect="dark" content="删除" placement="top-end">
                             <el-button size="small" type="warning"
                                        @click="rowDelete(scope.row.id)"><i class="fa fa-trash"></i>
                             </el-button>
@@ -218,18 +218,17 @@
 
 <script>
     import json from "../../../static/city.json";
+    import { pagination } from '../mixins/pagination.js'
     export default {
+        mixins: [pagination],
         data() {
             return {
+                url: '/api/v1/branch/getBranchPage',
                 //省市县
                 selectedOptions: [],
                 formLabelWidthCity: '156px',
-                tableData: [],
                 multipleSelection: [],
                 multipleEditButton: false,
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
                 agencyList: {},
                 searchForm: {
                     agencyId: '',
@@ -270,8 +269,12 @@
         },
         created(){
             this.init();
-            this.getData();
             this.getAgencyList();
+        },
+        computed: {
+            staff (){
+                return this.$store.state.staff.staff
+            }
         },
         methods: {
             init: function () {
@@ -283,22 +286,6 @@
                 this.form.province = this.selectedOptions[0];
                 this.form.city = this.selectedOptions[1];
                 this.form.district = this.selectedOptions[2];
-            },
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
-            getData(){
-                let self = this;
-                this.axios.post('/api/v1/branch/getBranchPage', {
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
             },
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
@@ -401,22 +388,6 @@
                     })
                 }
                 this.dialogVisible2 = false;
-            },
-            Search() {
-                let self = this;
-                this.axios.post('/api/v1/branch/getBranchPage', {
-                    agencyId: self.searchForm.agencyId,
-                    code: self.searchForm.code,
-                    name: self.searchForm.name,
-                    enabled: self.searchForm.enabled,
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
             },
             showQRCode(row) {
                 this.axios.get('/admin/api/branch/getBranchQRCode', {

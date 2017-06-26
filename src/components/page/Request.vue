@@ -8,7 +8,7 @@
         </div>
 
         <el-row>
-            <el-form :inline="true" :model="searchForm">
+            <el-form v-if="staff.staffType === 'Branch'" :inline="true" :model="searchForm">
                 <el-form-item label="申请编号：">
                     <el-input v-model="searchForm.applictionNo" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
@@ -30,6 +30,39 @@
                         <el-option label="全部" value=""></el-option>
                         <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name"
                                    :value="branch.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="Search">查询</el-button>
+                </el-form-item>
+            </el-form>
+            <el-form v-else :inline="true" :model="searchForm">
+                <el-form-item label="申请编号：">
+                    <el-input v-model="searchForm.applictionNo" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="起租日期：">
+                    <el-date-picker
+                            v-model="searchForm.applyDate"
+                            align="right"
+                            type="daterange"
+                            placeholder="选择日期范围"
+                            @change="selectedData"
+                            :picker-options="pickerOptions">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="租客姓名：">
+                    <el-input v-model="searchForm.customerName" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="所属中介：">
+                    <el-select v-model="searchForm.agencyId" @change="getBranchList(searchForm.agencyId)">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="门店：">
+                    <el-select v-model="searchForm.branchId">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -105,6 +138,11 @@
                         min-width="150"
                         prop="responsibleBranch"
                         label="门店名称">
+                </el-table-column>
+                <el-table-column
+                        min-width="150"
+                        prop="agencyName"
+                        label="中介名称">
                 </el-table-column>
                 <el-table-column
                         fixed="right"
@@ -546,24 +584,25 @@
     import json from "../../../static/city.json";
     import ElRow from "element-ui/packages/row/src/row";
     import format from 'date-fns/format'
+    import { pagination } from '../mixins/pagination.js'
     export default {
         components: {ElRow},
-
+        mixins: [pagination],
         data() {
             return {
+                url: '/api/v1/application/getApplicationPage',
+                agencyList: {},
+                branchList: {},
                 //省市县
                 selectedOptions: [],
                 options: [],
-                tableData: [],
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
                 searchForm: {
                     applictionNo: '',
                     applyDate: '',
                     startDate: '',
                     endDate: '',
                     customerName: '',
+                    agencyId: '',
                     branchId: '',
                     status: 'Unchecked'
                 },
@@ -592,7 +631,6 @@
                     idCardAndPersonPhoto: '',
                     contractPhotos: []
                 },
-                branchList: {},
                 formLabelWidth: '100px',
                 formLabelWidthCity: '156px',
                 pickerOptions: {
@@ -677,8 +715,17 @@
             }
         },
         created(){
-            this.getData();
             this.init();
+            if(this.staff.staffType === 'Branch') {
+                this.getBranchListByBranch();
+            } else {
+                this.getAgencyList();
+            }
+        },
+        computed: {
+            staff (){
+                return this.$store.state.staff.staff
+            }
         },
         filters: {
             appStatusFormat: function (value) {
@@ -733,10 +780,6 @@
                 this.form.city = this.selectedOptions[1];
                 this.form.district = this.selectedOptions[2];
             },
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
             photo(token) {
                 if (token !== undefined && token !== '' && token !== null) {
                     return this.qiniu + token + '?imageMogr2/auto-orient&imageView2/1/w/600/h/600';
@@ -745,22 +788,6 @@
             showBigPhoto(token) {
                 this.bigPhotoUrl = this.qiniu + token + '?imageMogr2/auto-orient';
                 this.dialogBigPhoto = true;
-            },
-            getData(){
-                let self = this;
-                this.axios.post('/api/v1/application/getApplicationPage', {
-                    applictionNo: self.searchForm.applictionNo,
-                    startDate: self.searchForm.startDate,
-                    endDate: self.searchForm.endDate,
-                    customerName: self.searchForm.customerName,
-                    branchId: self.searchForm.branchId,
-                    status: self.searchForm.status,
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                })
             },
             handleEdit(row) {
                 this.form = row;
@@ -816,9 +843,6 @@
             resetForm(formName) {
                 this.$refs[formName].resetFields();
                 this.formVisible = false;
-            },
-            Search() {
-                this.getData();
             },
             handleChangeTab() {
                 this.getData();
@@ -910,7 +934,33 @@
             },
             handlePreview(file) {
                 console.log(file);
-            }
+            },
+            getAgencyList() {
+                this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
+                    this.agencyList = res.data;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
+            },
+            getBranchList(agencyId) {
+                if(agencyId !== '') {
+                    this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencyId).then((res) => {
+                        this.branchList = res.data;
+                    }).catch((error) => {
+                        this.$message.error(error.response.data.message);
+                    })
+                } else {
+                    this.searchForm.branchId = '';
+                    this.branchList = [];
+                }
+            },
+            getBranchListByBranch() {
+                this.axios.get('/api/v1/branch/getBranchList').then((res) => {
+                    this.branchList = res.data;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
+            },
         }
     }
 </script>

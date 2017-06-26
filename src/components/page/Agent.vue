@@ -14,7 +14,7 @@
             <el-button type="primary" @click="dialogVisible1 = true">停用</el-button>
         </el-row>
         <el-row>
-            <el-form :inline="true" :model="form">
+            <el-form v-if="staff.staffType !== 'Branch'" :inline="true" :model="form">
                 <el-form-item label="姓名：">
                     <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
@@ -23,6 +23,30 @@
                         <el-option label="全部" value=""></el-option>
                         <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item label="所属门店：">
+                    <el-select v-model="searchForm.branchId">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="联系电话：">
+                    <el-input v-model="searchForm.tel" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="人员状态：">
+                    <el-select v-model="searchForm.status" placeholder="请选择">
+                        <el-option label="待审批" value="Pending"></el-option>
+                        <el-option label="启用" value="Enabled"></el-option>
+                        <el-option label="停用" value="Disable"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="Search">查询</el-button>
+                </el-form-item>
+            </el-form>
+            <el-form v-else :inline="true" :model="form">
+                <el-form-item label="姓名：">
+                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="所属门店：">
                     <el-select v-model="searchForm.branchId">
@@ -62,6 +86,10 @@
                 <el-table-column
                         prop="name"
                         label="姓名">
+                </el-table-column>
+                <el-table-column
+                        prop="agencyName"
+                        label="所属中介">
                 </el-table-column>
                 <el-table-column
                         prop="branchName"
@@ -104,6 +132,9 @@
 
         <el-dialog title="修改经纪人" :visible.sync="formVisible">
             <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="所属中介：">
+                    <span>{{ form.agencyName }}</span>
+                </el-form-item>
                 <el-form-item label="所属门店：">
                     <span>{{ form.branchName }}</span>
                 </el-form-item>
@@ -177,14 +208,12 @@
 </template>
 
 <script>
+    import { pagination } from '../mixins/pagination.js'
     export default {
+        mixins: [pagination],
         data() {
             return {
-                tableData: [],
-                multipleSelection: [],
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
+                url: '/api/v1/agent/getAgentPage',
                 agencyList: {},
                 branchList: {},
                 searchForm: {
@@ -215,8 +244,16 @@
             }
         },
         created(){
-            this.getData();
-            this.getAgencyList();
+            if(this.staff.staffType === 'Branch') {
+                this.getBranchListByBranch();
+            } else {
+                this.getAgencyList();
+            }
+        },
+        computed: {
+            staff (){
+                return this.$store.state.staff.staff
+            }
         },
         filters: {
             agentStatusFormat: function (value) {
@@ -230,22 +267,6 @@
             }
         },
         methods: {
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
-            getData(){
-                let self = this;
-                this.axios.post('/api/v1/agent/getAgentPage', {
-                    params: {
-                        page: self.cur_page - 1,
-                        size: self.size
-                    }
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                })
-            },
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
@@ -264,6 +285,13 @@
                     this.searchForm.branchId = '';
                     this.branchList = [];
                 }
+            },
+            getBranchListByBranch() {
+                this.axios.get('/api/v1/branch/getBranchList').then((res) => {
+                    this.branchList = res.data;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
             },
             handleEdit(row) {
                 this.form.id = row.id;
@@ -293,22 +321,6 @@
             resetForm(formName) {
                 this.$refs[formName].resetFields();
                 this.formVisible = false;
-            },
-            Search() {
-                let self = this;
-                this.axios.post('/api/v1/agent/getAgentPage', {
-                    name: self.searchForm.name,
-                    branchId: self.searchForm.branchId,
-                    tel: self.searchForm.tel,
-                    status: self.searchForm.status,
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
             },
             multipleEnable() {
                 let ids = this.multipleSelection.map(row => {
