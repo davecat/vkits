@@ -125,9 +125,9 @@
                         <el-option label="资金端" value="Loaner"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="角色" :label-width="formLabelWidth" prop="role.id">
-                    <el-select v-model="form2.roleId">
-                        <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.id"></el-option>
+                <el-form-item label="角色" :label-width="formLabelWidth" prop="role">
+                    <el-select v-model="form2.role">
+                        <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="所属资金端" :label-width="formLabelWidth" prop="loaner" v-show="editShow">
@@ -197,8 +197,6 @@
                     },//所属资金端
                     branches: [],//管理门店
                     agencies: [],//中介
-                    loanerId: '',
-                    roleId: '',
                 },
                 rules: {
                     staffName: [{required: true, message: '请输入昵称', trigger: 'blur'}],
@@ -280,12 +278,6 @@
                 //获取指定用户的详细信息
                 this.axios.get('/api/v1/user/assign/'+row.id).then((res) => {
                     this.form2 = res.data;
-                    this.form2.roleId = res.data.role.id;
-                    if(res.data.loaner.id !== undefined) {
-                        this.form2.loanerId = res.data.loaner.id;
-                    } else {
-                        this.form2.loanerId = '';
-                    }
                     this.formVisible2 = true;
                     if(this.form2.staffType === 'Loaner'){
                         this.editShow = true
