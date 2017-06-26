@@ -224,15 +224,13 @@
 </template>
 
 <script>
+    import { pagination } from '../mixins/pagination.js'
     export default {
+        mixins: [pagination],
         data() {
             return {
-                tableData: [],
                 multipleSelection: [],
                 multipleEditButton: false,
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
                 searchForm: {
                     code: '',
                     name: '',
@@ -275,29 +273,11 @@
                     payerBank: [{required: true, message: '请输入开户行', trigger: 'blur'}],
                     payerAccountNumber: [{required: true, message: '请输入账号', trigger: 'blur'}],
                     enabled: [{required: true, message: '请选择状态', trigger: 'blur'}],
-                }
+                },
+                url: '/api/v1/agency/getAgencyPage'
             }
         },
-        created(){
-            this.getData();
-        },
         methods: {
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
-            getData(){
-                let self = this;
-                this.axios.post('/api/v1/agency/getAgencyPage', {
-                        page: self.cur_page - 1,
-                        size: self.size
-                    }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
-            },
             submitAgency(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
@@ -404,21 +384,6 @@
                     })
                 }
                 this.dialogVisible4 = false;
-            },
-            Search() {
-                let self = this;
-                this.axios.post('/api/v1/agency/getAgencyPage', {
-                        code: self.searchForm.code,
-                        name: self.searchForm.name,
-                        enabled: self.searchForm.enabled,
-                        page: self.cur_page - 1,
-                        size: self.size
-                    }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
