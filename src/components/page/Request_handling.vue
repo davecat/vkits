@@ -370,6 +370,7 @@
 <script>
     import json from "../../../static/city.json";
     import ElRow from "element-ui/packages/row/src/row";
+    import format from 'date-fns/format'
     export default {
         components: {ElRow},
         data() {

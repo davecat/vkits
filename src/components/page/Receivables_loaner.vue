@@ -83,6 +83,7 @@
 
 <script>
     import { pagination } from '../mixins/pagination.js'
+    import format from 'date-fns/format'
     export default {
         mixins: [pagination],
         data() {

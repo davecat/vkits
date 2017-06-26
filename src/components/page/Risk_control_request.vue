@@ -389,6 +389,7 @@
 
 <script>
     import json from "../../../static/city.json";
+    import format from 'date-fns/format'
     import ElRow from "element-ui/packages/row/src/row";
     import ElCol from "element-ui/packages/col/src/col";
     export default {
