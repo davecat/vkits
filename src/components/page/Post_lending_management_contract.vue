@@ -81,8 +81,11 @@
                 </el-table-column>
                 <el-table-column
                         min-width="140"
-                        prop="contractNo"
+                        prop="overdueDays"
                         label="账单状态">
+                    <template scope="scope">
+                        {{ scope.row.overdueDays |  overdueDaysFormat}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="140"
@@ -209,6 +212,19 @@
         created(){
             this.getAgencyList();
             this.getLoanerList();
+        },
+        filters: {
+            overdueDaysFormat: function (value) {
+                if (value === -2) {
+                    return "未生成";
+                } else if (value === -1) {
+                    return "已还清";
+                } else if (value === 0) {
+                    return "正常";
+                } else if (value > 0) {
+                    return "逾期";
+                }
+            }
         },
         methods: {
             selectedData() {
