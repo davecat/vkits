@@ -136,13 +136,13 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="管辖中介：" :label-width="formLabelWidth" v-show="!editShow" prop="agencies">
-                    <el-select v-model="form2.agencies" multiple @change="getBranchList(form.agencies)">
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency"></el-option>
+                    <el-select v-model="form2.agencies" multiple @change="getBranchList(form2.agencies)">
+                        <el-option v-for="item in agencyList" :key="item.id" :label="item.name" :value="item"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="管辖门店：" :label-width="formLabelWidth" v-show="!editShow" prop="branches">
                     <el-select v-model="form2.branches" multiple>
-                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch"></el-option>
+                        <el-option v-for="item in branchList" :key="item.id" :label="item.name" :value="item"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -278,13 +278,19 @@
                 //获取指定用户的详细信息
                 this.axios.get('/api/v1/user/assign/'+row.id).then((res) => {
                     this.form2 = res.data;
+                    console.log(res.data);
+                    this.form2.agencies = res.data.agencies.map((item) => {
+                       return item.name
+                    });
+                    this.form2.branches = res.data.branches.map((item) => {
+                        return item.name
+                    });
                     this.formVisible2 = true;
                     if(this.form2.staffType === 'Loaner'){
                         this.editShow = true
                     } else {
                         this.editShow = false
                     }
-
                 })
             },
             //重置密码
