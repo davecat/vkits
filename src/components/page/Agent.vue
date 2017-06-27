@@ -80,7 +80,7 @@
                 <el-table-column type="selection" width="80">
                 </el-table-column>
                 <el-table-column
-                        prop="id"
+                        prop="agentNo"
                         label="人员编号">
                 </el-table-column>
                 <el-table-column
