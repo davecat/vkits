@@ -75,6 +75,13 @@ router.beforeEach((to, from, next) => {
 import "babel-polyfill";
 import App from './App.vue';
 
+Vue.filter('currency', function (value) {
+    const l10nCNY = new Intl.NumberFormat("zh-CN", { style: "currency", currency: "CNY" })
+    if (value !== null) {
+        return l10nCNY.format(value);
+    }
+});
+
 new Vue({
     el: '#app',
     router,

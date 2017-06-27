@@ -16,7 +16,8 @@
                 <el-form-item label="所属中介：">
                     <el-select v-model="searchForm.agencyId">
                         <el-option label="全部" value=""></el-option>
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
+                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name"
+                                   :value="agency.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="申请编号：">
@@ -144,8 +145,38 @@
                 </el-pagination>
             </div>
         </el-row>
-        <el-form label-position="left" inline
-                 class="demo-table-expand">
+        <el-form label-position="left" inline>
+            <el-row>
+                <el-col :span="10">
+                    <el-form-item label="审批备注：" id="reasonInputTextarea">
+                        <el-input
+                                type="textarea"
+                                autosize
+                                placeholder="请输入内容"
+                                v-model="currentRow.confirmRemarks">
+                        </el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                    <el-form-item label="待修改原因：">
+                        <el-select v-model="reason" multiple placeholder="请选择">
+                            <el-option
+                                    v-for="item in reasonOption"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                    <el-button type="primary" @click="openAccpetDailog">通过申请</el-button>
+                    <el-button type="primary" @click="openReturnDailog">驳回修改</el-button>
+                    <el-button type="primary" @click="openRejectDailog">拒绝申请</el-button>
+                </el-col>
+            </el-row>
+            <el-row>
+            </el-row>
             <el-row>
                 <el-col :span="8">
                     <el-form-item label="经纪人：">
@@ -350,6 +381,39 @@
         </el-dialog>
 
         <el-dialog
+                title="审批通过"
+                :visible.sync="dialogVisible3"
+                size="tiny">
+            <span>此操作会将选中分期申请通过审批，是否继续？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible3 = false">取 消</el-button>
+                <el-button type="primary" @click="handleAccpet">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog
+                title="驳回修改"
+                :visible.sync="dialogVisible4"
+                size="tiny">
+            <span>此操作会将选中分期申请驳回至中介修改，是否继续？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible4 = false">取 消</el-button>
+                <el-button type="primary" @click="handleReturn">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog
+                title="审批不通过"
+                :visible.sync="dialogVisible5"
+                size="tiny">
+            <span>此操作会将选中分期申请拒绝通过审批，是否继续？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible5 = false">取 消</el-button>
+                <el-button type="primary" @click="handleReject">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog
                 title="日结确认"
                 :visible.sync="dialogVisible2"
                 size="tiny">
@@ -371,15 +435,18 @@
     import json from "../../../static/city.json";
     import ElRow from "element-ui/packages/row/src/row";
     import format from 'date-fns/format'
+    import ElCol from "element-ui/packages/col/src/col";
+    import {pagination} from '../mixins/pagination.js'
     export default {
-        components: {ElRow},
+        mixins: [pagination],
+        components: {
+            ElCol,
+            ElRow
+        },
         data() {
             return {
-                tableData: [],
+                url: '/riskcontrol/loaner/api/v1/application/getApplicationPage',
                 multipleSelection: [],
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
                 agencyList: {},
                 branchList: {},
                 searchForm: {
@@ -393,9 +460,38 @@
                     status: ''
                 },
                 form: {},
+                reason: [],
+                reasonOption: [
+                    {
+                        value: 'idCardFrontOrVersoPhotoBlur',
+                        label: '身份证正反面照片不清晰'
+                    },
+                    {
+                        value: 'idCardAndPersonPhotoBlur',
+                        label: '手持身份证照片不清晰'
+                    },
+                    {
+                        value: 'contractPhotoBlur',
+                        label: '合同照片不清晰或不完整'
+                    },
+                    {
+                        value: 'addressBlur',
+                        label: '房屋地址不规范或不详细'
+                    },
+                    {
+                        value: 'customerInfoError',
+                        label: '租客信息有误'
+                    },
+                    {
+                        value: 'otherException',
+                        label: '其他问题'
+                    }],
                 eodInfo: {},
                 dialogVisible: false,
                 dialogVisible2: false,
+                dialogVisible3: false,
+                dialogVisible4: false,
+                dialogVisible5: false,
                 pickerOptions: {
                     shortcuts: [
                         {
@@ -469,7 +565,6 @@
             }
         },
         created(){
-            this.getData();
             this.getAgencyList();
         },
         filters: {
@@ -542,28 +637,47 @@
                         emergencyContact: '',
                         emergencyContactMobile: '',
                         relation: '',
+                        confirmRemarks: '',
                     }
                 } else {
                     this.currentRow = val;
+
+                    if(this.currentRow.idCardFrontOrVersoPhotoBlur) {
+                        this.reason.push('idCardFrontOrVersoPhotoBlur')
+                    }
+                    if(this.currentRow.idCardAndPersonPhotoBlur) {
+                        this.reason.push('idCardAndPersonPhotoBlur')
+                    }
+                    if(this.currentRow.contractPhotoBlur) {
+                        this.reason.push('contractPhotoBlur')
+                    }
+                    if(this.currentRow.addressBlur) {
+                        this.reason.push('addressBlur')
+                    }
+                    if(this.currentRow.customerInfoError) {
+                        this.reason.push('customerInfoError')
+                    }
+                    if(this.currentRow.otherException) {
+                        this.reason.push('otherException')
+                    }
                     //这里处理省市县的id
                     json.forEach((item) => {
                         //省
-                        if(that.currentRow.province === item.value){
-                            that.currentRow.provinceName = item.label+'/';
+                        if (that.currentRow.province === item.value) {
+                            that.currentRow.provinceName = item.label + '/';
                             //市
                             item.children.forEach((item) => {
-                                if(that.currentRow.city === item.value){
-                                    that.currentRow.cityName = item.label+'/';
+                                if (that.currentRow.city === item.value) {
+                                    that.currentRow.cityName = item.label + '/';
                                     //县
                                     item.children.forEach((item) => {
-                                        if(that.currentRow.district === item.value){
+                                        if (that.currentRow.district === item.value) {
                                             that.currentRow.districtName = item.label;
                                         }
                                     })
                                 }
                             })
                         }
-
                     });
                 }
             },
@@ -576,36 +690,12 @@
                 this.bigPhotoUrl = this.qiniu + token + '?imageMogr2/auto-orient';
                 this.dialogBigPhoto = true;
             },
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
-            getData(){
-                let self = this;
-                this.axios.post('/riskcontrol/loaner/api/v1/application/getApplicationPage', {
-                    applictionNo: self.searchForm.applictionNo,
-                    startDate: self.searchForm.startDate,
-                    endDate: self.searchForm.endDate,
-                    customerName: self.searchForm.customerName,
-                    agencyId: self.searchForm.agencyId,
-                    branchId: self.searchForm.branchId,
-                    status: self.searchForm.status,
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                })
-            },
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 })
-            },
-            Search() {
-                this.getData();
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
@@ -624,6 +714,81 @@
                     })
                 }
                 this.dialogVisible = false;
+            },
+            openAccpetDailog() {
+                if (this.currentRow.id) {
+                    this.dialogVisible3 = true;
+                } else {
+                    this.$message.error('当前未选择');
+                }
+            },
+            openReturnDailog() {
+                if (!this.currentRow.id) {
+                    this.$message.error('当前未选择');
+                } else if (this.currentRow.confirmRemarks !== '' || this.reason.length > 0) {
+                    this.dialogVisible4 = true;
+                } else {
+                    this.$message.error('请输入或选择修改原因');
+                }
+            },
+            openRejectDailog() {
+                if (!this.currentRow.id) {
+                    this.$message.error('当前未选择');
+                } else if (this.currentRow.confirmRemarks !== '' || this.reason.length > 0) {
+                    this.dialogVisible5 = true;
+                } else {
+                    this.$message.error('请输入或选择拒绝原因');
+                }
+            },
+            handleAccpet() {
+                let ids = [this.currentRow.id];
+                this.axios.post('/riskcontrol/loaner/api/v1/application/loanerAccept', ids).then((res) => {
+                    this.getData();
+                    this.dialogVisible3 = false;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                });
+            },
+            checkParam(arr, param) {
+                return arr.find(item => item === param) !== undefined;
+            },
+            handleReturn() {
+                let form = {
+                    id: this.currentRow.id,
+                    confirmRemarks: this.currentRow.confirmRemarks,
+                    idCardFrontOrVersoPhotoBlur: this.checkParam(this.reason, 'idCardFrontOrVersoPhotoBlur'),
+                    idCardAndPersonPhotoBlur: this.checkParam(this.reason, 'idCardAndPersonPhotoBlur'),
+                    contractPhotoBlur: this.checkParam(this.reason, 'contractPhotoBlur'),
+                    addressBlur: this.checkParam(this.reason, 'addressBlur'),
+                    customerInfoError: this.checkParam(this.reason, 'customerInfoError'),
+                    otherException: this.checkParam(this.reason, 'otherException'),
+                };
+                this.axios.post('/riskcontrol/loaner/api/v1/application/loanerReturn', form).then((res) => {
+                    this.getData();
+                    this.reason = [];
+                    this.dialogVisible4 = false;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                });
+            },
+            handleReject() {
+                let form = {
+                    id: this.currentRow.id,
+                    confirmRemarks: this.currentRow.confirmRemarks,
+                    idCardFrontOrVersoPhotoBlur: this.checkParam(this.reason, 'idCardFrontOrVersoPhotoBlur'),
+                    idCardAndPersonPhotoBlur: this.checkParam(this.reason, 'idCardAndPersonPhotoBlur'),
+                    contractPhotoBlur: this.checkParam(this.reason, 'contractPhotoBlur'),
+                    addressBlur: this.checkParam(this.reason, 'addressBlur'),
+                    customerInfoError: this.checkParam(this.reason, 'customerInfoError'),
+                    otherException: this.checkParam(this.reason, 'otherException'),
+                };
+                this.axios.post('/riskcontrol/loaner/api/v1/application/loanerReject', form).then((res) => {
+                    this.getData();
+                    this.reason = [];
+                    this.dialogVisible5 = false;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                });
             },
             showEodInfo() {
                 this.axios.get('/riskcontrol/loaner/api/v1/application/eod/info').then((res) => {
@@ -646,5 +811,11 @@
 </script>
 
 <style>
+    #reasonInputTextarea {
+        width: 100%;
+    }
 
+    #reasonInputTextarea .el-form-item__content {
+        width: 80%;
+    }
 </style>

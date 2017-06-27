@@ -100,9 +100,12 @@
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="160"
                         prop="monthlyRent"
                         label="月租金">
+                    <template scope="scope">
+                        {{ scope.row.monthlyRent |  currency}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="120"
@@ -110,11 +113,11 @@
                         label="租期">
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="160"
                         prop=""
                         label="总金额">
                     <template scope="scope">
-                        {{ scope.row.monthlyRent * scope.row.rentPeriod }}
+                        {{ scope.row.monthlyRent * scope.row.rentPeriod | currency }}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -126,6 +129,21 @@
                         min-width="150"
                         prop="responsibleBranch"
                         label="门店名称">
+                </el-table-column>
+                <el-table-column
+                        min-width="150"
+                        prop="responsibleBranch"
+                        label="提交资金端">
+                </el-table-column>
+                <el-table-column
+                        min-width="150"
+                        prop="responsibleBranch"
+                        label="审批日期">
+                </el-table-column>
+                <el-table-column
+                        min-width="150"
+                        prop="responsibleBranch"
+                        label="确认日期">
                 </el-table-column>
                 <el-table-column
                         fixed="right"
@@ -639,7 +657,6 @@
                     }
                 } else {
                     this.currentRow = val;
-                    console.log(this.currentRow);
                     //这里处理省市县的id
                     json.forEach((item) => {
                         //省
@@ -658,7 +675,6 @@
                                 }
                             })
                         }
-
                     });
                 }
             },

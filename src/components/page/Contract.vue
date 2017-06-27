@@ -52,13 +52,13 @@
                     style="width: 100%">
                 <el-table-column
                         fixed
-                        min-width="160"
+                        min-width="180"
                         prop="applicationNo"
                         label="关联申请编号">
                 </el-table-column>
                 <el-table-column
                         fixed
-                        min-width="140"
+                        min-width="180"
                         prop="contractNo"
                         label="合同编号">
                 </el-table-column>
@@ -81,24 +81,33 @@
                         label="租客联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="160"
                         prop="monthlyRent"
                         label="月租金">
+                    <template scope="scope">
+                        {{ scope.row.monthlyRent |  currency}}
+                    </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="110"
+                        min-width="140"
                         prop="rentPeriod"
-                        label="租期">
+                        label="分期期数">
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="160"
                         prop="serviceFee"
                         label="手续费">
+                    <template scope="scope">
+                        {{ scope.row.serviceFee |  currency}}
+                    </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="160"
                         prop="totalAmount"
                         label="总金额">
+                    <template scope="scope">
+                        {{ scope.row.totalAmount |  currency}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="180"
@@ -134,6 +143,9 @@
                         min-width="160"
                         prop="amount"
                         label="账单金额">
+                    <template scope="scope">
+                        {{ scope.row.amount |  currency}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="160"
@@ -147,11 +159,17 @@
                         min-width="160"
                         prop="serviceFee"
                         label="手续费">
+                    <template scope="scope">
+                        {{ scope.row.serviceFee |  currency}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="160"
                         prop="overdueFee"
                         label="逾期费用">
+                    <template scope="scope">
+                        {{ scope.row.overdueFee |  currency}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="160"
