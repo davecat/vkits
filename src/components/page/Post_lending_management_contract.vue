@@ -141,6 +141,58 @@
                 </el-pagination>
             </div>
         </el-row>
+        <el-row>
+            <el-table
+                    :data="billsData"
+                    border
+                    tooltip-effect="dark"
+                    style="width: 100%">
+                <el-table-column
+                        min-width="160"
+                        prop="billNo"
+                        label="账单编号">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="amount"
+                        label="账单金额">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="paymentDueDate"
+                        label="应还款日期">
+                    <template scope="scope">
+                        {{ scope.row.paymentDueDate |  dateFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="serviceFee"
+                        label="手续费">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="overdueFee"
+                        label="逾期费用">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="status"
+                        label="账单状态">
+                    <template scope="scope">
+                        {{ scope.row.status |  billStatusFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="paymentDate"
+                        label="实际还款日期">
+                    <template scope="scope">
+                        {{ scope.row.paymentDate |  dateFormat }}
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-row>
     </div>
 </template>
 
@@ -207,7 +259,8 @@
                         }
                     ]
                 },
-                url: '/postlending/api/v1/contract/getContractPage'
+                url: '/postlending/api/v1/contract/getContractPage',
+                billsData: []
             }
         },
         created(){

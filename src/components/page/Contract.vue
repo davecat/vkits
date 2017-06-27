@@ -47,6 +47,8 @@
                     :data="tableData"
                     border
                     tooltip-effect="dark"
+                    highlight-current-row
+                    @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
                         fixed
@@ -117,6 +119,58 @@
                 </el-pagination>
             </div>
         </el-row>
+        <el-row>
+            <el-table
+                    :data="billsData"
+                    border
+                    tooltip-effect="dark"
+                    style="width: 100%">
+                <el-table-column
+                        min-width="160"
+                        prop="billNo"
+                        label="账单编号">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="amount"
+                        label="账单金额">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="paymentDueDate"
+                        label="应还款日期">
+                    <template scope="scope">
+                        {{ scope.row.paymentDueDate |  dateFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="serviceFee"
+                        label="手续费">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="overdueFee"
+                        label="逾期费用">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="status"
+                        label="账单状态">
+                    <template scope="scope">
+                        {{ scope.row.status |  billStatusFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="paymentDate"
+                        label="实际还款日期">
+                    <template scope="scope">
+                        {{ scope.row.paymentDate |  dateFormat }}
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-row>
 
     </div>
 </template>
@@ -124,7 +178,9 @@
 <script>
     import { pagination } from '../mixins/pagination.js'
     import format from 'date-fns/format'
+    import ElRow from "element-ui/packages/row/src/row";
     export default {
+        components: {ElRow},
         mixins: [pagination],
         data() {
             return {
@@ -178,10 +234,8 @@
                     mobile: '',
                     status: 'Repayment'
                 },
+                billsData: []
             }
-        },
-        created(){
-            this.getData();
         },
         filters: {
             overdueDaysFormat: function (value) {
@@ -194,7 +248,21 @@
                 } else if (value > 0) {
                     return "逾期";
                 }
-            }
+            },
+            dateFormat: function (value) {
+                if (typeof value === "string") {
+                    return value.substring(0, value.length - 9)
+                }
+            },
+            billStatusFormat: function (value) {
+                if (value === 'NotRepayment') {
+                    return "未还款";
+                } else if (value === 'EndRepayment') {
+                    return "已还款";
+                } else if (value === 'OverdueRepayment') {
+                    return "逾期未还款";
+                }
+            },
         },
         methods: {
             selectedData() {
@@ -209,6 +277,9 @@
             handleChange() {
                 this.getData();
             },
+            handleCurrentRow(currentRow) {
+                this.billsData = currentRow.bills;
+            }
         }
     }
 </script>
