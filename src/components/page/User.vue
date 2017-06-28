@@ -28,6 +28,8 @@
                     </el-table-column>
                     <el-table-column prop="username" label="登录名">
                     </el-table-column>
+                    <el-table-column prop="role.name" label="角色">
+                    </el-table-column>
                     <el-table-column label="操作" width="320">
                         <template scope="scope">
                             <el-tooltip class="item" effect="dark" content="修改" placement="top-end">
@@ -93,7 +95,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="管辖中介：" :label-width="formLabelWidth" prop="agencies">
-                    <el-select v-model="form.agencies" multiple @change="getBranchList(form.agencies)" :disabled="agenciesDisable">
+                    <el-select v-model="form.agencies" multiple @change="getBranchListAdd(form.agencies)" :disabled="agenciesDisable">
                         <el-option v-for="agency in agencyList" :value="agency" :label="agency.name"  :key="agency.id"></el-option>
                     </el-select>
                 </el-form-item>
@@ -126,23 +128,23 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="角色" :label-width="formLabelWidth" prop="role">
-                    <el-select v-model="form2.role">
-                        <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role"></el-option>
+                    <el-select v-model="roleId">
+                        <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="所属资金端" :label-width="formLabelWidth" prop="loaner" v-show="editShow">
-                    <el-select v-model="form2.loaner">
-                        <el-option v-for="loaner in loanerList" :key="loaner.id"  :label="loaner.name" :value="loaner"></el-option>
+                    <el-select v-model="loanerId">
+                        <el-option v-for="loaner in loanerList" :key="loaner.id"  :label="loaner.name" :value="loaner.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="管辖中介：" :label-width="formLabelWidth" v-show="!editShow" prop="agencies">
-                    <el-select v-model="form2.agencies" multiple @change="getBranchList(form2.agencies)">
-                        <el-option v-for="item in agencyList" :key="item.id" :label="item.name" :value="item"></el-option>
+                    <el-select v-model="agenciesIds" multiple @change="getBranchList()">
+                        <el-option v-for="item in agencyList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="管辖门店：" :label-width="formLabelWidth" v-show="!editShow" prop="branches">
-                    <el-select v-model="form2.branches" multiple>
-                        <el-option v-for="item in branchList" :key="item.id" :label="item.name" :value="item"></el-option>
+                    <el-select v-model="branchesIds" multiple>
+                        <el-option v-for="item in branchList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -161,10 +163,13 @@
         mixins: [pagination],
         data() {
             return {
+                roleId: '',//角色id
+                loanerId: '',//资金端id
                 loanerDisable: true,//用来控制资金端是否能选择
                 agenciesDisable: false,//用来控制中介和门店是否能选择
                 editShow: true,//用来控制修改时候资金端是否显示
                 agenciesIds: [],//存放选择的中介id
+                branchesIds: [],//存放选择的门店id
                 formVisible: false,
                 formVisible2: false,
                 formLabelWidth: '120px',
@@ -237,7 +242,7 @@
             },
             //获取中介
             getAgencyList() {
-                this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
+                this.axios.get('/api/v1/admin/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
@@ -254,11 +259,20 @@
                 }
             },
             //只有当选择了中介，才能选择门店
-            getBranchList(item) {
-                this.agenciesIds = item.map(item => {
+            //新增
+            getBranchListAdd(item) {
+                let array = item.map((item) => {
                     return item.id
                 });
-                this.axios.post('/api/v1/branch/getBranchListByAgencyIdList', this.agenciesIds).then((res) => {
+                this.axios.post('/api/v1/admin/branch/getBranchListByAgencyIdList', array).then((res) => {
+                    this.branchList = res.data;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
+            },
+            //修改
+            getBranchList() {
+                this.axios.post('/api/v1/admin/branch/getBranchListByAgencyIdList', this.agenciesIds).then((res) => {
                     this.branchList = res.data;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
@@ -278,13 +292,15 @@
                 //获取指定用户的详细信息
                 this.axios.get('/api/v1/user/assign/'+row.id).then((res) => {
                     this.form2 = res.data;
-                    console.log(res.data);
-                    this.form2.agencies = res.data.agencies.map((item) => {
-                       return item.name
+                    this.roleId = res.data.role.id;
+                    this.loanerId = res.data.loaner.id;
+                    this.agenciesIds = res.data.agencies.map((item) => {
+                       return item.id
                     });
-                    this.form2.branches = res.data.branches.map((item) => {
-                        return item.name
+                    this.branchesIds = res.data.branches.map((item) => {
+                        return item.id
                     });
+                    this.getBranchList();
                     this.formVisible2 = true;
                     if(this.form2.staffType === 'Loaner'){
                         this.editShow = true
@@ -359,9 +375,26 @@
             },
             //修改提交
             submitUser2(formName) {
+                let that = this;
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.axios.put('/api/v1/user/admin/updateUser', this.form2).then((res) => {
+                        if(that.roleId){
+                            that.form2.role.id = this.roleId;
+                            that.form2.role.name = '';
+                        }
+                       if(that.loanerId){
+                           that.form2.loaner.id = this.loanerId;
+                           that.form2.loaner.name = '';
+                       }
+                       that.form2.agencies = that.agencyList.filter(item => {
+                           let id = that.agenciesIds.find((item2 => item2 === item.id));
+                           return id !== undefined;
+                       });
+                        that.form2.branches = that.branchList.filter(item => {
+                            let id = that.branchesIds.find((item2 => item2 === item.id));
+                            return id !== undefined;
+                        });
+                        that.axios.put('/api/v1/user/admin/updateUser', that.form2).then((res) => {
                             this.getData();
                             this.$refs[formName].resetFields();
                             this.formVisible2 = false;
