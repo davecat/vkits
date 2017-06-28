@@ -414,14 +414,13 @@
 <script>
     import json from "../../../static/city.json";
     import format from 'date-fns/format'
+    import { pagination } from '../mixins/pagination.js'
+    import { qiniu } from '../mixins/qiniu.js'
     export default {
+        mixins: [pagination, qiniu],
         data() {
             return {
-                tableData: [],
-                multipleSelection: [],
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
+                url: '/riskcontrol/lib/api/v1/application/getApplicationPage',
                 agencyList: {},
                 branchList: {},
                 loanerList: {},
@@ -466,7 +465,6 @@
                     idCardAndPersonPhoto: '',
                     contractPhotos: []
                 },
-                qiniu: 'http://7xt1kq.com1.z0.glb.clouddn.com/',
                 pickerOptions: {
                     shortcuts: [
                         {
@@ -518,7 +516,6 @@
             }
         },
         created(){
-            this.getData();
             this.getAgencyList();
             this.getLoanerList();
         },
@@ -567,10 +564,6 @@
             },
         },
         methods: {
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
             selectedData() {
                 if (this.searchForm.applyDate[0] !== null) {
                     this.searchForm.startDate = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
@@ -580,31 +573,9 @@
                     this.searchForm.endDate = '';
                 }
             },
-            photo(token) {
-                if (token !== undefined && token !== '' && token !== null) {
-                    return this.qiniu + token + '?imageMogr2/auto-orient&imageView2/1/w/600/h/600';
-                }
-            },
             showBigPhoto(token) {
                 this.bigPhotoUrl = this.qiniu + token + '?imageMogr2/auto-orient';
                 this.dialogBigPhoto = true;
-            },
-            getData(){
-                let self = this;
-                this.axios.post('/riskcontrol/lib/api/v1/application/getApplicationPage', {
-                    applictionNo: self.searchForm.applictionNo,
-                    startDate: self.searchForm.startDate,
-                    endDate: self.searchForm.endDate,
-                    customerName: self.searchForm.customerName,
-                    agencyId: self.searchForm.agencyId,
-                    branchId: self.searchForm.branchId,
-                    status: self.searchForm.status,
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                })
             },
             handleChange() {
                 this.getData();
@@ -681,9 +652,6 @@
                         }
                     });
                 }
-            },
-            Search() {
-                this.getData();
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;

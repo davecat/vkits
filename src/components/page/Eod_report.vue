@@ -358,13 +358,13 @@
 
 <script>
     import format from 'date-fns/format'
+    import { pagination } from '../mixins/pagination.js'
+    import { qiniu } from '../mixins/qiniu.js'
     export default {
+        mixins: [pagination, qiniu],
         data() {
             return {
-                tableData: [],
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
+                url: '/riskcontrol/loaner/api/v1/application/getApplicationPage',
                 agencyList: {},
                 branchList: {},
                 searchForm: {
@@ -444,7 +444,6 @@
                     idCardAndPersonPhoto: '',
                     contractPhotos: []
                 },
-                qiniu: 'http://7xt1kq.com1.z0.glb.clouddn.com/',
                 bigPhotoUrl: '',
                 dialogBigPhoto: false,
                 idCardFrontPhoto: '',
@@ -454,7 +453,6 @@
             }
         },
         created(){
-            this.getData();
             this.getAgencyList();
         },
         filters: {
@@ -494,9 +492,6 @@
             },
         },
         methods: {
-            handleChange() {
-                this.getData();
-            },
             selectedData() {
                 if (this.searchForm.applyDate[0] !== null) {
                     this.searchForm.startDate = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
@@ -532,35 +527,9 @@
                     this.currentRow = val;
                 }
             },
-            photo(token) {
-                if (token !== undefined && token !== '' && token !== null) {
-                    return this.qiniu + token + '?imageMogr2/auto-orient&imageView2/1/w/600/h/600';
-                }
-            },
             showBigPhoto(token) {
                 this.bigPhotoUrl = this.qiniu + token + '?imageMogr2/auto-orient';
                 this.dialogBigPhoto = true;
-            },
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
-            getData(){
-                let self = this;
-                this.axios.post('/riskcontrol/loaner/api/v1/application/getApplicationPage', {
-                    applictionNo: self.searchForm.applictionNo,
-                    startDate: self.searchForm.startDate,
-                    endDate: self.searchForm.endDate,
-                    customerName: self.searchForm.customerName,
-                    agencyId: self.searchForm.agencyId,
-                    branchId: self.searchForm.branchId,
-                    status: self.searchForm.status,
-                    page: self.cur_page - 1,
-                    size: self.size
-                }).then((res) => {
-                    self.tableData = res.data.content;
-                    self.totalElements = res.data.totalElements;
-                })
             },
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
@@ -568,9 +537,6 @@
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 })
-            },
-            Search() {
-                this.getData();
             },
             multipleAccept() {
                 let ids = this.multipleSelection.map(row => {

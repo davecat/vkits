@@ -434,9 +434,10 @@
 <script>
     import json from "../../../static/city.json";
     import format from 'date-fns/format'
-    import {pagination} from '../mixins/pagination.js'
+    import { pagination } from '../mixins/pagination.js'
+    import { qiniu } from '../mixins/qiniu.js'
     export default {
-        mixins: [pagination],
+        mixins: [pagination, qiniu],
         data() {
             return {
                 url: '/riskcontrol/loaner/api/v1/application/getApplicationPage',
@@ -549,7 +550,6 @@
                     idCardAndPersonPhoto: '',
                     contractPhotos: []
                 },
-                qiniu: 'http://7xt1kq.com1.z0.glb.clouddn.com/',
                 bigPhotoUrl: '',
                 dialogBigPhoto: false,
                 idCardFrontPhoto: '',
@@ -673,11 +673,6 @@
                             })
                         }
                     });
-                }
-            },
-            photo(token) {
-                if (token !== undefined && token !== '' && token !== null) {
-                    return this.qiniu + token + '?imageMogr2/auto-orient&imageView2/1/w/600/h/600';
                 }
             },
             showBigPhoto(token) {

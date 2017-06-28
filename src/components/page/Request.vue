@@ -587,8 +587,9 @@
     import json from "../../../static/city.json";
     import format from 'date-fns/format'
     import { pagination } from '../mixins/pagination.js'
+    import { qiniu } from '../mixins/qiniu.js'
     export default {
-        mixins: [pagination],
+        mixins: [pagination, qiniu],
         data() {
             return {
                 url: '/api/v1/application/getApplicationPage',
@@ -607,7 +608,6 @@
                     branchId: '',
                     status: 'Unchecked'
                 },
-                qiniu: 'http://7xt1kq.com1.z0.glb.clouddn.com/',
                 form: {
                     responsibleAgent: '',
                     applyDate: '',
@@ -676,9 +676,6 @@
                 bigPhotoUrl: '',
                 formVisible: false,
                 dialogBigPhoto: false,
-                postData: {
-                    token: ''
-                },
                 currentRow: {
                     responsibleAgent: '',
                     applyDate: '',
@@ -780,11 +777,6 @@
                 this.form.province = this.selectedOptions[0];
                 this.form.city = this.selectedOptions[1];
                 this.form.district = this.selectedOptions[2];
-            },
-            photo(token) {
-                if (token !== undefined && token !== '' && token !== null) {
-                    return this.qiniu + token + '?imageMogr2/auto-orient&imageView2/1/w/600/h/600';
-                }
             },
             showBigPhoto(token) {
                 this.bigPhotoUrl = this.qiniu + token + '?imageMogr2/auto-orient';
@@ -904,16 +896,6 @@
                     this.searchForm.startDate = '';
                     this.searchForm.endDate = '';
                 }
-            },
-            getUploadToken() {
-                return this.axios.get('/api/upload/getToken').then((res) => {
-                    this.postData.token = res.data;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);;
-                })
-            },
-            beforeUpload(file) {
-                return this.getUploadToken();
             },
             uploadFrontSuccess(response, file) {
                 this.idCardFrontPhoto = response.key;
