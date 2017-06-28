@@ -130,20 +130,26 @@
                         prop="responsibleBranch"
                         label="门店名称">
                 </el-table-column>
-                <el-table-column
+                <el-table-column v-if="searchForm.status !== 'Unconfirmed'"
                         min-width="150"
-                        prop="responsibleBranch"
+                        prop="loanerName"
                         label="提交资金端">
                 </el-table-column>
-                <el-table-column
+                <el-table-column v-if="searchForm.status !== 'Unconfirmed' && searchForm.status !== 'Commited'"
                         min-width="150"
-                        prop="responsibleBranch"
+                        prop="loanerApprovalDate"
                         label="审批日期">
+                    <template scope="scope">
+                        {{ scope.row.loanerApprovalDate | dateFormat }}
+                    </template>
                 </el-table-column>
-                <el-table-column
+                <el-table-column v-if="searchForm.status === 'LibRejected' || searchForm.status === 'LibReturned'"
                         min-width="150"
-                        prop="responsibleBranch"
+                        prop="libApprovalDate"
                         label="确认日期">
+                    <template scope="scope">
+                        {{ scope.row.libApprovalDate | dateFormat }}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         fixed="right"
@@ -408,13 +414,7 @@
 <script>
     import json from "../../../static/city.json";
     import format from 'date-fns/format'
-    import ElRow from "element-ui/packages/row/src/row";
-    import ElCol from "element-ui/packages/col/src/col";
     export default {
-        components: {
-            ElCol,
-            ElRow
-        },
         data() {
             return {
                 tableData: [],
@@ -528,12 +528,16 @@
                     return "待审核";
                 } else if (value === "Accepted") {
                     return "审核通过";
-                } else if (value === "Returned") {
-                    return "待修改";
-                } else if (value === "Canceled") {
-                    return "已取消";
-                } else if (value === "Rejected") {
-                    return "审核不通过";
+                } else if (value === "LibReturned") {
+                    return "待修改（待确认）";
+                } else if (value === "LoanerRejected") {
+                    return "审批不通过-待确认";
+                } else if (value === "LoanerReturned") {
+                    return "待修改-待确认";
+                } else if (value === "LibRejected") {
+                    return "审批不通过-已确认";
+                } else if (value === "Commited") {
+                    return "已提交";
                 }
             },
             educationFormat: function (value) {

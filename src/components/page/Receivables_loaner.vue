@@ -111,9 +111,7 @@
 <script>
     import { pagination } from '../mixins/pagination.js'
     import format from 'date-fns/format'
-    import ElRow from "element-ui/packages/row/src/row";
     export default {
-        components: {ElRow},
         mixins: [pagination],
         data() {
             return {

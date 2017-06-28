@@ -433,16 +433,10 @@
 
 <script>
     import json from "../../../static/city.json";
-    import ElRow from "element-ui/packages/row/src/row";
     import format from 'date-fns/format'
-    import ElCol from "element-ui/packages/col/src/col";
     import {pagination} from '../mixins/pagination.js'
     export default {
         mixins: [pagination],
-        components: {
-            ElCol,
-            ElRow
-        },
         data() {
             return {
                 url: '/riskcontrol/loaner/api/v1/application/getApplicationPage',
@@ -725,19 +719,19 @@
             openReturnDailog() {
                 if (!this.currentRow.id) {
                     this.$message.error('当前未选择');
-                } else if (this.currentRow.confirmRemarks !== '' || this.reason.length > 0) {
-                    this.dialogVisible4 = true;
-                } else {
+                } else if (!this.currentRow.confirmRemarks && this.currentRow.confirmRemarks === '' || this.reason.length === 0) {
                     this.$message.error('请输入或选择修改原因');
+                } else {
+                    this.dialogVisible4 = true;
                 }
             },
             openRejectDailog() {
                 if (!this.currentRow.id) {
                     this.$message.error('当前未选择');
-                } else if (this.currentRow.confirmRemarks !== '' || this.reason.length > 0) {
-                    this.dialogVisible5 = true;
-                } else {
+                } else if(!this.currentRow.confirmRemarks && this.currentRow.confirmRemarks === '' || this.reason.length === 0) {
                     this.$message.error('请输入或选择拒绝原因');
+                } else {
+                    this.dialogVisible5 = true;
                 }
             },
             handleAccpet() {

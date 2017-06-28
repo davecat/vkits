@@ -144,7 +144,7 @@
                 </el-table-column>
                 <el-table-column
                         min-width="150"
-                        prop="agencyName"
+                        prop="responsibleAgency"
                         label="中介名称">
                 </el-table-column>
                 <el-table-column
@@ -585,11 +585,9 @@
 
 <script>
     import json from "../../../static/city.json";
-    import ElRow from "element-ui/packages/row/src/row";
     import format from 'date-fns/format'
     import { pagination } from '../mixins/pagination.js'
     export default {
-        components: {ElRow},
         mixins: [pagination],
         data() {
             return {
