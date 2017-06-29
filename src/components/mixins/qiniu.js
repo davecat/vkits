@@ -4,7 +4,8 @@
 export const qiniu = {
     data() {
         return {
-            qiniu: 'https://libfile1.wezebra.com/',
+            qiniu: process.env.QINIU,
+            uploadUrl: process.env.UPLOAD,
             postData: {
                 token: ''
             },

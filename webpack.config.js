@@ -51,15 +51,15 @@ module.exports = {
                 target: 'http://localhost:5001',
                 secure: false
             },
-            '/riskcontrol/lib/api/v1/*': {
+            '/riskcontrol/*': {
                 target: 'http://localhost:5001',
                 secure: false
             },
-            '/riskcontrol/api/v1/*': {
+            '/postlending/*': {
                 target: 'http://localhost:5001',
                 secure: false
             },
-            '/riskcontrol/loaner/api/v1/*': {
+            '/counter/*': {
                 target: 'http://localhost:5001',
                 secure: false
             },
@@ -68,11 +68,11 @@ module.exports = {
                 secure: false
             },
             '/admin/api/branch/*': {
-                target: 'http://localhost:5002',
+                target: 'http://192.168.0.107:8001',
                 secure: false
             },
             '/api/upload/*': {
-                target: 'http://localhost:5002',
+                target: 'http://192.168.0.107:8001',
                 secure: false
             }
         }
@@ -89,11 +89,13 @@ if (process.env.NODE_ENV === 'production') {
     module.exports.plugins = (module.exports.plugins || []).concat([
         new webpack.DefinePlugin({
             'process.env': {
-                NODE_ENV: '"production"'
+                NODE_ENV: '"production"',
+                QINIU: 'https://libfile1.wezebra.com/',
+                UPLOAD: 'https://upload-z2.qbox.me'
             }
         }),
         new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
+            sourceMap: false,
             compress: {
                 warnings: false
             }
@@ -101,5 +103,17 @@ if (process.env.NODE_ENV === 'production') {
         new webpack.LoaderOptionsPlugin({
             minimize: true
         })
+    ])
+}
+
+if(process.env.NODE_ENV === 'development') {
+    module.exports.plugins = (module.exports.plugins || []).concat([
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify('"development"'),
+                QINIU: JSON.stringify('http://7xt1kq.com1.z0.glb.clouddn.com/'),
+                UPLOAD: JSON.stringify('http://upload.qiniu.com')
+            }
+        }),
     ])
 }

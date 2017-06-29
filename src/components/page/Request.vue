@@ -503,7 +503,7 @@
                     <el-col :span="7">
                         <el-upload
                                 class="avatar-uploader"
-                                action="https://upload-z2.qbox.me"
+                                :action="uploadUrl"
                                 :data="postData"
                                 :show-file-list="false"
                                 :before-upload="beforeUpload"
@@ -517,7 +517,7 @@
                     <el-col :span="7">
                         <el-upload
                                 class="avatar-uploader"
-                                action="https://upload-z2.qbox.me"
+                                :action="uploadUrl"
                                 :data="postData"
                                 :show-file-list="false"
                                 :before-upload="beforeUpload"
@@ -531,7 +531,7 @@
                     <el-col :span="7">
                         <el-upload
                                 class="avatar-uploader"
-                                action="https://upload-z2.qbox.me"
+                                :action="uploadUrl"
                                 :data="postData"
                                 :show-file-list="false"
                                 :before-upload="beforeUpload"
@@ -550,7 +550,7 @@
                     </el-col>
                     <el-col :span="20">
                         <el-upload
-                                action="https://upload-z2.qbox.me"
+                                :action="uploadUrl"
                                 :data="postData"
                                 list-type="picture-card"
                                 :on-preview="handlePreview"
