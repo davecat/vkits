@@ -111,8 +111,11 @@
                 </el-table-column>
                 <el-table-column
                         min-width="150"
-                        prop="responsibleBranch"
+                        prop="approvalDate"
                         label="审批日期">
+                    <template scope="scope">
+                        {{ scope.row.approvalDate | dateFormat }}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         fixed="right"
@@ -526,6 +529,9 @@
                 } else {
                     this.currentRow = val;
                 }
+            },
+            handleChange() {
+              this.getData();
             },
             showBigPhoto(token) {
                 this.bigPhotoUrl = this.qiniu + token + '?imageMogr2/auto-orient';

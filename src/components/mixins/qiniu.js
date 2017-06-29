@@ -4,8 +4,7 @@
 export const qiniu = {
     data() {
         return {
-            // qiniu: 'http://libfile.wezebra.com/',
-            qiniu: 'http://7xt1kq.com1.z0.glb.clouddn.com/',
+            qiniu: 'https://libfile1.wezebra.com/',
             postData: {
                 token: ''
             },
@@ -24,7 +23,7 @@ export const qiniu = {
         },
         photo(token) {
             if (token !== undefined && token !== '' && token !== null) {
-                return this.qiniu + token + '?imageMogr2/auto-orient&imageView2/1/w/600/h/600';
+                return this.qiniu + token + '?imageMogr2/auto-orient|imageView2/1/w/600/h/600';
             }
         },
     }
