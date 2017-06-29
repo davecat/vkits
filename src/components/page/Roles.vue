@@ -8,7 +8,7 @@
         </div>
 
         <el-row>
-            <el-button type="primary" @click="formVisible = true">新增</el-button>
+            <el-button type="primary" @click="formVisible = true;">新增</el-button>
         </el-row>
 
         <el-row>
@@ -125,7 +125,7 @@
                     label: 'name',
                     children: 'children'
                 },
-                testMenus: {}
+                testMenus: []
             }
         },
         computed: {
@@ -137,16 +137,14 @@
             this.getData();
         },
         methods: {
-            //授权
+            //点击授权确定
             getCheckedNodes() {
                 let that = this;
                 that.permission.permissions = [];
                 let checked = this.$refs.tree.getCheckedNodes();
-                console.log(checked);
                 checked.forEach((item) => {
                     that.permission.permissions.push(item.permission)
                 });
-                console.log(that.permission);
                 this.axios.put('/api/v1/role/setPermission', that.permission).then((res) => {
                     if (res.data.status === 200) {
                         this.$message({
@@ -160,6 +158,7 @@
 
                 this.warrant = false;
                 this.$forceUpdate();
+                window.location.reload();
             },
             //获取数据
             getData(){
@@ -176,36 +175,31 @@
                 this.dialogVisible = true;
                 this.deleteId = id;
             },
-            gcd(menu) {
-                let that = this;
-//                return menu.map(item => {
-//                    if(item.hasPermission) {
-//                        return item.id;
-//                    } else {
-//                        return that.gcd(item.children)
-//                    }
-//                })
 
-                return menu.forEach(function (item) {
-                    if(item.hasPermission) {
-//                        return item.id;
-                        console.log(item.id);
-                        that.permissionId.push(item.id);
-                    } else {
-                        that.gcd(item.children)
-                    }
-                })
-            },
             //授权
             rowWarrant(id) {
+                let that = this;
                 this.testMenus = this.menus;
                 this.permission.id = id;
 //                获取用户已有权限
                 this.axios.get('/api/v1/role/getRolePermission/' + id).then((res) => {
-                    this.gcd(res.data);
-                    this.warrant = true;
+                    //清空已有权限的id数组
+                    this.permissionId = [];
+                    that.gcd(res.data);
+                    that.warrant = true;
                 }).catch((error) => {
                     console.log(error);
+                });
+            },
+            gcd(menu) {
+                let that = this;
+                return menu.forEach(function (item) {
+                    if(item.hasPermission) {
+//                        return item.id;
+                        that.permissionId.push(item.id);
+                    } else {
+                        that.gcd(item.children)
+                    }
                 });
             },
             handleDelete() {
@@ -243,11 +237,12 @@
                 this.currentRow = val;
             },
             handleCancel() {
-                this.testMenus = [{
-                    id:"4028b8815cdee019015cdee04b40000d",
-                    name:"控制台首页",
-                    children: []
-                }];
+                window.location.reload();
+//                this.testMenus = [{
+//                    id:"4028b8815cdee019015cdee04b40000d",
+//                    name:"控制台首页",
+//                    children: []
+//                }];
                 this.warrant = false;
             }
 
