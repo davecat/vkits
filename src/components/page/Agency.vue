@@ -44,34 +44,42 @@
                 <el-table-column type="selection" width="80">
                 </el-table-column>
                 <el-table-column
+                        min-width="94"
                         prop="code"
                         label="中介编号">
                 </el-table-column>
                 <el-table-column
+                        min-width="94"
                         prop="name"
                         label="中介名称">
                 </el-table-column>
                 <el-table-column
+                        min-width="94"
                         prop="branchAmount"
                         label="门店数量">
                 </el-table-column>
                 <el-table-column
+                        min-width="94"
                         prop="serviceTariffing"
                         label="服务费率">
                 </el-table-column>
                 <el-table-column
+                        min-width="135"
                         prop="payeeBank"
                         label="开户行（收款）">
                 </el-table-column>
                 <el-table-column
+                        min-width="149"
                         prop="payeeAccountNumber"
                         label="银行卡号（收款）">
                 </el-table-column>
                 <el-table-column
+                        min-width="135"
                         prop="payerBank"
                         label="开户行（付款）">
                 </el-table-column>
                 <el-table-column
+                        min-width="149"
                         prop="payerAccountNumber"
                         label="银行卡号（付款）">
                 </el-table-column>

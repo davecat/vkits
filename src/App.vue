@@ -51,7 +51,7 @@
         margin-left: 10px;
     }
     .el-table td,.el-table th{
-        padding:5px 18px;
+        text-align: center;
     }
     .el-table tr:hover{
         background: #f6faff;

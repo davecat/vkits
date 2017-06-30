@@ -41,10 +41,12 @@
                 <el-table-column type="selection" width="80">
                 </el-table-column>
                 <el-table-column
+                        min-width="110"
                         prop="name"
                         label="资金端名称">
                 </el-table-column>
                 <el-table-column
+                        min-width="100"
                         prop="repaymentType"
                         label="还款方式">
                     <template scope="scope">
@@ -52,18 +54,22 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="142"
                         prop="collectionBankCard"
                         label="银行帐号（收款)">
                 </el-table-column>
                 <el-table-column
+                        min-width="135"
                         prop="collectionBankAccount"
                         label="开户行（收款）">
                 </el-table-column>
                 <el-table-column
+                        min-width="176"
                         prop="paymentBankAccount"
                         label="银行账号（付款至LIB)">
                 </el-table-column>
                 <el-table-column
+                        min-width="135"
                         prop="paymentBankCard"
                         label="开户行（付款）">
                 </el-table-column>

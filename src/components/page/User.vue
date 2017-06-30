@@ -12,8 +12,7 @@
         </el-row>
 
         <el-row>
-            <el-col :span="14">
-                <el-table :data="tableData" border>
+                <el-table :data="tableData" border width="100%">
                     <el-table-column prop="staffName" label="用户昵称">
                     </el-table-column>
                     <el-table-column prop="staffType" label="类型">
@@ -62,7 +61,7 @@
                             :total="totalElements">
                     </el-pagination>
                 </div>
-            </el-col>
+
         </el-row>
 
         <el-dialog title="新增用户" :visible.sync="formVisible">
