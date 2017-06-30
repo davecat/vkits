@@ -16,7 +16,6 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 </div>
-                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名admin、密码123456、验证码zzz。</p>
                 <el-form-item prop="error" v-if="error">
                     <el-alert
                             :title="error"

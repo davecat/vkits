@@ -90,8 +90,8 @@ if (process.env.NODE_ENV === 'production') {
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: '"production"',
-                QINIU: 'https://libfile1.wezebra.com/',
-                UPLOAD: 'https://upload-z2.qbox.me'
+                QINIU: '"https://libfile1.wezebra.com/"',
+                UPLOAD: '"https://upload-z2.qbox.me"'
             }
         }),
         new webpack.optimize.UglifyJsPlugin({
@@ -110,9 +110,9 @@ if(process.env.NODE_ENV === 'development') {
     module.exports.plugins = (module.exports.plugins || []).concat([
         new webpack.DefinePlugin({
             'process.env': {
-                NODE_ENV: JSON.stringify('"development"'),
-                QINIU: JSON.stringify('http://7xt1kq.com1.z0.glb.clouddn.com/'),
-                UPLOAD: JSON.stringify('http://upload.qiniu.com')
+                NODE_ENV: '"development"',
+                QINIU: '"http://7xt1kq.com1.z0.glb.clouddn.com/"',
+                UPLOAD: '"http://upload.qiniu.com"'
             }
         }),
     ])
