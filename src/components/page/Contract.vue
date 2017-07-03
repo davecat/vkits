@@ -292,6 +292,7 @@
             },
             handleChange() {
                 this.getData();
+                this.billsData = [];
             },
             handleCurrentRow(currentRow) {
                 this.billsData = currentRow.bills;
