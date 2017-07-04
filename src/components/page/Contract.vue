@@ -85,7 +85,7 @@
                         prop="startDate"
                         label="起租日期">
                     <template scope="scope">
-                        {{ scope.row.startDate |  overdueDaysFormat}}
+                        {{ scope.row.startDate |  dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -93,7 +93,7 @@
                         prop="endDate"
                         label="退租日期">
                     <template scope="scope">
-                        {{ scope.row.endDate |  overdueDaysFormat}}
+                        {{ scope.row.endDate |  dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
