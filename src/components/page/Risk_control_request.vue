@@ -27,7 +27,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="申请编号：">
-                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
+                    <el-input v-model="searchForm.applictionNo" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="起租日期：">
                     <el-date-picker
@@ -40,7 +40,10 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="租客姓名：">
-                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
+                    <el-input v-model="searchForm.customerName" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="租客联系方式：">
+                    <el-input v-model="searchForm.mobile" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
@@ -432,6 +435,7 @@
                     customerName: '',
                     agencyId: '',
                     branchId: '',
+                    mobile: '',
                     status: 'Unconfirmed'
                 },
                 form: {
