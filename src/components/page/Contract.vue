@@ -82,6 +82,22 @@
                 </el-table-column>
                 <el-table-column
                         min-width="160"
+                        prop="startDate"
+                        label="起租日期">
+                    <template scope="scope">
+                        {{ scope.row.startDate |  overdueDaysFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="endDate"
+                        label="退租日期">
+                    <template scope="scope">
+                        {{ scope.row.endDate |  overdueDaysFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
                         prop="monthlyRent"
                         label="月租金">
                     <template scope="scope">
