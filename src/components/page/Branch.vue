@@ -150,7 +150,7 @@
                     <el-cascader
                             :options="options"
                             v-model="selectedOptions"
-                            @change="handleChange">
+                            @change="handleChange2">
                     </el-cascader>
                 </el-form-item>
                 <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
@@ -240,6 +240,7 @@
                     agencyId: '',
                     code: '',
                     name: '',
+                    address: '',
                     enabled: 'true'
                 },
                 form2: {
@@ -287,6 +288,12 @@
                 this.form.city = this.selectedOptions[1];
                 this.form.district = this.selectedOptions[2];
             },
+            handleChange2() {
+                //把省市县的值带到后台
+                this.form2.province = this.selectedOptions[0];
+                this.form2.city = this.selectedOptions[1];
+                this.form2.district = this.selectedOptions[2];
+            },
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
@@ -300,6 +307,8 @@
                         this.axios.post('/api/v1/branch', this.form).then((res) => {
                             this.getData();
                             this.$refs[formName].resetFields();
+                            //清空省市区
+                            this.selectedOptions = [];
                             this.formVisible = false;
                         }).catch((error) => {
                             this.$message.error(error.response.data.message);
@@ -315,6 +324,10 @@
                     if (valid) {
                         this.axios.put('/api/v1/branch', this.form2).then((res) => {
                             this.getData();
+                            this.$message({
+                                message:"修改成功",
+                                type: 'success'
+                            });
                             this.$refs[formName].resetFields();
                             this.formVisible2 = false;
                         }).catch((error) => {
@@ -328,6 +341,8 @@
             },
             resetForm(formName) {
                 this.$refs[formName].resetFields();
+                //清空省市区
+                this.selectedOptions = [];
                 this.formVisible = false;
             },
             resetForm2(formName) {
@@ -335,9 +350,12 @@
                 this.formVisible2 = false;
             },
             handleEdit(row) {
+                //带过来默认的省市区
+                this.selectedOptions = [row.province,row.city,row.district];
                 this.form2.id = row.id;
                 this.form2.code = row.code;
                 this.form2.name = row.name;
+                this.form2.address = row.address;
                 this.form2.enabled = String(row.enabled);
                 this.formVisible2 = true;
             },
