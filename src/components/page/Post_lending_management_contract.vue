@@ -60,6 +60,8 @@
                     :data="tableData"
                     border
                     tooltip-effect="dark"
+                    highlight-current-row
+                    @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
                         fixed
@@ -96,6 +98,22 @@
                         min-width="160"
                         prop="mobile"
                         label="租客联系方式">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="startDate"
+                        label="起租日期">
+                    <template scope="scope">
+                        {{ scope.row.startDate |  dateFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="endDate"
+                        label="退租日期">
+                    <template scope="scope">
+                        {{ scope.row.endDate |  dateFormat}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="160"
@@ -163,18 +181,18 @@
                 </el-table-column>
                 <el-table-column
                         min-width="160"
-                        prop="amount"
-                        label="账单金额">
-                    <template scope="scope">
-                        {{ scope.row.amount | currency }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="160"
                         prop="paymentDueDate"
                         label="应还款日期">
                     <template scope="scope">
                         {{ scope.row.paymentDueDate |  dateFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="amount"
+                        label="账单金额">
+                    <template scope="scope">
+                        {{ scope.row.amount | currency }}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -297,6 +315,20 @@
                     return "逾期";
                 }
             },
+            dateFormat: function (value) {
+                if (typeof value === "string") {
+                    return value.substring(0, value.length - 9)
+                }
+            },
+            billStatusFormat: function (value) {
+                if (value === 'NotRepayment') {
+                    return "未还款";
+                } else if (value === 'EndRepayment') {
+                    return "已还款";
+                } else if (value === 'OverdueRepayment') {
+                    return "逾期未还款";
+                }
+            },
         },
         methods: {
             selectedData() {
@@ -310,6 +342,10 @@
             },
             handleChange() {
                 this.getData();
+                this.billsData = [];
+            },
+            handleCurrentRow(currentRow) {
+                this.billsData = currentRow.bills;
             },
             getAgencyList() {
                 this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
