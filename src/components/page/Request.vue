@@ -129,7 +129,7 @@
                         prop=""
                         label="总金额">
                     <template scope="scope">
-                        {{ scope.row.monthlyRent * scope.row.rentPeriod | currency }}
+                        {{ scope.row.totalAmount | currency }}
                     </template>
                 </el-table-column>
                 <el-table-column
