@@ -613,7 +613,7 @@
             },
             getBranchList(agencyId) {
                 if(agencyId !== '') {
-                    this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencyId).then((res) => {
+                    this.axios.get('/api/v1/admin/branch/getBranchListByAgencyId/' + agencyId).then((res) => {
                         this.branchList = res.data;
                     }).catch((error) => {
                         this.$message.error(error.response.data.message);
