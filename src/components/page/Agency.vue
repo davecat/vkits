@@ -123,9 +123,6 @@
                 <el-form-item label="中介名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="服务费率" :label-width="formLabelWidth" prop="serviceTariffing">
-                    <el-input v-model="form.serviceTariffing"></el-input>
-                </el-form-item>
                 <el-form-item label="开户行（收款）" :label-width="formLabelWidth" prop="payeeBank">
                     <el-input v-model="form.payeeBank"></el-input>
                 </el-form-item>
@@ -159,9 +156,9 @@
                 <el-form-item label="中介名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form2.name"></el-input>
                 </el-form-item>
-                <el-form-item label="服务费率" :label-width="formLabelWidth" prop="serviceTariffing">
-                    <el-input v-model="form2.serviceTariffing"></el-input>
-                </el-form-item>
+                <!--<el-form-item label="服务费率" :label-width="formLabelWidth" prop="serviceTariffing">-->
+                    <!--<el-input v-model="form2.serviceTariffing"></el-input>-->
+                <!--</el-form-item>-->
                 <el-form-item label="开户行（收款）" :label-width="formLabelWidth" prop="payeeBank">
                     <el-input v-model="form2.payeeBank"></el-input>
                 </el-form-item>
@@ -247,7 +244,6 @@
                 form: {
                     code: '',
                     name: '',
-                    serviceTariffing: '',
                     payeeBank: '',
                     payeeAccountNumber: '',
                     payerBank: '',
@@ -257,7 +253,6 @@
                 form2: {
                     code: '',
                     name: '',
-                    serviceTariffing: '',
                     payeeBank: '',
                     payeeAccountNumber: '',
                     payerBank: '',
@@ -275,7 +270,6 @@
                 rules: {
                     code: [{required: true, message: '请输入中介编号', trigger: 'blur'}],
                     name: [{required: true, message: '请输入中介名称', trigger: 'blur'}],
-                    serviceTariffing: [{required: true, message: '请输入费率', trigger: 'blur'}],
                     payeeBank: [{required: true, message: '请输入开户行', trigger: 'blur'}],
                     payeeAccountNumber: [{required: true, message: '请输入账号', trigger: 'blur'}],
                     payerBank: [{required: true, message: '请输入开户行', trigger: 'blur'}],
