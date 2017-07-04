@@ -209,7 +209,7 @@
             <el-row>
                 <el-col :span="8">
                     <el-form-item label="月租金：">
-                        <span>{{ currentRow.monthlyRent }} 元／月</span>
+                        <span>{{ currentRow.monthlyRent | currency }} 元／月</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
