@@ -59,11 +59,6 @@
                         label="门店数量">
                 </el-table-column>
                 <el-table-column
-                        min-width="94"
-                        prop="serviceTariffing"
-                        label="服务费率">
-                </el-table-column>
-                <el-table-column
                         min-width="135"
                         prop="payeeBank"
                         label="开户行（收款）">
@@ -123,9 +118,6 @@
                 <el-form-item label="中介名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="服务费率" :label-width="formLabelWidth" prop="serviceTariffing">
-                    <el-input v-model="form.serviceTariffing"></el-input>
-                </el-form-item>
                 <el-form-item label="开户行（收款）" :label-width="formLabelWidth" prop="payeeBank">
                     <el-input v-model="form.payeeBank"></el-input>
                 </el-form-item>
@@ -158,9 +150,6 @@
                 </el-form-item>
                 <el-form-item label="中介名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form2.name"></el-input>
-                </el-form-item>
-                <el-form-item label="服务费率" :label-width="formLabelWidth" prop="serviceTariffing">
-                    <el-input v-model="form2.serviceTariffing"></el-input>
                 </el-form-item>
                 <el-form-item label="开户行（收款）" :label-width="formLabelWidth" prop="payeeBank">
                     <el-input v-model="form2.payeeBank"></el-input>
