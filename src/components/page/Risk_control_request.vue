@@ -86,14 +86,6 @@
                 </el-table-column>
                 <el-table-column
                         min-width="150"
-                        prop="startDate"
-                        label="起租日期">
-                    <template scope="scope">
-                        {{ scope.row.startDate | dateFormat }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="150"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>
@@ -101,6 +93,22 @@
                         min-width="180"
                         prop="mobile"
                         label="联系方式">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="startDate"
+                        label="起租日期">
+                    <template scope="scope">
+                        {{ scope.row.startDate |  dateFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="endDate"
+                        label="退租日期">
+                    <template scope="scope">
+                        {{ scope.row.endDate |  dateFormat}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="160"
@@ -217,16 +225,28 @@
             </el-row>
             <el-row>
                 <el-col :span="8">
+                    <el-form-item label="退租日期：">
+                        <span>{{ currentRow.endDate  | dateFormat }}</span>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                    <el-form-item label="尾款：">
+                        <span>{{ currentRow.retainage }}</span>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="8">
                     <el-form-item label="房源编号：">
                         <span>{{ currentRow.apartmentNo }}</span>
                     </el-form-item>
                 </el-col>
+            </el-row>
+            <el-row>
                 <el-col :span="8">
                     <el-form-item label="省市区（县）：">
                         <span>{{ currentRow.provinceName }}{{ currentRow.cityName }}{{ currentRow.districtName }}</span>
                     </el-form-item>
                 </el-col>
-                <el-col :span="8">
+                <el-col :span="16">
                     <el-form-item label="房屋信息：">
                         <span>{{ currentRow.address }}</span>
                     </el-form-item>
