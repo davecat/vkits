@@ -228,7 +228,7 @@
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="尾款：">
-                        <span>{{ currentRow.retainage }}</span>
+                        <span>{{ currentRow.retainage | currency }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
