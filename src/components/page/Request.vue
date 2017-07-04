@@ -820,7 +820,7 @@
                         application.idCardAndPersonPhoto = this.idCardAndPersonPhoto;
                         application.contractPhotos = this.contractPhotos;
                         application.commit = true;
-                        this.axios.put('/api/v1/application', application).then((res) => {
+                        this.axios.post('/api/v1/application/commit', application).then((res) => {
                             this.getData();
                             this.$refs[formName].resetFields();
                             this.formVisible = false;
