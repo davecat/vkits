@@ -36,6 +36,7 @@
                 <el-form-item label="人员状态：">
                     <el-select v-model="searchForm.status" placeholder="请选择">
                         <el-option label="待审批" value="Pending"></el-option>
+                        <el-option label="审批不通过" value="NoPass"></el-option>
                         <el-option label="启用" value="Enabled"></el-option>
                         <el-option label="停用" value="Disable"></el-option>
                     </el-select>
@@ -260,6 +261,8 @@
             agentStatusFormat: function (value) {
                 if (value === "Pending") {
                     return "待审批";
+                } else if(value === "NoPass"){
+                    return "审批不通过";
                 } else if (value === "Enabled") {
                     return "启用";
                 } else if (value === "Disable") {
