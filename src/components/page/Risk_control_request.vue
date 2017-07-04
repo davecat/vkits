@@ -605,7 +605,7 @@
                 this.getData();
             },
             getAgencyList() {
-                this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
+                this.axios.get('/api/v1/admin/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
