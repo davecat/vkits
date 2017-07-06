@@ -403,11 +403,6 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="租期：" :label-width="formLabelWidth" prop="rentPeriod">
-                            <el-input v-model="form.rentPeriod"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="8">
                         <el-form-item label="起租日期：" :label-width="formLabelWidth" prop="startDate">
                             <el-date-picker
                                     v-model="form.startDate"
@@ -417,14 +412,29 @@
                             </el-date-picker>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="退租日期：" :label-width="formLabelWidth" prop="endDate">
+                            <el-date-picker
+                                    v-model="form.endDate"
+                                    type="date"
+                                    placeholder="退租日期"
+                                    :default-value="form.endDate">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
                 <el-row>
+                    <el-col :span="8">
+                        <el-form-item label="租期：" :label-width="formLabelWidth" prop="rentPeriod">
+                            <span v-model="form.rentPeriod"></span>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="8">
                         <el-form-item label="房源编号：" :label-width="formLabelWidth" prop="apartmentNo">
                             <el-input v-model="form.apartmentNo"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="16">
+                    <el-col :span="8">
                         <el-form-item label="省市区（县）：" :label-width="formLabelWidthCity" prop="selectedOptions">
                             <el-cascader
                                     :options="options"
@@ -635,6 +645,7 @@
                     monthlyRent: '',
                     rentPeriod: '',
                     startDate: '',
+                    endDate: '',
                     address: '',
                     customerName: '',
                     idCardNo: '',
@@ -818,6 +829,8 @@
                         application.idCardVersoPhoto = this.idCardVersoPhoto;
                         application.idCardAndPersonPhoto = this.idCardAndPersonPhoto;
                         application.contractPhotos = this.contractPhotos;
+                        application.startDate = format(this.form.startDate, 'YYYY-MM-DD');
+                        application.endDate = format(this.form.endDate, 'YYYY-MM-DD');
                         this.axios.put('/api/v1/application', application).then((res) => {
                             this.getData();
                             this.$refs[formName].resetFields();
@@ -839,6 +852,8 @@
                         application.idCardVersoPhoto = this.idCardVersoPhoto;
                         application.idCardAndPersonPhoto = this.idCardAndPersonPhoto;
                         application.contractPhotos = this.contractPhotos;
+                        application.startDate = format(this.form.startDate, 'YYYY-MM-DD');
+                        application.endDate = format(this.form.endDate, 'YYYY-MM-DD');
                         application.commit = true;
                         this.axios.post('/api/v1/application/commit', application).then((res) => {
                             this.getData();
