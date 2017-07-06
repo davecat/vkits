@@ -321,7 +321,7 @@
                 this.formVisible2 = false;
             },
             handleEdit(row) {
-                this.form2 = row;
+                this.form2 = Object.assign({}, row);
                 this.formVisible2 = true;
             },
             rowDelete(id) {

@@ -200,7 +200,7 @@
                 this.getData();
             },
             handleEdit(row) {
-                this.selectedRow = row;
+                this.selectedRow = Object.assign({},row);
                 this.dialogVisible = true;
             },
             confirm() {

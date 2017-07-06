@@ -783,7 +783,7 @@
                 this.dialogBigPhoto = true;
             },
             handleEdit(row) {
-                this.form = row;
+                this.form = Object.assign({},row);
                 this.idCardFrontPhoto = row.idCardFrontPhoto;
                 this.idCardVersoPhoto = row.idCardVersoPhoto;
                 this.idCardAndPersonPhoto = row.idCardAndPersonPhoto;
