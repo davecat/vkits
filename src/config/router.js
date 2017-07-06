@@ -104,6 +104,11 @@ export default new Router({
                     path: '/receivables_loaner',
                     meta: { requiresAuth: true },
                     component: resolve => require(['../components/page/Receivables_loaner.vue'], resolve)
+                },
+                {
+                    path: '/payables_agency',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Payables_agency.vue'], resolve)
                 }
             ]
         },
