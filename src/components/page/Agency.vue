@@ -236,7 +236,6 @@
                 form: {
                     code: '',
                     name: '',
-                    serviceTariffing: '',
                     payeeBank: '',
                     payeeAccountNumber: '',
                     payerBank: '',
@@ -246,7 +245,6 @@
                 form2: {
                     code: '',
                     name: '',
-                    serviceTariffing: '',
                     payeeBank: '',
                     payeeAccountNumber: '',
                     payerBank: '',
@@ -264,7 +262,6 @@
                 rules: {
                     code: [{required: true, message: '请输入中介编号', trigger: 'blur'}],
                     name: [{required: true, message: '请输入中介名称', trigger: 'blur'}],
-                    serviceTariffing: [{required: true, message: '请输入费率', trigger: 'blur'}],
                     payeeBank: [{required: true, message: '请输入开户行', trigger: 'blur'}],
                     payeeAccountNumber: [{required: true, message: '请输入账号', trigger: 'blur'}],
                     payerBank: [{required: true, message: '请输入开户行', trigger: 'blur'}],
@@ -316,7 +313,7 @@
                 this.formVisible2 = false;
             },
             handleEdit(row) {
-                this.form2 = row;
+                this.form2 = Object.assign({}, row);
                 this.formVisible2 = true;
             },
             rowDelete(id) {

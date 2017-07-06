@@ -328,7 +328,7 @@
                 this.formVisible2 = false;
             },
             handleEdit(row) {
-                this.form2 = row;
+                this.form2 = Object.assign({},row);
                 this.form2.enabled = String(row.enabled);
                 this.formVisible2 = true;
             },
