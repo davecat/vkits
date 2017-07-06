@@ -36,10 +36,8 @@
                 <el-tab-pane label="异常款项" name="exception"></el-tab-pane>
             </el-tabs>
             <el-table
-                    ref="multipleTable"
                     :data="tableData"
-                    border
-                    tooltip-effect="dark"
+                    stripe
                     highlight-current-row
                     @current-change="handleCurrentRow"
                     style="width: 100%">
@@ -90,10 +88,16 @@
                 <el-table-column
                         label="操作">
                     <template scope="scope">
-                        <el-tooltip class="item" effect="dark" content="确认收款" placement="top-end">
+                        <el-tooltip class="item" effect="dark" content="确认放款" placement="top-end">
                             <el-button size="small" type="primary"
                                        @click="handleEdit(scope.row)"><i
                                     class="fa fa-pencil-square-o"></i>
+                            </el-button>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="取消确认" placement="top-end">
+                            <el-button size="small" type="warning"
+                                       @click="dialogVisible2=true"><i
+                                    class="fa fa-repeat"></i>
                             </el-button>
                         </el-tooltip>
                     </template>
@@ -129,56 +133,92 @@
         <el-row>
             <el-table
                     :data="payablesDetail"
-                    border
-                    tooltip-effect="dark"
+                    stripe
                     style="width: 100%">
                 <el-table-column
                         min-width="160"
-                        prop="billNo"
+                        prop="contractNo"
                         label="合同编号">
                 </el-table-column>
                 <el-table-column
                         min-width="160"
-                        prop="amount"
+                        prop="totalAmount"
                         label="房租总金额">
                     <template scope="scope">
-                        {{ scope.row.amount |  currency}}
+                        {{ scope.row.totalAmount |  currency}}
                     </template>
                 </el-table-column>
                 <el-table-column
                         min-width="160"
-                        prop="paymentDueDate"
+                        prop="payerAmount"
                         label="代付金额">
                     <template scope="scope">
-                        {{ scope.row.paymentDueDate |  dateFormat}}
+                        {{ scope.row.payerAmount |  currency}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="rate"
+                        label="服务费率">
+                    <template scope="scope">
+                        {{ scope.row.rate }}
                     </template>
                 </el-table-column>
                 <el-table-column
                         min-width="160"
                         prop="serviceFee"
-                        label="服务费率">
+                        label="服务费金额">
                     <template scope="scope">
                         {{ scope.row.serviceFee |  currency}}
                     </template>
                 </el-table-column>
-                <el-table-column
-                        min-width="160"
-                        prop="overdueFee"
-                        label="服务费金额">
-                    <template scope="scope">
-                        {{ scope.row.overdueFee |  currency}}
-                    </template>
-                </el-table-column>
             </el-table>
+            <div class="pagination">
+                <el-pagination
+                        @current-change="handleChange"
+                        layout="prev, pager, next"
+                        :total="detailTotalElements">
+                </el-pagination>
+            </div>
         </el-row>
 
-        <el-dialog
-                title="确认收款"
-                :visible.sync="dialogVisible"
-                size="tiny">
+        <el-dialog title="确认付款" :visible.sync="dialogVisible">
+            <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="实际付款日期：" :label-width="formLabelWidth" prop="factPayerDate">
+                    <el-date-picker
+                            v-model="form.factPayerDate"
+                            type="date"
+                            placeholder="选择日期"
+                            :default-value="form.factPayerDate"
+                            :picker-options="pickerOptions0">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="支付方式：" :label-width="formLabelWidth" prop="payerType">
+                    <el-select v-model="form.payerType">
+                        <el-option label="银行转账" value="BankTransfer"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="付款银行：" :label-width="formLabelWidth" prop="bank">
+                    <el-input v-model="form.bank"></el-input>
+                </el-form-item>
+                <el-form-item label="付款账号：" :label-width="formLabelWidth" prop="accountNumber">
+                    <el-input v-model="form.accountNumber"></el-input>
+                </el-form-item>
+            </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button @click="resetForm('form')">取 消</el-button>
                 <el-button type="primary" @click="confirm">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog
+                title="取消确认付款"
+                :visible.sync="dialogVisible2"
+                size="tiny">
+            <p>此操作将取消确认付款，该付款记录状态变更为 “待确认”，确认操作？</p>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible2 = false">取 消</el-button>
+                <el-button type="primary" @click="unConfirm">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -188,12 +228,7 @@
 <script>
     import { pagination } from '../mixins/pagination.js'
     import format from 'date-fns/format'
-    import ElRow from "element-ui/packages/row/src/row";
-    import ElCol from "element-ui/packages/col/src/col";
     export default {
-        components: {
-            ElCol,
-            ElRow},
         mixins: [pagination],
         data() {
             return {
@@ -250,9 +285,29 @@
                         accountNumber: '',
                     }
                 },
+                form: {
+                    factPayerDate: Date.now()
+                },
                 agencyList: {},
                 dialogVisible: false,
-                payablesDetail: []
+                dialogVisible2: false,
+                payablesDetail: [],
+                detailCurPage: 1,
+                detailSize: 10,
+                detailTotalElements: 0,
+                detailPage: 0,
+                formLabelWidth: '120px',
+                rules: {
+                    factPayerDate: [{type: 'date', required: true, message: '请选择日期', trigger: 'blur'}],
+                    bank: [{required: true, message: '请输入银行', trigger: 'blur'}],
+                    accountNumber: [{required: true, message: '请输入账号', trigger: 'blur'}],
+                    payerType: [{required: true, message: '请选择类型', trigger: 'change'}]
+                },
+                pickerOptions0: {
+                    disabledDate(time) {
+                        return time.getTime() < Date.now() - 8.64e7;
+                    }
+                },
             }
         },
         created(){
@@ -267,7 +322,7 @@
         },
         methods: {
             getAgencyList() {
-                this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
+                this.axios.get('/api/v1/admin/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
@@ -286,12 +341,41 @@
                 this.getData();
             },
             handleEdit(row) {
-                this.selectedRow = row;
+                this.form.factPayerDate = row.factPayerDate || Date.now();
+                this.form.payerType = row.payerType || '';
+                this.form.payer = row.payer || {};
+                this.form.accountNumber = this.form.payer.accountNumber || '';
+                this.form.bank = this.form.payer.accountNumber || '';
                 this.dialogVisible = true;
             },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+                this.form = {factPayerDate: Date.now()};
+                this.dialogVisible = false;
+            },
             handleCurrentRow(row) {
-                this.currentRow = row;
-                this.currentRow.payer = {bank: '', accountNumber: '',}
+                this.currentRow.factPayerDate = row.factPayerDate || '';
+                this.currentRow.payerType = row.payerType || '';
+                this.currentRow.payer = row.payer || '';
+                this.getDetail(row.agencyId, row.payerDate);
+            },
+            handleChange(val){
+                this.detailCurPage = val;
+                this.getDetail();
+            },
+            getDetail(agencyId, payerDate) {
+                let param = {
+                    agencyId: agencyId,
+                    payerDate: format(payerDate, 'YYYY-MM-DD'),
+                    page: this.detailCurPage - 1,
+                    size: this.detailSize
+                };
+                this.axios.post('/postlending/api/v1/payee/loaner/getPayerAgencyDetailPage', param).then((res) => {
+                    this.payablesDetail = res.data.content;
+                    this.detailTotalElements = res.data.totalElements;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
             },
             confirm() {
                 let form = {
@@ -304,6 +388,10 @@
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 })
+            },
+            unConfirm() {
+                console.log("cancel");
+                this.dialogVisible2 = false;
             }
         }
     }
