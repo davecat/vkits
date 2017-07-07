@@ -36,10 +36,11 @@
                 <el-tab-pane label="异常款项" name="exception"></el-tab-pane>
             </el-tabs>
             <el-table
-                    ref="multipleTable"
                     :data="tableData"
                     border
                     tooltip-effect="dark"
+                    highlight-current-row
+                    @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
                         prop="loanerName"
@@ -88,6 +89,42 @@
                         @current-change="handleCurrentChange"
                         layout="prev, pager, next"
                         :total="totalElements">
+                </el-pagination>
+            </div>
+        </el-row>
+
+        <el-row>
+            <el-table
+                    :data="receivablesDetail"
+                    stripe
+                    style="width: 100%">
+                <el-table-column
+                        min-width="160"
+                        prop="contractNo"
+                        label="合同编号">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="payeeAmount"
+                        label="合同金额">
+                    <template scope="scope">
+                        {{ scope.row.payeeAmount |  currency}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="payeeDate"
+                        label="应收款日期">
+                    <template scope="scope">
+                        {{ scope.row.payeeDate |  dateFormat}}
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination
+                        @current-change="handleChange"
+                        layout="prev, pager, next"
+                        :total="detailTotalElements">
                 </el-pagination>
             </div>
         </el-row>
@@ -162,8 +199,12 @@
                     loanerId: '',
                     type: 'receivables'
                 },
+                receivablesDetail: [],
+                detailCurPage: 1,
+                detailSize: 10,
+                detailTotalElements: 0,
+                detailPage: 0,
                 loanerList: {},
-                multipleSelection: [],
                 dialogVisible: false,
                 selectedRow: {}
             }
@@ -198,10 +239,35 @@
             },
             handleChangeTab() {
                 this.getData();
+                this.receivablesDetail = [];
             },
             handleEdit(row) {
                 this.selectedRow = Object.assign({},row);
                 this.dialogVisible = true;
+            },
+            handleCurrentRow(row) {
+                if(row) {
+                    this.getDetail(row.loanerId, row.payeeDate, row.status);
+                }
+            },
+            handleChange(val){
+                this.detailCurPage = val;
+                this.getDetail();
+            },
+            getDetail(loanerId, payeeDate, status) {
+                let param = {
+                    loanerId: loanerId,
+                    payeeDate: format(payeeDate, 'YYYY-MM-DD'),
+                    status: status,
+                    page: this.detailCurPage - 1,
+                    size: this.detailSize
+                };
+                this.axios.post('/postlending/api/v1/payee/loaner/getPayeeLoanerDetailPage', param).then((res) => {
+                    this.receivablesDetail = res.data.content;
+                    this.detailTotalElements = res.data.totalElements;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
             },
             confirm() {
                 let form = {
