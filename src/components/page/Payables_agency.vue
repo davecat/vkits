@@ -72,6 +72,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        class-name="payerAmountFont"
                         prop="payerAmount"
                         label="代付金额">
                     <template scope="scope">
@@ -79,10 +80,11 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        class-name="statusGood"
                         prop="status"
                         label="状态">
                     <template scope="scope">
-                        {{ scope.row.status === 'Unconfirmed'?'待确认':'已确认' }}
+                        <p :class="{ statusAlert: scope.row.status === 'Unconfirmed' }">{{ scope.row.status === 'Unconfirmed'?'待确认':'已确认' }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -420,4 +422,13 @@
 </script>
 
 <style>
+    .payerAmountFont {
+        color: #1D8CE0
+    }
+    .statusAlert {
+        color: #F7BA2A
+    }
+    .statusGood {
+        color: #13CE66
+    }
 </style>

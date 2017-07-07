@@ -47,8 +47,12 @@
                         label="付款方">
                 </el-table-column>
                 <el-table-column
+                        class-name="payerAmountFont"
                         prop="payeeTotalAmount"
                         label="付款金额">
+                    <template scope="scope">
+                        {{ scope.row.payeeTotalAmount | currency }}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="contractCount"
@@ -62,10 +66,11 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        class-name="statusGood"
                         prop="status"
                         label="状态">
                     <template scope="scope">
-                        {{ scope.row.status === 'Unconfirmed'? '待确认':'已确认'}}
+                        <p :class="{ statusAlert: scope.row.status === 'Unconfirmed' }">{{ scope.row.status === 'Unconfirmed'?'待确认':'已确认' }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column
