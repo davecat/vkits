@@ -96,7 +96,7 @@
                         </el-tooltip>
                         <el-tooltip class="item" effect="dark" content="取消确认" placement="top-end">
                             <el-button size="small" type="warning"
-                                       @click="dialogVisible2=true"><i
+                                       @click="unConfirmShow(scope.row)"><i
                                     class="fa fa-repeat"></i>
                             </el-button>
                         </el-tooltip>
@@ -117,7 +117,7 @@
                 应付款明细:
             </el-col>
             <el-col :span="5">
-                支付方式: {{ currentRow.payerType }}
+                支付方式: {{ currentRow.payerType==='BankTransfer'?'银行转账':'' }}
             </el-col>
             <el-col :span="5">
                 付款银行: {{ currentRow.payer.bank }}
@@ -126,7 +126,7 @@
                 付款账号: {{ currentRow.payer.accountNumber }}
             </el-col>
             <el-col :span="5">
-                实际付款日期: {{ currentRow.factPayerDate }}
+                实际付款日期: {{ currentRow.factPayerDate | dateFormat }}
             </el-col>
         </el-row>
 
@@ -217,7 +217,7 @@
                 size="tiny">
             <p>此操作将取消确认付款，该付款记录状态变更为 “待确认”，确认操作？</p>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible2 = false">取 消</el-button>
+                <el-button @click="dialogVisible2=false">取 消</el-button>
                 <el-button type="primary" @click="unConfirm">确 定</el-button>
             </span>
         </el-dialog>
@@ -271,7 +271,7 @@
                         }
                     ]
                 },
-                url: '/postlending/api/v1/payee/loaner/getPayerAgencyPage',
+                url: '/postlending/api/v1/payer/agency/getPayerAgencyPage',
                 searchForm: {
                     applyDate: '',
                     payeeDateStart: '',
@@ -291,6 +291,7 @@
                 agencyList: {},
                 dialogVisible: false,
                 dialogVisible2: false,
+                unConfirmRow: {},
                 payablesDetail: [],
                 detailCurPage: 1,
                 detailSize: 10,
@@ -315,7 +316,7 @@
         },
         filters: {
             dateFormat: function (value) {
-                if(value !== null) {
+                if(value !== null || value !== "" || value !== undefined) {
                     return format(value, 'YYYY-MM-DD');
                 }
             }
@@ -341,8 +342,10 @@
                 this.getData();
             },
             handleEdit(row) {
+                this.form.agencyId = row.agencyId || '';
+                this.form.payerDate = row.payerDate || '';
                 this.form.factPayerDate = row.factPayerDate || Date.now();
-                this.form.payerType = row.payerType || '';
+                this.form.payerType = row.payerType || 'BankTransfer';
                 this.form.payer = row.payer || {};
                 this.form.accountNumber = this.form.payer.accountNumber || '';
                 this.form.bank = this.form.payer.accountNumber || '';
@@ -354,23 +357,26 @@
                 this.dialogVisible = false;
             },
             handleCurrentRow(row) {
-                this.currentRow.factPayerDate = row.factPayerDate || '';
-                this.currentRow.payerType = row.payerType || '';
-                this.currentRow.payer = row.payer || '';
-                this.getDetail(row.agencyId, row.payerDate);
+                if(row) {
+                    this.currentRow.factPayerDate = row.factPayerDate || '';
+                    this.currentRow.payerType = row.payerType || '';
+                    this.currentRow.payer = row.payer || '';
+                    this.getDetail(row.agencyId, row.payerDate, row.status);
+                }
             },
             handleChange(val){
                 this.detailCurPage = val;
                 this.getDetail();
             },
-            getDetail(agencyId, payerDate) {
+            getDetail(agencyId, payerDate, status) {
                 let param = {
                     agencyId: agencyId,
                     payerDate: format(payerDate, 'YYYY-MM-DD'),
+                    status: status,
                     page: this.detailCurPage - 1,
                     size: this.detailSize
                 };
-                this.axios.post('/postlending/api/v1/payee/loaner/getPayerAgencyDetailPage', param).then((res) => {
+                this.axios.post('/postlending/api/v1/payer/agency/getPayerAgencyDetailPage', param).then((res) => {
                     this.payablesDetail = res.data.content;
                     this.detailTotalElements = res.data.totalElements;
                 }).catch((error) => {
@@ -379,19 +385,35 @@
             },
             confirm() {
                 let form = {
-                    loanerId: this.selectedRow.loanerId,
-                    payeeDate: format(this.selectedRow.payeeDate, 'YYYY-MM-DD'),
+                    bank: this.form.bank,
+                    accountNumber: this.form.accountNumber,
+                    payerType: this.form.payerType,
+                    factPayerDate: format(this.form.factPayerDate, 'YYYY-MM-DD'),
+                    agencyId: this.form.agencyId,
+                    payerDate: format(this.form.payerDate, 'YYYY-MM-DD'),
                 };
-                this.axios.post('/postlending/api/v1/payee/loaner/confirm', form).then((res) => {
+                this.axios.post('/postlending/api/v1/payer/agency/confirm', form).then((res) => {
                     this.getData();
                     this.dialogVisible = false;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 })
             },
+            unConfirmShow(row) {
+                this.unConfirmRow = row;
+                this.dialogVisible2 = true;
+            },
             unConfirm() {
-                console.log("cancel");
-                this.dialogVisible2 = false;
+                let form = {
+                    agencyId: this.unConfirmRow.agencyId,
+                    payerDate: format(this.unConfirmRow.payerDate, 'YYYY-MM-DD'),
+                };
+                this.axios.post('/postlending/api/v1/payer/agency/backConfirm', form).then((res) => {
+                    this.getData();
+                    this.dialogVisible2 = false;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
             }
         }
     }
