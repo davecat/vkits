@@ -111,6 +111,11 @@ export default new Router({
                     component: resolve => require(['../components/page/Payables_agency.vue'], resolve)
                 },
                 {
+                    path: '/statement',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Statement.vue'], resolve)
+                },
+                {
                     path: '/rates',
                     meta: { requiresAuth: true },
                     component: resolve => require(['../components/page/Rates.vue'], resolve)
