@@ -76,11 +76,6 @@
                 </el-table-column>
                 <el-table-column
                         min-width="180"
-                        prop="agencyName"
-                        label="中介名称">
-                </el-table-column>
-                <el-table-column
-                        min-width="180"
                         prop="id"
                         label="申请编号">
                 </el-table-column>
@@ -97,17 +92,9 @@
                 <el-table-column
                         min-width="160"
                         prop="startDate"
-                        label="起租日期">
+                        label="起止日期">
                     <template scope="scope">
-                        {{ scope.row.startDate |  dateFormat}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="160"
-                        prop="endDate"
-                        label="退租日期">
-                    <template scope="scope">
-                        {{ scope.row.endDate |  dateFormat}}
+                        {{ scope.row.startDate |  dateFormat}} - {{ scope.row.endDate |  dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -126,7 +113,7 @@
                 <el-table-column
                         min-width="160"
                         prop=""
-                        label="总金额">
+                        label="房租总额">
                     <template scope="scope">
                         {{ scope.row.totalAmount | currency }}
                     </template>
@@ -135,11 +122,9 @@
                         min-width="120"
                         prop="responsibleAgent"
                         label="经纪人">
-                </el-table-column>
-                <el-table-column
-                        min-width="150"
-                        prop="responsibleBranch"
-                        label="门店名称">
+                    <template scope="scope">
+                        {{ scope.row.agencyName }} - {{ scope.row.responsibleBranch }} -{{ scope.row.responsibleAgent }}
+                    </template>
                 </el-table-column>
                 <el-table-column v-if="searchForm.status !== 'Unconfirmed'"
                         min-width="150"

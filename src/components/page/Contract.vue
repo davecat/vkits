@@ -3,7 +3,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="fa fa-dashboard"></i> 分期管理</el-breadcrumb-item>
-                <el-breadcrumb-item>分期合同</el-breadcrumb-item>
+                <el-breadcrumb-item>还款账单</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
 
@@ -11,9 +11,6 @@
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="申请编号：">
                     <el-input v-model="searchForm.applictionNo" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
-                <el-form-item label="合同编号：">
-                    <el-input v-model="searchForm.contractNo" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="起租日期：">
                     <el-date-picker
@@ -54,13 +51,7 @@
                         fixed
                         min-width="180"
                         prop="applicationNo"
-                        label="关联申请编号">
-                </el-table-column>
-                <el-table-column
-                        fixed
-                        min-width="180"
-                        prop="contractNo"
-                        label="合同编号">
+                        label="申请编号">
                 </el-table-column>
                 <el-table-column
                         min-width="140"
@@ -83,17 +74,9 @@
                 <el-table-column
                         min-width="160"
                         prop="startDate"
-                        label="起租日期">
+                        label="起止日期">
                     <template scope="scope">
-                        {{ scope.row.startDate |  dateFormat}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="160"
-                        prop="endDate"
-                        label="退租日期">
-                    <template scope="scope">
-                        {{ scope.row.endDate |  dateFormat}}
+                        {{ scope.row.startDate |  dateFormat}} - {{ scope.row.endDate |  dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -120,7 +103,7 @@
                 <el-table-column
                         min-width="160"
                         prop="totalAmount"
-                        label="总金额">
+                        label="分期总金额">
                     <template scope="scope">
                         {{ scope.row.totalAmount |  currency}}
                     </template>
@@ -128,12 +111,10 @@
                 <el-table-column
                         min-width="180"
                         prop="responsibleAgent"
-                        label="签单经纪人名称">
-                </el-table-column>
-                <el-table-column
-                        min-width="160"
-                        prop="responsibleBranch"
-                        label="签单门店名称">
+                        label="签单经纪人">
+                    <template scope="scope">
+                        {{ scope.row.responsibleBranch }} - {{ scope.row.responsibleAgent }}
+                    </template>
                 </el-table-column>
             </el-table>
             <div class="pagination">
@@ -151,9 +132,8 @@
                     tooltip-effect="dark"
                     style="width: 100%">
                 <el-table-column
-                        min-width="160"
-                        prop="billNo"
-                        label="账单编号">
+                        type="index"
+                        width="50">
                 </el-table-column>
                 <el-table-column
                         min-width="160"
