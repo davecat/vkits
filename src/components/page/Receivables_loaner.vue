@@ -38,8 +38,10 @@
             <el-table
                     :data="tableData"
                     border
+                    max-height="500"
                     tooltip-effect="dark"
                     highlight-current-row
+                    :default-sort = "{prop: 'payeeDate', order: 'descending'}"
                     @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
@@ -60,6 +62,7 @@
                 </el-table-column>
                 <el-table-column
                         prop="payeeDate"
+                        sortable
                         label="应收款日期">
                     <template scope="scope">
                         {{ scope.row.payeeDate | dateFormat }}
@@ -89,13 +92,13 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <div class="pagination">
-                <el-pagination
-                        @current-change="handleCurrentChange"
-                        layout="prev, pager, next"
-                        :total="totalElements">
-                </el-pagination>
-            </div>
+            <!--<div class="pagination">-->
+                <!--<el-pagination-->
+                        <!--@current-change="handleCurrentChange"-->
+                        <!--layout="prev, pager, next"-->
+                        <!--:total="totalElements">-->
+                <!--</el-pagination>-->
+            <!--</div>-->
         </el-row>
 
         <el-row>

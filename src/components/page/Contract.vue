@@ -72,7 +72,7 @@
                         label="租客联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="180"
                         prop="startDate"
                         label="起止日期">
                     <template scope="scope">
@@ -88,12 +88,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
+                        min-width="120"
                         prop="rentPeriod"
                         label="分期期数">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="serviceFee"
                         label="手续费">
                     <template scope="scope">
@@ -263,7 +263,8 @@
             },
             dateFormat: function (value) {
                 if (typeof value === "string") {
-                    return value.substring(0, value.length - 9)
+                    let date = Date.parse(value.substring(0, value.length - 9))
+                    return format(date, 'YYYYMMDD')
                 }
             },
             billStatusFormat: function (value) {

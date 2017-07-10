@@ -32,17 +32,20 @@
         </el-row>
         <el-row>
             <el-tabs v-model="searchForm.type" type="card" @tab-click="handleChangeTab">
-                <el-tab-pane label="应收款" name="receivables"></el-tab-pane>
+                <el-tab-pane label="应付款" name="receivables"></el-tab-pane>
                 <el-tab-pane label="异常款项" name="exception"></el-tab-pane>
             </el-tabs>
             <el-table
                     :data="tableData"
                     stripe
+                    max-height="500"
+                    :default-sort = "{prop: 'payerDate', order: 'descending'}"
                     highlight-current-row
                     @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
                         prop="payerDate"
+                        sortable
                         label="应付款日期">
                     <template scope="scope">
                         {{ scope.row.payerDate | dateFormat }}
@@ -105,13 +108,13 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <div class="pagination">
-                <el-pagination
-                        @current-change="handleCurrentChange"
-                        layout="prev, pager, next"
-                        :total="totalElements">
-                </el-pagination>
-            </div>
+            <!--<div class="pagination">-->
+                <!--<el-pagination-->
+                        <!--@current-change="handleCurrentChange"-->
+                        <!--layout="prev, pager, next"-->
+                        <!--:total="totalElements">-->
+                <!--</el-pagination>-->
+            <!--</div>-->
         </el-row>
 
         <el-row>
@@ -318,10 +321,10 @@
         },
         filters: {
             dateFormat: function (value) {
-                if(value !== null || value !== "" || value !== undefined) {
-                    return format(value, 'YYYY-MM-DD');
+                if (typeof value === "string") {
+                    return value.substring(0, value.length - 9)
                 }
-            }
+            },
         },
         methods: {
             getAgencyList() {
@@ -363,18 +366,21 @@
                     this.currentRow.factPayerDate = row.factPayerDate || '';
                     this.currentRow.payerType = row.payerType || '';
                     this.currentRow.payer = row.payer || '';
-                    this.getDetail(row.agencyId, row.payerDate, row.status);
+                    this.currentRow.agencyId = row.agencyId || '';
+                    this.currentRow.payerDate = row.payerDate || '';
+                    this.currentRow.status = row.status || '';
+                    this.getDetail();
                 }
             },
             handleChange(val){
                 this.detailCurPage = val;
                 this.getDetail();
             },
-            getDetail(agencyId, payerDate, status) {
+            getDetail() {
                 let param = {
-                    agencyId: agencyId,
-                    payerDate: format(payerDate, 'YYYY-MM-DD'),
-                    status: status,
+                    agencyId: this.currentRow.agencyId,
+                    payerDate: format(this.currentRow.payerDate, 'YYYY-MM-DD'),
+                    status: this.currentRow.status,
                     page: this.detailCurPage - 1,
                     size: this.detailSize
                 };
@@ -416,6 +422,11 @@
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 })
+            },
+            handleCurrentChange(val){
+                this.cur_page = val;
+                this.getData();
+                this.payablesDetail = [];
             }
         }
     }
