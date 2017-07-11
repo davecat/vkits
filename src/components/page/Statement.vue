@@ -28,17 +28,18 @@
             <el-table
                     :data="tableData"
                     stripe
-                    highlight-current-row
-                    @current-change="handleCurrentRow"
+                    :default-sort="{prop: 'payeeDate', order: 'descending'}"
                     style="width: 100%">
                 <el-table-column
                         prop="payeeDate"
+                        sortable
                         label="应收款日期">
                     <template scope="scope">
-                        {{ scope.row.payerDate | dateFormat }}
+                        {{ scope.row.payeeDate | dateFormat }}
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         prop="applicationNo"
                         label="申请编号">
                 </el-table-column>
@@ -69,10 +70,11 @@
                         label="租期">
                 </el-table-column>
                 <el-table-column
+                        min-width="180"
                         prop="startDate"
                         label="起止时间">
                     <template scope="scope">
-                        {{ scope.row.startDate |  dateFormat}} - {{ scope.row.endDate |  dateFormat}}
+                        {{ scope.row.startDate | dateFormat}}-{{ scope.row.endDate | dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -83,10 +85,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        prop="province"
+                        min-width="180"
+                        prop="city"
                         label="城市">
                     <template scope="scope">
-                        {{ scope.row.province }}
+                        {{ scope.row.province | provinceFormat }}-{{ scope.row.city | cityFormat }}-{{
+                        scope.row.district | districtFormat }}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -100,7 +104,7 @@
             <div class="pagination">
                 <el-pagination
                         @current-change="handleCurrentChange"
-                        layout="prev, pager, next"
+                        layout="total, prev, pager, next"
                         :total="totalElements">
                 </el-pagination>
             </div>
@@ -110,8 +114,9 @@
 </template>
 
 <script>
-    import { pagination } from '../mixins/pagination.js'
+    import {pagination} from '../mixins/pagination.js'
     import format from 'date-fns/format'
+    import json from "../../../static/city.json";
     export default {
         mixins: [pagination],
         data() {
@@ -166,10 +171,36 @@
         },
         filters: {
             dateFormat: function (value) {
-                if(value !== null || value !== "" || value !== undefined) {
-                    return format(value, 'YYYY-MM-DD');
+                if (typeof value === "string") {
+                    let date = Date.parse(value.substring(0, value.length - 9));
+                    return format(date, 'YYYYMMDD');
                 }
-            }
+            },
+            provinceFormat: function (value) {
+                let province = json.find((item) => value === item.value);
+                return province.label;
+            },
+            cityFormat: function (value) {
+                let city = json.find((item) => {
+                    return item.children.find((item) => value === item.value);
+                });
+                return city.label;
+            },
+            districtFormat: function (value) {
+                let findLabel = (item, value) => {
+                    if(item) {
+                        return item.find(i => {
+                            if (value === i.value) {
+                                return true;
+                            } else {
+                                return findLabel(i.children, value)
+                            }
+                        });
+                    }
+                };
+                let district = findLabel(json, value);
+                return district.label;
+            },
         },
         methods: {
             selectedData() {
@@ -189,9 +220,11 @@
     .payerAmountFont {
         color: #1D8CE0
     }
+
     .statusAlert {
         color: #F7BA2A
     }
+
     .statusGood {
         color: #13CE66
     }
