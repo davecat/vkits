@@ -113,6 +113,11 @@
                 </el-table-column>
                 <el-table-column
                         min-width="160"
+                        prop="customerName"
+                        label="租客姓名">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
                         prop="payeeAmount"
                         label="合同金额">
                     <template scope="scope">
