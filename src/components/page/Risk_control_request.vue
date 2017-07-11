@@ -93,18 +93,18 @@
                 </el-table-column>
                 <el-table-column
                         min-width="160"
-                        prop="startDate"
-                        label="起止日期">
-                    <template scope="scope">
-                        {{ scope.row.startDate |  dateFormat}} - {{ scope.row.endDate |  dateFormat}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="160"
                         prop="monthlyRent"
                         label="月租金">
                     <template scope="scope">
                         {{ scope.row.monthlyRent |  currency}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="180"
+                        prop="startDate"
+                        label="起止日期">
+                    <template scope="scope">
+                        {{ scope.row.startDate |  dateFormat}}-{{ scope.row.endDate |  dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -121,11 +121,28 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="160"
+                        prop=""
+                        label="分期总额">
+                    <template scope="scope">
+                        {{ scope.row.totalAmount | currency }}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="180"
+                        prop="city"
+                        label="租房城市">
+                    <template scope="scope">
+                        {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
+                        scope.row.district | districtFormat }}
+                    </template>
+                </el-table-column>
+                <el-table-column
                         min-width="120"
                         prop="responsibleAgent"
                         label="经纪人">
                     <template scope="scope">
-                        {{ scope.row.agencyName }} - {{ scope.row.responsibleBranch }} -{{ scope.row.responsibleAgent }}
+                        {{ scope.row.agencyName }}-{{ scope.row.responsibleBranch }}-{{ scope.row.responsibleAgent }}
                     </template>
                 </el-table-column>
                 <el-table-column v-if="searchForm.status !== 'Unconfirmed'"
@@ -572,6 +589,26 @@
                 if (typeof value === "string") {
                     return value.substring(0, value.length - 9)
                 }
+            },
+            districtFormat: function (value) {
+                if(!value){
+                    return ''
+                }
+                let district;
+                let findLabel = (item, value) => {
+                    if(item) {
+                        return item.some(i => {
+                            if (value === i.value) {
+                                district = i;
+                                return true;
+                            } else {
+                                return findLabel(i.children, value)
+                            }
+                        });
+                    }
+                };
+                findLabel(json, value);
+                return district.label;
             },
         },
         methods: {
