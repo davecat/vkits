@@ -104,19 +104,11 @@
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="180"
                         prop="startDate"
-                        label="起租日期">
+                        label="起止日期">
                     <template scope="scope">
-                        {{ scope.row.startDate |  dateFormat}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="160"
-                        prop="endDate"
-                        label="退租日期">
-                    <template scope="scope">
-                        {{ scope.row.endDate |  dateFormat}}
+                        {{ scope.row.startDate |  dateFormat}}-{{ scope.row.endDate |  dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -141,19 +133,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="180"
                         prop="responsibleAgent"
                         label="经纪人">
-                </el-table-column>
-                <el-table-column
-                        min-width="150"
-                        prop="responsibleBranch"
-                        label="门店名称">
-                </el-table-column>
-                <el-table-column
-                        min-width="150"
-                        prop="responsibleAgency"
-                        label="中介名称">
+                    <template scope="scope">
+                        {{ scope.row.responsibleAgency }}-{{ scope.row.responsibleBranch }}-{{ scope.row.responsibleAgent }}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         fixed="right"
@@ -794,7 +779,8 @@
             },
             dateFormat: function (value) {
                 if (typeof value === "string") {
-                    return value.substring(0, value.length - 9)
+                    let date = Date.parse(value.substring(0, value.length - 9));
+                    return format(date, 'YYYYMMDD');
                 }
             },
         },
