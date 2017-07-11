@@ -45,6 +45,7 @@
                     @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
+                        min-width="140"
                         prop="payerDate"
                         sortable
                         label="应付款日期">
@@ -53,22 +54,27 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         prop="agencyName"
                         label="收款方">
                 </el-table-column>
                 <el-table-column
+                        min-width="160"
                         prop="payee.bank"
                         label="收款开户银行">
                 </el-table-column>
                 <el-table-column
+                        min-width="100"
                         prop="payee.name"
                         label="开户人">
                 </el-table-column>
                 <el-table-column
+                        min-width="160"
                         prop="payee.accountNumber"
                         label="收款银行账号">
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         prop="totalAmount"
                         label="房租总金额">
                     <template scope="scope">
@@ -76,6 +82,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         class-name="payerAmountFont"
                         prop="payerAmount"
                         label="代付金额">
@@ -84,6 +91,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="100"
                         class-name="statusGood"
                         prop="status"
                         label="状态">
@@ -93,15 +101,16 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         label="操作">
                     <template scope="scope">
-                        <el-tooltip class="item" effect="dark" content="确认放款" placement="top-end">
+                        <el-tooltip class="item" effect="dark" content="确认放款" placement="top-end" v-if="scope.row.status === 'Unconfirmed'">
                             <el-button size="small" type="primary"
                                        @click="handleEdit(scope.row)"><i
                                     class="fa fa-pencil-square-o"></i>
                             </el-button>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="取消确认" placement="top-end">
+                        <el-tooltip class="item" effect="dark" content="取消确认" placement="top-end" v-else>
                             <el-button size="small" type="warning"
                                        @click="unConfirmShow(scope.row)"><i
                                     class="fa fa-repeat"></i>
