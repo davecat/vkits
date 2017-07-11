@@ -65,6 +65,7 @@
                     :data="tableData"
                     highlight-current-row
                     @current-change="handleCurrentRow"
+                    :default-sort="{prop: 'id', order: 'descending'}"
                     border
                     tooltip-effect="dark"
                     style="width: 100%"
@@ -77,6 +78,7 @@
                 <el-table-column
                         min-width="180"
                         prop="id"
+                        sortable
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
