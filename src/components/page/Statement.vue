@@ -89,7 +89,7 @@
                         prop="city"
                         label="城市">
                     <template scope="scope">
-                        {{ scope.row.province | provinceFormat }}-{{ scope.row.city | cityFormat }}-{{
+                        {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
                         scope.row.district | districtFormat }}
                     </template>
                 </el-table-column>
@@ -176,17 +176,10 @@
                     return format(date, 'YYYYMMDD');
                 }
             },
-            provinceFormat: function (value) {
-                let province = json.find((item) => value === item.value);
-                return province.label;
-            },
-            cityFormat: function (value) {
-                let city = json.find((item) => {
-                    return item.children.find((item) => value === item.value);
-                });
-                return city.label;
-            },
             districtFormat: function (value) {
+                if(!value){
+                    return ''
+                }
                 let findLabel = (item, value) => {
                     if(item) {
                         return item.find(i => {

@@ -110,6 +110,15 @@
                 </el-table-column>
                 <el-table-column
                         min-width="180"
+                        prop="city"
+                        label="城市">
+                    <template scope="scope">
+                        {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
+                        scope.row.district | districtFormat }}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="180"
                         prop="responsibleAgent"
                         label="签单经纪人">
                     <template scope="scope">
@@ -192,6 +201,7 @@
 <script>
     import { pagination } from '../mixins/pagination.js'
     import format from 'date-fns/format'
+    import json from "../../../static/city.json";
     export default {
         mixins: [pagination],
         data() {
@@ -275,6 +285,24 @@
                 } else if (value === 'OverdueRepayment') {
                     return "逾期未还款";
                 }
+            },
+            districtFormat: function (value) {
+                if(!value){
+                    return ''
+                }
+                let findLabel = (item, value) => {
+                    if(item) {
+                        return item.find(i => {
+                            if (value === i.value) {
+                                return true;
+                            } else {
+                                return findLabel(i.children, value)
+                            }
+                        });
+                    }
+                };
+                let district = findLabel(json, value);
+                return district.label;
             },
         },
         methods: {
