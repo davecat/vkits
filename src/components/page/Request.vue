@@ -426,7 +426,7 @@
                 <el-row>
                     <el-col :span="8">
                         <el-form-item label="租期：" :label-width="formLabelWidth" prop="rentPeriod">
-                            <span v-model="form.rentPeriod"></span>
+                            <span>{{ form.rentPeriod }} 个月</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
