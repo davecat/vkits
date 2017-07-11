@@ -9,9 +9,6 @@
 
         <el-row>
             <el-form v-if="staff.staffType === 'Branch'" :inline="true" :model="searchForm">
-                <el-form-item label="申请编号：">
-                    <el-input v-model="searchForm.applictionNo" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
                 <el-form-item label="起租日期：">
                     <el-date-picker
                             v-model="searchForm.applyDate"
@@ -140,14 +137,13 @@
                         {{ scope.row.responsibleAgency }}-{{ scope.row.responsibleBranch }}-{{ scope.row.responsibleAgent }}
                     </template>
                 </el-table-column>
-                <el-table-column
+                <el-table-column v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
                         fixed="right"
                         min-width="110"
                         prop="enabled"
                         label="操作">
                     <template scope="scope">
-                        <el-tooltip v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
-                                    class="item" effect="dark" content="补充／修改分期申请" placement="top-end">
+                        <el-tooltip class="item" effect="dark" content="补充／修改分期申请" placement="top-end">
                             <el-button size="small" type="primary"
                                        @click="handleEdit(scope.row)"><i
                                     class="fa fa-pencil-square-o"></i>
@@ -159,7 +155,7 @@
             <div class="pagination">
                 <el-pagination
                         @current-change="handleCurrentChange"
-                        layout="prev, pager, next"
+                        layout="total, prev, pager, next"
                         :total="totalElements">
                 </el-pagination>
             </div>
@@ -614,7 +610,6 @@
                 selectedOptions: [],
                 options: [],
                 searchForm: {
-                    applictionNo: '',
                     applyDate: '',
                     startDate: '',
                     endDate: '',
