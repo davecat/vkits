@@ -71,28 +71,28 @@
                     style="width: 100%"
                     @selection-change="handleSelectionChange">
                 <el-table-column
+                        min-width="50"
                         fixed
-                        type="selection"
-                        width="80">
+                        type="selection">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="140"
                         prop="id"
                         sortable
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="150"
+                        min-width="120"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="140"
                         prop="mobile"
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="140"
                         prop="monthlyRent"
                         label="月租金">
                     <template scope="scope">
@@ -108,12 +108,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="140"
                         prop="rentPeriod"
                         label="租期">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="140"
                         prop=""
                         label="房租总额">
                     <template scope="scope">
@@ -121,7 +121,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="140"
                         prop=""
                         label="分期总额">
                     <template scope="scope">
@@ -138,7 +138,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="180"
                         prop="responsibleAgent"
                         label="经纪人">
                     <template scope="scope">
@@ -146,12 +146,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column v-if="searchForm.status !== 'Unconfirmed'"
-                        min-width="150"
+                        min-width="120"
                         prop="loanerName"
                         label="提交资金端">
                 </el-table-column>
                 <el-table-column v-if="searchForm.status !== 'Unconfirmed' && searchForm.status !== 'Commited'"
-                        min-width="150"
+                        min-width="120"
                         prop="loanerApprovalDate"
                         label="审批日期">
                     <template scope="scope">
@@ -159,7 +159,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column v-if="searchForm.status === 'LibRejected' || searchForm.status === 'LibReturned'"
-                        min-width="150"
+                        min-width="120"
                         prop="libApprovalDate"
                         label="确认日期">
                     <template scope="scope">
@@ -168,7 +168,7 @@
                 </el-table-column>
                 <el-table-column
                         fixed="right"
-                        min-width="110"
+                        min-width="80"
                         prop="enabled"
                         label="操作">
                     <template scope="scope">
@@ -587,7 +587,8 @@
             },
             dateFormat: function (value) {
                 if (typeof value === "string") {
-                    return value.substring(0, value.length - 9)
+                    let date = Date.parse(value.substring(0, value.length - 9))
+                    return format(date, 'YYYYMMDD')
                 }
             },
             districtFormat: function (value) {

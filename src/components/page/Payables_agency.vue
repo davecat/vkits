@@ -22,7 +22,8 @@
                 <el-form-item label="中介名称：">
                     <el-select v-model="searchForm.agencyId">
                         <el-option label="全部" value=""></el-option>
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
+                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name"
+                                   :value="agency.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -39,7 +40,7 @@
                     :data="tableData"
                     stripe
                     max-height="500"
-                    :default-sort = "{prop: 'payerDate', order: 'descending'}"
+                    :default-sort="{prop: 'payerDate', order: 'descending'}"
                     highlight-current-row
                     @current-change="handleCurrentRow"
                     style="width: 100%">
@@ -87,7 +88,8 @@
                         prop="status"
                         label="状态">
                     <template scope="scope">
-                        <p :class="{ statusAlert: scope.row.status === 'Unconfirmed' }">{{ scope.row.status === 'Unconfirmed'?'待确认':'已确认' }}</p>
+                        <p :class="{ statusAlert: scope.row.status === 'Unconfirmed' }">{{ scope.row.status ===
+                            'Unconfirmed'?'待确认':'已确认' }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -105,15 +107,20 @@
                                     class="fa fa-repeat"></i>
                             </el-button>
                         </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="导出" placement="top-end">
+                            <el-button size="small" type="success"
+                                       @click="exportCSV(scope.row)"><i class="fa fa-save"></i>
+                            </el-button>
+                        </el-tooltip>
                     </template>
                 </el-table-column>
             </el-table>
             <!--<div class="pagination">-->
-                <!--<el-pagination-->
-                        <!--@current-change="handleCurrentChange"-->
-                        <!--layout="prev, pager, next"-->
-                        <!--:total="totalElements">-->
-                <!--</el-pagination>-->
+            <!--<el-pagination-->
+            <!--@current-change="handleCurrentChange"-->
+            <!--layout="prev, pager, next"-->
+            <!--:total="totalElements">-->
+            <!--</el-pagination>-->
             <!--</div>-->
         </el-row>
 
@@ -155,7 +162,7 @@
                         prop="totalAmount"
                         label="房租总金额">
                     <template scope="scope">
-                        {{ scope.row.totalAmount |  currency}}
+                        {{ scope.row.totalAmount | currency}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -163,7 +170,7 @@
                         prop="payerAmount"
                         label="代付金额">
                     <template scope="scope">
-                        {{ scope.row.payerAmount |  currency}}
+                        {{ scope.row.payerAmount | currency}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -179,7 +186,7 @@
                         prop="serviceFee"
                         label="服务费金额">
                     <template scope="scope">
-                        {{ scope.row.serviceFee |  currency}}
+                        {{ scope.row.serviceFee | currency}}
                     </template>
                 </el-table-column>
             </el-table>
@@ -236,7 +243,7 @@
 </template>
 
 <script>
-    import { pagination } from '../mixins/pagination.js'
+    import {pagination} from '../mixins/pagination.js'
     import format from 'date-fns/format'
     export default {
         mixins: [pagination],
@@ -367,7 +374,7 @@
                 this.dialogVisible = false;
             },
             handleCurrentRow(row) {
-                if(row) {
+                if (row) {
                     this.currentRow.factPayerDate = row.factPayerDate || '';
                     this.currentRow.payerType = row.payerType || '';
                     this.currentRow.payer = row.payer || '';
@@ -428,7 +435,40 @@
                     this.$message.error(error.response.data.message);
                 })
             },
-            handleCurrentChange(val){
+            exportCSV(row) {
+                var head = [["合同编号", "租客姓名", "房租总金额", "代付金额", "服务费率", "服务费金额"]];
+                let param = {
+                    agencyId: row.agencyId,
+                    payerDate: format(row.payerDate, 'YYYY-MM-DD'),
+                    status: row.status,
+                    page: this.detailCurPage - 1,
+                    size: this.detailSize
+                };
+                this.axios.post('/postlending/api/v1/payer/agency/getPayerAgencyDetailPage', param).then((res) => {
+                        var rowData = res.data.content;
+                        for (let i = 0; i < rowData.length; i++) {
+                            head.push([rowData[i].contractNo, rowData[i].customerName, rowData[i].totalAmount, rowData[i].payerAmount, rowData[i].rate, rowData[i].serviceFee]);
+                        };
+                        var csvRows = [];
+                        head.forEach(item => csvRows.push(item.join(',')));
+                        var csvString = csvRows.join('\n');
+                        //BOM的方式解决EXCEL乱码问题
+                        var BOM = '\uFEFF';
+                        csvString = BOM + csvString;
+                        var a = document.createElement('a');
+                        a.href = 'data:attachment/csv,' + encodeURI(csvString);
+                        a.target = '_blank';
+                        a.download = row.payerDate + row.agencyName +".csv";
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    }
+                ).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                });
+            },
+            handleCurrentChange(val)
+            {
                 this.cur_page = val;
                 this.getData();
                 this.payablesDetail = [];
@@ -441,9 +481,11 @@
     .payerAmountFont {
         color: #1D8CE0
     }
+
     .statusAlert {
         color: #F7BA2A
     }
+
     .statusGood {
         color: #13CE66
     }
