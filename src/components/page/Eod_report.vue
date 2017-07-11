@@ -48,6 +48,7 @@
                     highlight-current-row
                     @current-change="handleCurrentRow"
                     border
+                    :default-sort="{prop: 'approvalDate', order: 'descending'}"
                     tooltip-effect="dark"
                     style="width: 100%">
                 <el-table-column
@@ -112,6 +113,7 @@
                 <el-table-column
                         min-width="150"
                         prop="approvalDate"
+                        sortable
                         label="审批日期">
                     <template scope="scope">
                         {{ scope.row.approvalDate | dateFormat }}
