@@ -45,22 +45,7 @@
                     @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
-                        prop="loanerName"
-                        label="付款方">
-                </el-table-column>
-                <el-table-column
-                        class-name="payerAmountFont"
-                        prop="payeeTotalAmount"
-                        label="付款金额">
-                    <template scope="scope">
-                        {{ scope.row.payeeTotalAmount | currency }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        prop="contractCount"
-                        label="合同数量">
-                </el-table-column>
-                <el-table-column
+                        min-width="160"
                         prop="payeeDate"
                         sortable
                         label="应收款日期">
@@ -69,6 +54,31 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="140"
+                        prop="loanerName"
+                        label="付款方">
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        class-name="payerAmountFont"
+                        prop="payeeTotalAmount"
+                        label="付款金额">
+                    <template scope="scope">
+                        {{ scope.row.payeeTotalAmount | currency }}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="120"
+                        prop="contractCount"
+                        label="合同数量">
+                </el-table-column>
+                <el-table-column
+                        min-width="240"
+                        prop="payeeBankAccount"
+                        label="收款账号">
+                </el-table-column>
+                <el-table-column
+                        min-width="120"
                         class-name="statusGood"
                         prop="status"
                         label="状态">
@@ -77,10 +87,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        prop="payeeBankAccount"
-                        label="收款账号">
-                </el-table-column>
-                <el-table-column
+                        min-width="120"
                         label="操作">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="确认收款" placement="top-end">
@@ -299,4 +306,13 @@
 </script>
 
 <style>
+    .payerAmountFont {
+        color: #1D8CE0
+    }
+    .statusAlert {
+        color: #F7BA2A
+    }
+    .statusGood {
+        color: #13CE66
+    }
 </style>
