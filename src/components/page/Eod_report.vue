@@ -97,7 +97,7 @@
                         prop=""
                         label="总金额">
                     <template scope="scope">
-                        {{ scope.row.monthlyRent * scope.row.rentPeriod | currency }}
+                        {{ scope.row.totalAmount | currency }}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -369,7 +369,7 @@
         mixins: [pagination, qiniu],
         data() {
             return {
-                url: '/riskcontrol/loaner/api/v1/application/getApplicationPage',
+                url: '/riskcontrol/loaner/api/v1/application/eod/getApplicationPage',
                 agencyList: {},
                 branchList: {},
                 searchForm: {
