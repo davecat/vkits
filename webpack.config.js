@@ -68,11 +68,11 @@ module.exports = {
                 secure: false
             },
             '/admin/api/branch/*': {
-                target: 'http://192.168.0.107:8001',
+                target: 'http://192.168.0.112:8001',
                 secure: false
             },
             '/api/upload/*': {
-                target: 'http://192.168.0.107:8001',
+                target: 'http://192.168.0.112:8001',
                 secure: false
             }
         }
