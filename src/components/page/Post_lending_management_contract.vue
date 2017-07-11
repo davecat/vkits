@@ -64,19 +64,16 @@
                     @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
-                        fixed
                         min-width="140"
                         prop="agencyName"
                         label="中介名称">
                 </el-table-column>
                 <el-table-column
-                        fixed
                         min-width="180"
                         prop="applicationNo"
-                        label="关联申请编号">
+                        label="申请编号">
                 </el-table-column>
                 <el-table-column
-                        fixed
                         min-width="180"
                         prop="contractNo"
                         label="合同编号">
@@ -100,19 +97,11 @@
                         label="租客联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="180"
                         prop="startDate"
-                        label="起租日期">
+                        label="起止日期">
                     <template scope="scope">
-                        {{ scope.row.startDate |  dateFormat}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="160"
-                        prop="endDate"
-                        label="退租日期">
-                    <template scope="scope">
-                        {{ scope.row.endDate |  dateFormat}}
+                        {{ scope.row.startDate |  dateFormat}} - {{ scope.row.endDate |  dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -139,20 +128,27 @@
                 <el-table-column
                         min-width="160"
                         prop="totalAmount"
-                        label="总金额">
+                        label="分期总金额">
                     <template scope="scope">
                         {{ scope.row.totalAmount | currency }}
                     </template>
                 </el-table-column>
                 <el-table-column
                         min-width="180"
-                        prop="responsibleAgent"
-                        label="签单经纪人名称">
+                        prop="city"
+                        label="城市">
+                    <template scope="scope">
+                        {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
+                        scope.row.district | districtFormat }}
+                    </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
-                        prop="responsibleBranch"
-                        label="签单门店名称">
+                        min-width="180"
+                        prop="responsibleAgent"
+                        label="签单经纪人">
+                    <template scope="scope">
+                        {{ scope.row.responsibleBranch }} - {{ scope.row.responsibleAgent }}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="150"
@@ -175,9 +171,8 @@
                     tooltip-effect="dark"
                     style="width: 100%">
                 <el-table-column
-                        min-width="160"
-                        prop="billNo"
-                        label="账单编号">
+                        type="index"
+                        width="50">
                 </el-table-column>
                 <el-table-column
                         min-width="160"
@@ -235,6 +230,7 @@
 <script>
     import { pagination } from '../mixins/pagination.js'
     import format from 'date-fns/format'
+    import json from "../../../static/city.json";
     export default {
         mixins: [pagination],
         data() {
@@ -328,6 +324,24 @@
                 } else if (value === 'OverdueRepayment') {
                     return "逾期未还款";
                 }
+            },
+            districtFormat: function (value) {
+                if(!value){
+                    return ''
+                }
+                let findLabel = (item, value) => {
+                    if(item) {
+                        return item.find(i => {
+                            if (value === i.value) {
+                                return true;
+                            } else {
+                                return findLabel(i.children, value)
+                            }
+                        });
+                    }
+                };
+                let district = findLabel(json, value);
+                return district.label;
             },
         },
         methods: {
