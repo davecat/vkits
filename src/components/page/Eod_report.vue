@@ -52,6 +52,15 @@
                     tooltip-effect="dark"
                     style="width: 100%">
                 <el-table-column
+                        min-width="150"
+                        prop="approvalDate"
+                        sortable
+                        label="审批日期">
+                    <template scope="scope">
+                        {{ scope.row.approvalDate | dateFormat }}
+                    </template>
+                </el-table-column>
+                <el-table-column
                         min-width="180"
                         prop="agencyName"
                         label="中介名称">
@@ -109,30 +118,6 @@
                         min-width="150"
                         prop="responsibleBranch"
                         label="门店名称">
-                </el-table-column>
-                <el-table-column
-                        min-width="150"
-                        prop="approvalDate"
-                        sortable
-                        label="审批日期">
-                    <template scope="scope">
-                        {{ scope.row.approvalDate | dateFormat }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        fixed="right"
-                        min-width="110"
-                        prop="enabled"
-                        label="操作">
-                    <template scope="scope">
-                        <el-tooltip v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
-                                    class="item" effect="dark" content="补充／修改分期申请" placement="top-end">
-                            <el-button size="small" type="primary"
-                                       @click="handleEdit(scope.row)"><i
-                                    class="fa fa-pencil-square-o"></i>
-                            </el-button>
-                        </el-tooltip>
-                    </template>
                 </el-table-column>
             </el-table>
             <div class="pagination">
