@@ -25,6 +25,22 @@
                         <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="实际收款日期：">
+                    <el-date-picker
+                            v-model="searchForm.applyDate2"
+                            align="right"
+                            type="daterange"
+                            placeholder="选择日期范围"
+                            @change="selectedData2"
+                            :picker-options="pickerOptions">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="状态：">
+                    <el-select v-model="searchForm.status">
+                        <el-option label="待确认" value="Unconfirmed"></el-option>
+                        <el-option label="已确认" value="Accepted"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
                 </el-form-item>
@@ -139,6 +155,14 @@
                         {{ scope.row.payeeDate |  dateFormat}}
                     </template>
                 </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="contractApprovalDate"
+                        label="实际收款日期">
+                    <template scope="scope">
+                        {{ scope.row.contractApprovalDate |  dateFormat}}
+                    </template>
+                </el-table-column>
             </el-table>
             <div class="pagination">
                 <el-pagination
@@ -214,9 +238,13 @@
                 url: '/postlending/api/v1/payee/loaner/getPayeeLoanerPage',
                 searchForm: {
                     applyDate: '',
+                    applyDate2: '',
                     payeeDateStart: '',
                     payeeDateEnd: '',
+                    contractApprovalDateStart: '',
+                    contractApprovalDateEnd: '',
                     loanerId: '',
+                    status: '',
                     type: 'receivables'
                 },
                 receivablesDetail: [],
@@ -235,7 +263,7 @@
         },
         filters: {
             dateFormat: function (value) {
-                if(value !== null) {
+                if(value) {
                     return format(value, 'YYYY-MM-DD');
                 }
             }
@@ -248,6 +276,15 @@
                 } else {
                     this.searchForm.payeeDateStart = '';
                     this.searchForm.payeeDateEnd = '';
+                }
+            },
+            selectedData2() {
+                if (this.searchForm.applyDate2[0] !== null) {
+                    this.searchForm.contractApprovalDateStart = format(this.searchForm.applyDate2[0], 'YYYY-MM-DD');
+                    this.searchForm.contractApprovalDateEnd = format(this.searchForm.applyDate2[1], 'YYYY-MM-DD');
+                } else {
+                    this.searchForm.contractApprovalDateStart = '';
+                    this.searchForm.contractApprovalDateEnd = '';
                 }
             },
             getLoanerList() {
