@@ -13,17 +13,7 @@
         </el-row>
         <el-row>
             <el-form :inline="true" :model="searchForm">
-                <el-form-item label="所属中介：">
-                    <el-select v-model="searchForm.agencyId">
-                        <el-option label="全部" value=""></el-option>
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name"
-                                   :value="agency.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="申请编号：">
-                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
-                <el-form-item label="起租日期：">
+                <el-form-item label="申请日期：">
                     <el-date-picker
                             v-model="searchForm.applyDate"
                             align="right"
@@ -32,9 +22,6 @@
                             @change="selectedData"
                             :picker-options="pickerOptions">
                     </el-date-picker>
-                </el-form-item>
-                <el-form-item label="租客姓名：">
-                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="状态：">
                     <el-select v-model="searchForm.status">
@@ -128,21 +115,6 @@
                         min-width="150"
                         prop="responsibleBranch"
                         label="门店名称">
-                </el-table-column>
-                <el-table-column
-                        fixed="right"
-                        min-width="110"
-                        prop="enabled"
-                        label="操作">
-                    <template scope="scope">
-                        <el-tooltip v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
-                                    class="item" effect="dark" content="补充／修改分期申请" placement="top-end">
-                            <el-button size="small" type="primary"
-                                       @click="handleEdit(scope.row)"><i
-                                    class="fa fa-pencil-square-o"></i>
-                            </el-button>
-                        </el-tooltip>
-                    </template>
                 </el-table-column>
             </el-table>
             <div class="pagination">
@@ -465,13 +437,9 @@
                 agencyList: {},
                 branchList: {},
                 searchForm: {
-                    applictionNo: '',
                     applyDate: '',
                     startDate: '',
                     endDate: '',
-                    customerName: '',
-                    agencyId: '',
-                    branchId: '',
                     status: ''
                 },
                 form: {},
