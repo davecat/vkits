@@ -241,8 +241,8 @@
                     applyDate2: '',
                     payeeDateStart: '',
                     payeeDateEnd: '',
-                    contractApprovalDateStart: '',
-                    contractApprovalDateEnd: '',
+                    factPayeeDateStart: '',
+                    factPayeeDateEnd: '',
                     loanerId: '',
                     status: '',
                     type: 'receivables'
