@@ -49,21 +49,8 @@
                 </el-table-column>
                 <el-table-column
                         min-width="180"
-                        prop="agencyName"
-                        label="中介名称">
-                </el-table-column>
-                <el-table-column
-                        min-width="180"
                         prop="applictionNo"
                         label="申请编号">
-                </el-table-column>
-                <el-table-column
-                        min-width="150"
-                        prop="startDate"
-                        label="起租日期">
-                    <template scope="scope">
-                        {{ scope.row.startDate | dateFormat }}
-                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="150"
@@ -76,35 +63,20 @@
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
-                        prop="monthlyRent"
-                        label="月租金">
+                        min-width="180"
+                        prop="startDate"
+                        label="起止日期">
                     <template scope="scope">
-                        {{ scope.row.monthlyRent | currency }}
+                        {{ scope.row.startDate |  dateFormat}}-{{ scope.row.endDate |  dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
                         min-width="120"
-                        prop="rentPeriod"
-                        label="租期">
-                </el-table-column>
-                <el-table-column
-                        min-width="160"
                         prop=""
-                        label="总金额">
+                        label="借款金额">
                     <template scope="scope">
-                        {{ scope.row.totalAmount | currency }}
+                        {{ scope.row.totalAmount - scope.row.monthlyRent | currency }}
                     </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="120"
-                        prop="responsibleAgent"
-                        label="经纪人">
-                </el-table-column>
-                <el-table-column
-                        min-width="150"
-                        prop="responsibleBranch"
-                        label="门店名称">
                 </el-table-column>
             </el-table>
             <div class="pagination">
@@ -415,7 +387,8 @@
             },
             dateFormat: function (value) {
                 if (typeof value === "string") {
-                    return value.substring(0, value.length - 9)
+                    let date = Date.parse(value.substring(0, value.length - 9))
+                    return format(date, 'YYYYMMDD')
                 }
             },
         },
