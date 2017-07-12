@@ -157,10 +157,10 @@
                 </el-table-column>
                 <el-table-column
                         min-width="160"
-                        prop="contractApprovalDate"
+                        prop="factPayeeDate"
                         label="实际收款日期">
                     <template scope="scope">
-                        {{ scope.row.contractApprovalDate |  dateFormat}}
+                        {{ scope.row.factPayeeDate |  dateFormat}}
                     </template>
                 </el-table-column>
             </el-table>
@@ -280,11 +280,11 @@
             },
             selectedData2() {
                 if (this.searchForm.applyDate2[0] !== null) {
-                    this.searchForm.contractApprovalDateStart = format(this.searchForm.applyDate2[0], 'YYYY-MM-DD');
-                    this.searchForm.contractApprovalDateEnd = format(this.searchForm.applyDate2[1], 'YYYY-MM-DD');
+                    this.searchForm.factPayeeDateStart = format(this.searchForm.applyDate2[0], 'YYYY-MM-DD');
+                    this.searchForm.factPayeeDateEnd = format(this.searchForm.applyDate2[1], 'YYYY-MM-DD');
                 } else {
-                    this.searchForm.contractApprovalDateStart = '';
-                    this.searchForm.contractApprovalDateEnd = '';
+                    this.searchForm.factPayeeDateStart = '';
+                    this.searchForm.factPayeeDateEnd = '';
                 }
             },
             getLoanerList() {
