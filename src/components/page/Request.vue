@@ -804,7 +804,7 @@
                 }).then((res) => {
                     this.tableData = res.data.content;
                     this.totalElements = res.data.totalElements;
-                    if(a === 'Unchecked' || 'undefined'){
+                    if(a === 'Unchecked'){
                         this.uncheckedNumber = this.tableData.length;
                     }
                     if(a === 'Returned'){
@@ -820,7 +820,16 @@
             init: function () {
                 this.options = json;
                 //获取待补充、待修改单据数量
-                let searchForm = {
+                this.axios.post(this.url, {
+                    ...this.searchForm,
+                    page: this.cur_page - 1,
+                    size: this.size
+                }).then((res) => {
+                    this.uncheckedNumber = res.data.content.length;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                });
+                let searchForm1 = {
                     applyDate: '',
                     startDate: '',
                     endDate: '',
@@ -830,7 +839,7 @@
                     status: 'Returned'
                 };
                 this.axios.post(this.url, {
-                    ...searchForm,
+                    ...searchForm1,
                     page: this.cur_page - 1,
                     size: this.size
                 }).then((res) => {

@@ -562,6 +562,15 @@
             this.getAgencyList();
             this.getLoanerList();
             //获取单据数量
+            this.axios.post(this.url, {
+                ...this.searchForm,
+                page: this.cur_page - 1,
+                size: this.size
+            }).then((res) => {
+                this.unconfirmedNumber = res.data.content.length;
+            }).catch((error) => {
+                this.$message.error(error.response.data.message);
+            });
             //审批不通过(待确认)单据
             let searchForm1 = {
                 applictionNo: '',
@@ -680,7 +689,7 @@
                     this.tableData = res.data.content;
                     this.totalElements = res.data.totalElements;
                     //获取单据数量
-                    if(a === 'Unconfirmed' || 'undefined'){
+                    if(a === 'Unconfirmed'){
                         this.unconfirmedNumber = this.tableData.length;
                     }
                     if(a === 'LoanerRejected'){
