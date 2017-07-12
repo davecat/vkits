@@ -51,13 +51,19 @@
             </el-form>
         </el-row>
         <el-row>
-            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange">
-                <el-tab-pane label="待审核" name="Unconfirmed"></el-tab-pane>
+            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange(searchForm.status)">
+                <el-tab-pane label="待审核" name="Unconfirmed">
+                    <span slot="label">待审核<el-badge :value="unconfirmedNumber" class="item"></el-badge></span>
+                </el-tab-pane>
                 <el-tab-pane label="已提交" name="Commited"></el-tab-pane>
                 <el-tab-pane label="审批通过" name="Accepted"></el-tab-pane>
-                <el-tab-pane label="审批不通过（待确认）" name="LoanerRejected"></el-tab-pane>
+                <el-tab-pane label="审批不通过（待确认）" name="LoanerRejected">
+                    <span slot="label">审批不通过（待确认）<el-badge :value="loanerRejectedNumber" class="item"></el-badge></span>
+                </el-tab-pane>
                 <el-tab-pane label="审批不通过（已确认）" name="LibRejected"></el-tab-pane>
-                <el-tab-pane label="待修改（待确认）" name="LoanerReturned"></el-tab-pane>
+                <el-tab-pane label="待修改（待确认）" name="LoanerReturned">
+                    <span slot="label">待修改（待确认）<el-badge :value="loanerReturnedNumber" class="item"></el-badge></span>
+                </el-tab-pane>
                 <el-tab-pane label="待修改（已确认）" name="LibReturned"></el-tab-pane>
             </el-tabs>
             <el-table
@@ -441,12 +447,17 @@
 <script>
     import json from "../../../static/city.json";
     import format from 'date-fns/format'
-    import { pagination } from '../mixins/pagination.js'
+//    import { pagination } from '../mixins/pagination.js'
     import { qiniu } from '../mixins/qiniu.js'
     export default {
-        mixins: [pagination, qiniu],
+//        mixins: [pagination, qiniu],
+        mixins: [qiniu],
         data() {
             return {
+                tableData: [],
+                cur_page: 1,
+                size: 10,
+                totalElements: 0,
                 url: '/riskcontrol/lib/api/v1/application/getApplicationPage',
                 agencyList: {},
                 branchList: {},
@@ -540,12 +551,59 @@
                 idCardFrontPhoto: '',
                 idCardVersoPhoto: '',
                 idCardAndPersonPhoto: '',
-                contractPhotos: []
+                contractPhotos: [],
+                unconfirmedNumber: 0,//待审核单据数量
+                loanerRejectedNumber: 0,//审批不通过（待确认）单据数量
+                loanerReturnedNumber: 0//待修改（待确认）单据数量
             }
         },
         created(){
+            this.getData();
             this.getAgencyList();
             this.getLoanerList();
+            //获取单据数量
+            //审批不通过(待确认)单据
+            let searchForm1 = {
+                applictionNo: '',
+                applyDate: '',
+                startDate: '',
+                endDate: '',
+                customerName: '',
+                agencyId: '',
+                branchId: '',
+                mobile: '',
+                status: 'LoanerRejected'
+            };
+            this.axios.post(this.url, {
+                ...searchForm1,
+                page: this.cur_page - 1,
+                size: this.size
+            }).then((res) => {
+                this.loanerRejectedNumber = res.data.content.length;
+            }).catch((error) => {
+                this.$message.error(error.response.data.message);
+            });
+            //待修改(待确认)单据
+            let searchForm2 = {
+                applictionNo: '',
+                applyDate: '',
+                startDate: '',
+                endDate: '',
+                customerName: '',
+                agencyId: '',
+                branchId: '',
+                mobile: '',
+                status: 'LoanerReturned'
+            };
+            this.axios.post(this.url, {
+                ...searchForm2,
+                page: this.cur_page - 1,
+                size: this.size
+            }).then((res) => {
+                this.loanerReturnedNumber = res.data.content.length;
+            }).catch((error) => {
+                this.$message.error(error.response.data.message);
+            })
         },
         filters: {
             appStatusFormat: function (value) {
@@ -613,6 +671,35 @@
             },
         },
         methods: {
+            getData(a){
+                this.axios.post(this.url, {
+                    ...this.searchForm,
+                    page: this.cur_page - 1,
+                    size: this.size
+                }).then((res) => {
+                    this.tableData = res.data.content;
+                    this.totalElements = res.data.totalElements;
+                    //获取单据数量
+                    if(a === 'Unconfirmed' || 'undefined'){
+                        this.unconfirmedNumber = this.tableData.length;
+                    }
+                    if(a === 'LoanerRejected'){
+                        this.loanerRejectedNumber = this.tableData.length;
+                    }
+                    if(a === 'LoanerReturned'){
+                        this.loanerReturnedNumber = this.tableData.length;
+                    }
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
+            },
+            handleCurrentChange(val){
+                this.cur_page = val;
+                this.getData();
+            },
+            Search() {
+                this.getData();
+            },
             selectedData() {
                 if (this.searchForm.applyDate[0] !== null) {
                     this.searchForm.startDate = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
@@ -626,8 +713,8 @@
                 this.bigPhotoUrl = this.qiniu + token + '?imageMogr2/auto-orient';
                 this.dialogBigPhoto = true;
             },
-            handleChange() {
-                this.getData();
+            handleChange(a) {
+                this.getData(a);
             },
             getAgencyList() {
                 this.axios.get('/api/v1/admin/agency/getAgencyList').then((res) => {
@@ -768,5 +855,9 @@
     .demo-table-expand .el-form-item {
         margin-right: 0;
         width: 50%;
+    }
+    .item {
+        margin-left: 4px;
+        vertical-align: sub;
     }
 </style>

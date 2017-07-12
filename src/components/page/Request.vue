@@ -602,12 +602,16 @@
 <script>
     import json from "../../../static/city.json";
     import format from 'date-fns/format'
-    import { pagination } from '../mixins/pagination.js'
+//    import { pagination } from '../mixins/pagination.js'
     import { qiniu } from '../mixins/qiniu.js'
     export default {
-        mixins: [pagination, qiniu],
+        mixins: [qiniu],
         data() {
             return {
+                tableData: [],
+                cur_page: 1,
+                size: 10,
+                totalElements: 0,
                 url: '/api/v1/application/getApplicationPage',
                 agencyList: {},
                 branchList: {},
@@ -731,6 +735,7 @@
             }
         },
         created(){
+            this.getData();
             this.init();
             if(this.staff.staffType === 'Branch') {
                 this.getBranchListByBranch();
@@ -787,10 +792,34 @@
             },
         },
         methods: {
+            handleCurrentChange(val){
+                this.cur_page = val;
+                this.getData();
+            },
+            getData(a){
+                this.axios.post(this.url, {
+                    ...this.searchForm,
+                    page: this.cur_page - 1,
+                    size: this.size
+                }).then((res) => {
+                    this.tableData = res.data.content;
+                    this.totalElements = res.data.totalElements;
+                    if(a === 'Unchecked' || 'undefined'){
+                        this.uncheckedNumber = this.tableData.length;
+                    }
+                    if(a === 'Returned'){
+                        this.returnedNumber = this.tableData.length;
+                    }
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
+            },
+            Search() {
+                this.getData();
+            },
             init: function () {
                 this.options = json;
                 //获取待补充、待修改单据数量
-                this.uncheckedNumber = this.tableData.length;
                 let searchForm = {
                     applyDate: '',
                     startDate: '',
@@ -881,13 +910,7 @@
                 this.formVisible = false;
             },
             handleChangeTab(a) {
-                this.getData();
-                if(a === 'Unchecked'){
-                    this.uncheckedNumber = this.tableData.length;
-                }
-                if(a === 'Returned'){
-                    this.returnedNumber = this.tableData.length;
-                }
+                this.getData(a);
             },
             //点击每一行显示下面内容
             handleCurrentRow(val) {
