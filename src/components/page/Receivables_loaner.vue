@@ -226,7 +226,8 @@
                 detailPage: 0,
                 loanerList: {},
                 dialogVisible: false,
-                selectedRow: {}
+                selectedRow: {},
+                currentRow: {}
             }
         },
         created(){
@@ -267,18 +268,19 @@
             },
             handleCurrentRow(row) {
                 if(row) {
-                    this.getDetail(row.loanerId, row.payeeDate, row.status);
+                    this.currentRow = row;
+                    this.getDetail();
                 }
             },
             handleChange(val){
                 this.detailCurPage = val;
                 this.getDetail();
             },
-            getDetail(loanerId, payeeDate, status) {
+            getDetail() {
                 let param = {
-                    loanerId: loanerId,
-                    payeeDate: format(payeeDate, 'YYYY-MM-DD'),
-                    status: status,
+                    loanerId: this.currentRow.loanerId,
+                    payeeDate: format(this.currentRow.payeeDate, 'YYYY-MM-DD'),
+                    status: this.currentRow.status,
                     page: this.detailCurPage - 1,
                     size: this.detailSize
                 };

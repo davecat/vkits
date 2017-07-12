@@ -476,8 +476,7 @@
                     this.$message.error(error.response.data.message);
                 });
             },
-            handleCurrentChange(val)
-            {
+            handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();
                 this.payablesDetail = [];

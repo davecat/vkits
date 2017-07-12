@@ -313,7 +313,8 @@
             },
             dateFormat: function (value) {
                 if (typeof value === "string") {
-                    return value.substring(0, value.length - 9)
+                    let date = Date.parse(value.substring(0, value.length - 9))
+                    return format(date, 'YYYYMMDD')
                 }
             },
             billStatusFormat: function (value) {
