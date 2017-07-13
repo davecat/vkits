@@ -40,11 +40,11 @@
                     style="width: 100%">
                 <el-table-column
                         min-width="150"
-                        prop="approvalDate"
+                        prop="eodDate"
                         sortable
-                        label="审批日期">
+                        label="日结日期">
                     <template scope="scope">
-                        {{ scope.row.approvalDate | dateFormat }}
+                        {{ scope.row.eodDate | dateFormat }}
                     </template>
                 </el-table-column>
                 <el-table-column
