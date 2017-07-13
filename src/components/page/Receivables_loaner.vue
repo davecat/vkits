@@ -142,7 +142,7 @@
                 <el-table-column
                         min-width="160"
                         prop="payeeAmount"
-                        label="合同金额">
+                        label="分期总金额">
                     <template scope="scope">
                         {{ scope.row.payeeAmount |  currency}}
                     </template>
