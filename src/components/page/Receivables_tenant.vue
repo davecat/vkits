@@ -77,35 +77,23 @@
                 </el-table-column>
                 <el-table-column
                         min-width="140"
-                        prop="agencyName"
-                        label="所属中介">
+                        label="中介门店">
+                    <template scope="scope">
+                        {{ scope.row.agencyName}}-{{scope.row.branchName}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="140"
-                        prop="branchName"
-                        label="所属门店">
-                </el-table-column>
-                <el-table-column
-                        min-width="120"
                         prop="customName"
-                        label="付款方">
+                        label="租客姓名">
                 </el-table-column>
                 <el-table-column
                         min-width="160"
                         sortable
                         prop="payeeAmount"
-                        label="付款总金额">
+                        label="账单金额">
                     <template scope="scope">
                         {{ scope.row.payeeAmount | currency }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="120"
-                        sortable
-                        prop="monthlyRent"
-                        label="月租金">
-                    <template scope="scope">
-                        {{ scope.row.monthlyRent | currency }}
                     </template>
                 </el-table-column>
                 <el-table-column
