@@ -9,27 +9,14 @@
 
         <el-row>
             <el-form :inline="true" :model="searchForm">
-                <el-form-item label="所属中介：">
-                    <el-select v-model="searchForm.agencyId">
-                        <el-option label="全部" value=""></el-option>
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="申请编号：">
-                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
-                <el-form-item label="审批日期：">
+                <el-form-item label="日结日期：">
                     <el-date-picker
-                            v-model="searchForm.applyDate"
+                            v-model="searchForm.eodDate"
                             align="right"
-                            type="daterange"
-                            placeholder="选择日期范围"
-                            @change="selectedData"
+                            type="date"
+                            placeholder="选择日期"
                             :picker-options="pickerOptions">
                     </el-date-picker>
-                </el-form-item>
-                <el-form-item label="租客姓名：">
-                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
@@ -52,22 +39,18 @@
                     tooltip-effect="dark"
                     style="width: 100%">
                 <el-table-column
-                        min-width="180"
-                        prop="agencyName"
-                        label="中介名称">
+                        min-width="150"
+                        prop="approvalDate"
+                        sortable
+                        label="审批日期">
+                    <template scope="scope">
+                        {{ scope.row.approvalDate | dateFormat }}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="180"
                         prop="applictionNo"
                         label="申请编号">
-                </el-table-column>
-                <el-table-column
-                        min-width="150"
-                        prop="startDate"
-                        label="起租日期">
-                    <template scope="scope">
-                        {{ scope.row.startDate | dateFormat }}
-                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="150"
@@ -80,58 +63,19 @@
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
-                        prop="monthlyRent"
-                        label="月租金">
+                        min-width="180"
+                        prop="startDate"
+                        label="起止日期">
                     <template scope="scope">
-                        {{ scope.row.monthlyRent | currency }}
+                        {{ scope.row.startDate |  dateFormat}}-{{ scope.row.endDate |  dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
                         min-width="120"
-                        prop="rentPeriod"
-                        label="租期">
-                </el-table-column>
-                <el-table-column
-                        min-width="160"
                         prop=""
-                        label="总金额">
+                        label="借款金额">
                     <template scope="scope">
-                        {{ scope.row.totalAmount | currency }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="120"
-                        prop="responsibleAgent"
-                        label="经纪人">
-                </el-table-column>
-                <el-table-column
-                        min-width="150"
-                        prop="responsibleBranch"
-                        label="门店名称">
-                </el-table-column>
-                <el-table-column
-                        min-width="150"
-                        prop="approvalDate"
-                        sortable
-                        label="审批日期">
-                    <template scope="scope">
-                        {{ scope.row.approvalDate | dateFormat }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        fixed="right"
-                        min-width="110"
-                        prop="enabled"
-                        label="操作">
-                    <template scope="scope">
-                        <el-tooltip v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
-                                    class="item" effect="dark" content="补充／修改分期申请" placement="top-end">
-                            <el-button size="small" type="primary"
-                                       @click="handleEdit(scope.row)"><i
-                                    class="fa fa-pencil-square-o"></i>
-                            </el-button>
-                        </el-tooltip>
+                        {{ scope.row.totalAmount - scope.row.monthlyRent | currency }}
                     </template>
                 </el-table-column>
             </el-table>
@@ -370,61 +314,15 @@
         data() {
             return {
                 url: '/riskcontrol/loaner/api/v1/application/eod/getApplicationPage',
-                agencyList: {},
-                branchList: {},
                 searchForm: {
-                    applictionNo: '',
-                    applyDate: '',
-                    startDate: '',
-                    endDate: '',
-                    customerName: '',
-                    agencyId: '',
-                    branchId: '',
+                    eodDate: '',
                     status: 'Accepted'
                 },
                 form: {},
                 eodInfo: {},
                 dialogVisible: false,
                 dialogVisible2: false,
-                pickerOptions: {
-                    shortcuts: [
-                        {
-                            text: '今日',
-                            onClick(picker) {
-                                const end = new Date();
-                                const start = new Date();
-                                picker.$emit('pick', [start, end]);
-                            }
-                        },
-                        {
-                            text: '最近三天',
-                            onClick(picker) {
-                                const end = new Date();
-                                const start = new Date();
-                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 3);
-                                picker.$emit('pick', [start, end]);
-                            }
-                        },
-                        {
-                            text: '最近七天',
-                            onClick(picker) {
-                                const end = new Date();
-                                const start = new Date();
-                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                                picker.$emit('pick', [start, end]);
-                            }
-                        },
-                        {
-                            text: '最近三十天',
-                            onClick(picker) {
-                                const end = new Date();
-                                const start = new Date();
-                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                                picker.$emit('pick', [start, end]);
-                            }
-                        }
-                    ]
-                },
+                pickerOptions: {},
                 currentRow: {
                     responsibleAgent: '',
                     applyDate: '',
@@ -456,9 +354,6 @@
                 idCardAndPersonPhoto: '',
                 contractPhotos: []
             }
-        },
-        created(){
-            this.getAgencyList();
         },
         filters: {
             appStatusFormat: function (value) {
@@ -492,20 +387,12 @@
             },
             dateFormat: function (value) {
                 if (typeof value === "string") {
-                    return value.substring(0, value.length - 9)
+                    let date = Date.parse(value.substring(0, value.length - 9))
+                    return format(date, 'YYYYMMDD')
                 }
             },
         },
         methods: {
-            selectedData() {
-                if (this.searchForm.applyDate[0] !== null) {
-                    this.searchForm.startDate = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
-                    this.searchForm.endDate = format(this.searchForm.applyDate[1], 'YYYY-MM-DD');
-                } else {
-                    this.searchForm.startDate = '';
-                    this.searchForm.endDate = '';
-                }
-            },
             handleCurrentRow(val) {
                 if (val === null) {
                     this.currentRow = {
@@ -538,13 +425,6 @@
             showBigPhoto(token) {
                 this.bigPhotoUrl = this.qiniu + token + '?imageMogr2/auto-orient';
                 this.dialogBigPhoto = true;
-            },
-            getAgencyList() {
-                this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
-                    this.agencyList = res.data;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
             },
             multipleAccept() {
                 let ids = this.multipleSelection.map(row => {

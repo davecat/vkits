@@ -25,6 +25,22 @@
                         <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="实际收款日期：">
+                    <el-date-picker
+                            v-model="searchForm.applyDate2"
+                            align="right"
+                            type="daterange"
+                            placeholder="选择日期范围"
+                            @change="selectedData2"
+                            :picker-options="pickerOptions">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="状态：">
+                    <el-select v-model="searchForm.status">
+                        <el-option label="待确认" value="Unconfirmed"></el-option>
+                        <el-option label="已确认" value="Accepted"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
                 </el-form-item>
@@ -139,6 +155,14 @@
                         {{ scope.row.payeeDate |  dateFormat}}
                     </template>
                 </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="factPayeeDate"
+                        label="实际收款日期">
+                    <template scope="scope">
+                        {{ scope.row.factPayeeDate |  dateFormat}}
+                    </template>
+                </el-table-column>
             </el-table>
             <div class="pagination">
                 <el-pagination
@@ -214,9 +238,13 @@
                 url: '/postlending/api/v1/payee/loaner/getPayeeLoanerPage',
                 searchForm: {
                     applyDate: '',
+                    applyDate2: '',
                     payeeDateStart: '',
                     payeeDateEnd: '',
+                    factPayeeDateStart: '',
+                    factPayeeDateEnd: '',
                     loanerId: '',
+                    status: '',
                     type: 'receivables'
                 },
                 receivablesDetail: [],
@@ -226,7 +254,8 @@
                 detailPage: 0,
                 loanerList: {},
                 dialogVisible: false,
-                selectedRow: {}
+                selectedRow: {},
+                currentRow: {}
             }
         },
         created(){
@@ -234,7 +263,7 @@
         },
         filters: {
             dateFormat: function (value) {
-                if(value !== null) {
+                if(value) {
                     return format(value, 'YYYY-MM-DD');
                 }
             }
@@ -247,6 +276,15 @@
                 } else {
                     this.searchForm.payeeDateStart = '';
                     this.searchForm.payeeDateEnd = '';
+                }
+            },
+            selectedData2() {
+                if (this.searchForm.applyDate2[0] !== null) {
+                    this.searchForm.factPayeeDateStart = format(this.searchForm.applyDate2[0], 'YYYY-MM-DD');
+                    this.searchForm.factPayeeDateEnd = format(this.searchForm.applyDate2[1], 'YYYY-MM-DD');
+                } else {
+                    this.searchForm.factPayeeDateStart = '';
+                    this.searchForm.factPayeeDateEnd = '';
                 }
             },
             getLoanerList() {
@@ -267,18 +305,19 @@
             },
             handleCurrentRow(row) {
                 if(row) {
-                    this.getDetail(row.loanerId, row.payeeDate, row.status);
+                    this.currentRow = row;
+                    this.getDetail();
                 }
             },
             handleChange(val){
                 this.detailCurPage = val;
                 this.getDetail();
             },
-            getDetail(loanerId, payeeDate, status) {
+            getDetail() {
                 let param = {
-                    loanerId: loanerId,
-                    payeeDate: format(payeeDate, 'YYYY-MM-DD'),
-                    status: status,
+                    loanerId: this.currentRow.loanerId,
+                    payeeDate: format(this.currentRow.payeeDate, 'YYYY-MM-DD'),
+                    status: this.currentRow.status,
                     page: this.detailCurPage - 1,
                     size: this.detailSize
                 };

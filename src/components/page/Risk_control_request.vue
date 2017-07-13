@@ -127,14 +127,6 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
-                        prop=""
-                        label="分期总额">
-                    <template scope="scope">
-                        {{ scope.row.totalAmount | currency }}
-                    </template>
-                </el-table-column>
-                <el-table-column
                         min-width="180"
                         prop="city"
                         label="租房城市">

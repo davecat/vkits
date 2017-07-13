@@ -91,17 +91,17 @@
                     style="width: 100%">
                 <el-table-column
                         fixed
-                        min-width="180"
+                        min-width="140"
                         prop="id"
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="150"
+                        min-width="100"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="130"
                         prop="mobile"
                         label="联系方式">
                 </el-table-column>
@@ -114,7 +114,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="130"
                         prop="monthlyRent"
                         label="月租金">
                     <template scope="scope">
@@ -122,20 +122,29 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="130"
                         prop="rentPeriod"
                         label="租期">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
-                        prop=""
-                        label="总金额">
+                        min-width="130"
+                        prop="totalAmount"
+                        label="房租总额">
                     <template scope="scope">
                         {{ scope.row.totalAmount | currency }}
                     </template>
                 </el-table-column>
                 <el-table-column
                         min-width="180"
+                        prop="city"
+                        label="租房城市">
+                    <template scope="scope">
+                        {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
+                        scope.row.district | districtFormat }}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="200"
                         prop="responsibleAgent"
                         label="经纪人">
                     <template scope="scope">
@@ -144,7 +153,7 @@
                 </el-table-column>
                 <el-table-column v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
                         fixed="right"
-                        min-width="110"
+                        min-width="80"
                         prop="enabled"
                         label="操作">
                     <template scope="scope">
@@ -194,7 +203,7 @@
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="租期：">
-                        <span>{{ currentRow.rentPeriod }} 个月</span>
+                        <span>{{ currentRow.rentPeriod }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
@@ -789,6 +798,26 @@
                     let date = Date.parse(value.substring(0, value.length - 9));
                     return format(date, 'YYYYMMDD');
                 }
+            },
+            districtFormat: function (value) {
+                if(!value){
+                    return ''
+                }
+                let district;
+                let findLabel = (item, value) => {
+                    if(item) {
+                        return item.some(i => {
+                            if (value === i.value) {
+                                district = i;
+                                return true;
+                            } else {
+                                return findLabel(i.children, value)
+                            }
+                        });
+                    }
+                };
+                findLabel(json, value);
+                return district.label;
             },
         },
         methods: {
