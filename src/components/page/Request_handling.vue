@@ -54,6 +54,14 @@
                 </el-table-column>
                 <el-table-column
                         min-width="180"
+                        prop="libCommitDate"
+                        label="申请日期">
+                    <template scope="scope">
+                        {{ scope.row.libCommitDate |  dateFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="180"
                         prop="applictionNo"
                         label="申请编号">
                 </el-table-column>
