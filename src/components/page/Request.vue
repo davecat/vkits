@@ -68,14 +68,9 @@
             </el-form>
         </el-row>
         <el-row>
-            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChangeTab(searchForm.status)">
-                <el-tab-pane label="待补充" name="Unchecked">
-                    <span slot="label">待补充<el-badge :value="uncheckedNumber" class="item"></el-badge></span>
-                </el-tab-pane>
-
-                <el-tab-pane label="待修改" name="Returned">
-                    <span slot="label">待修改<el-badge :value="returnedNumber" class="item"></el-badge></span>
-                </el-tab-pane>
+            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChangeTab">
+                <el-tab-pane label="待补充" name="Unchecked"></el-tab-pane>
+                <el-tab-pane label="待修改" name="Returned"></el-tab-pane>
                 <el-tab-pane label="待审核" name="Unconfirmed"></el-tab-pane>
                 <el-tab-pane label="审批通过" name="Accepted"></el-tab-pane>
                 <el-tab-pane label="审批不通过" name="Rejected"></el-tab-pane>
@@ -611,16 +606,12 @@
 <script>
     import json from "../../../static/city.json";
     import format from 'date-fns/format'
-//    import { pagination } from '../mixins/pagination.js'
+    import { pagination } from '../mixins/pagination.js'
     import { qiniu } from '../mixins/qiniu.js'
     export default {
-        mixins: [qiniu],
+        mixins: [pagination, qiniu],
         data() {
             return {
-                tableData: [],
-                cur_page: 1,
-                size: 10,
-                totalElements: 0,
                 url: '/api/v1/application/getApplicationPage',
                 agencyList: {},
                 branchList: {},
@@ -738,13 +729,10 @@
                 idCardFrontPhoto: '',
                 idCardVersoPhoto: '',
                 idCardAndPersonPhoto: '',
-                contractPhotos: [],
-                uncheckedNumber: 0,//待补充单据数量
-                returnedNumber: 0//待修改单据数量
+                contractPhotos: []
             }
         },
         created(){
-            this.getData();
             this.init();
             if(this.staff.staffType === 'Branch') {
                 this.getBranchListByBranch();
@@ -821,61 +809,8 @@
             },
         },
         methods: {
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
-            getData(a){
-                this.axios.post(this.url, {
-                    ...this.searchForm,
-                    page: this.cur_page - 1,
-                    size: this.size
-                }).then((res) => {
-                    this.tableData = res.data.content;
-                    this.totalElements = res.data.totalElements;
-                    if(a === 'Unchecked'){
-                        this.uncheckedNumber = this.tableData.length;
-                    }
-                    if(a === 'Returned'){
-                        this.returnedNumber = this.tableData.length;
-                    }
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
-            },
-            Search() {
-                this.getData();
-            },
             init: function () {
                 this.options = json;
-                //获取待补充、待修改单据数量
-                this.axios.post(this.url, {
-                    ...this.searchForm,
-                    page: this.cur_page - 1,
-                    size: this.size
-                }).then((res) => {
-                    this.uncheckedNumber = res.data.content.length;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                });
-                let searchForm1 = {
-                    applyDate: '',
-                    startDate: '',
-                    endDate: '',
-                    customerName: '',
-                    agencyId: '',
-                    branchId: '',
-                    status: 'Returned'
-                };
-                this.axios.post(this.url, {
-                    ...searchForm1,
-                    page: this.cur_page - 1,
-                    size: this.size
-                }).then((res) => {
-                    this.returnedNumber = res.data.content.length;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
             },
             //切换省市区
             handleChange(value) {
@@ -947,8 +882,8 @@
                 this.$refs[formName].resetFields();
                 this.formVisible = false;
             },
-            handleChangeTab(a) {
-                this.getData(a);
+            handleChangeTab() {
+                this.getData();
             },
             //点击每一行显示下面内容
             handleCurrentRow(val) {
@@ -1106,9 +1041,5 @@
         width: 178px;
         height: 178px;
         display: block;
-    }
-    .item {
-        margin-left: 4px;
-        vertical-align: sub;
     }
 </style>
