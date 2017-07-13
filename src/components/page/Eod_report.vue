@@ -11,10 +11,11 @@
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="日结日期：">
                     <el-date-picker
-                            v-model="searchForm.eodDate"
+                            v-model="searchForm.applyDate"
                             align="right"
                             type="date"
                             placeholder="选择日期"
+                            @change="selectedData"
                             :picker-options="pickerOptions">
                     </el-date-picker>
                 </el-form-item>
@@ -315,6 +316,7 @@
             return {
                 url: '/riskcontrol/loaner/api/v1/application/eod/getApplicationPage',
                 searchForm: {
+                    applyDate: '',
                     eodDate: '',
                     status: 'Accepted'
                 },
@@ -393,6 +395,13 @@
             },
         },
         methods: {
+            selectedData() {
+                if (this.searchForm.applyDate !== null) {
+                    this.searchForm.eodDate = format(this.searchForm.applyDate, 'YYYY-MM-DD');
+                } else {
+                    this.searchForm.eodDate = '';
+                }
+            },
             handleCurrentRow(val) {
                 if (val === null) {
                     this.currentRow = {

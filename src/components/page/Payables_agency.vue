@@ -491,11 +491,9 @@
                     agencyId: row.agencyId,
                     payerDate: format(row.payerDate, 'YYYY-MM-DD'),
                     status: row.status,
-                    page: this.detailCurPage - 1,
-                    size: this.detailSize
                 };
                 this.axios.post('/postlending/api/v1/payer/agency/getPayerAgencyDetailList', param).then((res) => {
-                        var rowData = res.data.content;
+                        var rowData = res.data;
                         for (let i = 0; i < rowData.length; i++) {
                             head.push([rowData[i].contractNo, rowData[i].customerName, rowData[i].totalAmount, rowData[i].payerAmount, rowData[i].rate, rowData[i].serviceFee]);
                         };
