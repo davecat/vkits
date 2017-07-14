@@ -45,6 +45,7 @@
                     @current-change="handleCurrentRow"
                     border
                     tooltip-effect="dark"
+                    :default-sort = "{prop: 'libCommitDate', order: 'descending'}"
                     style="width: 100%"
                     @selection-change="handleSelectionChange">
                 <el-table-column
@@ -53,15 +54,16 @@
                         width="80">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="120"
                         prop="libCommitDate"
+                        sortable
                         label="申请日期">
                     <template scope="scope">
                         {{ scope.row.libCommitDate |  dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="140"
                         prop="applictionNo"
                         label="申请编号">
                 </el-table-column>
@@ -84,7 +86,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="150"
                         prop=""
                         label="借款金额">
                     <template scope="scope">

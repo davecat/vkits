@@ -396,7 +396,7 @@
         },
         methods: {
             selectedData() {
-                if (this.searchForm.applyDate !== null) {
+                if (this.searchForm.applyDate) {
                     this.searchForm.eodDate = format(this.searchForm.applyDate, 'YYYY-MM-DD');
                 } else {
                     this.searchForm.eodDate = '';

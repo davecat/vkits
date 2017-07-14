@@ -26,7 +26,7 @@
                                    :value="agency.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="实际收款日期：">
+                <el-form-item label="实际付款日期：">
                     <el-date-picker
                             v-model="searchForm.applyDate2"
                             align="right"
@@ -38,6 +38,7 @@
                 </el-form-item>
                 <el-form-item label="状态：">
                     <el-select v-model="searchForm.status">
+                        <el-option label="全部" value=""></el-option>
                         <el-option label="待确认" value="Unconfirmed"></el-option>
                         <el-option label="已确认" value="Accepted"></el-option>
                     </el-select>
@@ -335,7 +336,8 @@
                     factPayerDateStart: '',
                     factPayerDateEnd: '',
                     agencyId: '',
-                    type: 'receivables'
+                    type: 'receivables',
+                    status: ''
                 },
                 currentRow: {
                     payer: {
@@ -407,6 +409,14 @@
             },
             handleChangeTab() {
                 this.getData();
+                this.currentRow = {
+                    payer: {
+                        bank: '',
+                        accountNumber: '',
+                    }
+                };
+                this.payablesDetail = [];
+                this.detailTotalElements = 0;
             },
             handleEdit(row) {
                 this.form.agencyId = row.agencyId || '';
@@ -432,6 +442,16 @@
                     this.currentRow.payerDate = row.payerDate || '';
                     this.currentRow.status = row.status || '';
                     this.getDetail();
+                } else {
+                    this.currentRow = {
+                        payer: {
+                            bank: '',
+                            accountNumber: '',
+                        }
+                    };
+                    this.detailCurPage = 1;
+                    this.payablesDetail = [];
+                    this.detailTotalElements = 0;
                 }
             },
             handleChange(val){

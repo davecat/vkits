@@ -37,6 +37,7 @@
                 </el-form-item>
                 <el-form-item label="状态：">
                     <el-select v-model="searchForm.status">
+                        <el-option label="全部" value=""></el-option>
                         <el-option label="待确认" value="Unconfirmed"></el-option>
                         <el-option label="已确认" value="Accepted"></el-option>
                     </el-select>
@@ -306,6 +307,8 @@
             handleCurrentRow(row) {
                 if(row) {
                     this.currentRow = row;
+                    this.detailCurPage = 1;
+                    this.detailTotalElements = 0;
                     this.getDetail();
                 }
             },
