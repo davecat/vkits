@@ -834,10 +834,10 @@
                     this.tableData = res.data.content;
                     this.totalElements = res.data.totalElements;
                     if(a === 'Unchecked'){
-                        this.uncheckedNumber = this.tableData.length;
+                        this.uncheckedNumber = res.data.totalElements;
                     }
                     if(a === 'Returned'){
-                        this.returnedNumber = this.tableData.length;
+                        this.returnedNumber = res.data.totalElements;
                     }
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
@@ -854,7 +854,7 @@
                     page: this.cur_page - 1,
                     size: this.size
                 }).then((res) => {
-                    this.uncheckedNumber = res.data.content.length;
+                    this.uncheckedNumber = res.data.totalElements;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 });
@@ -872,7 +872,7 @@
                     page: this.cur_page - 1,
                     size: this.size
                 }).then((res) => {
-                    this.returnedNumber = res.data.content.length;
+                    this.returnedNumber = res.data.totalElements;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 })
