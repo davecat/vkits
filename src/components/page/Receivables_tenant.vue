@@ -141,7 +141,7 @@
                         label="备注">
                 </el-table-column>
                 <el-table-column
-                        fixed
+                        fixed="right"
                         min-width="120"
                         label="操作">
                     <template scope="scope">
