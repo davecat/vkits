@@ -108,7 +108,7 @@
                 <el-table-column
                         v-if="overdue"
                         min-width="100"
-                        prop="payee.name"
+                        prop="overdueDays"
                         label="逾期天数">
                 </el-table-column>
                 <el-table-column
