@@ -1,20 +1,20 @@
 import Vue from 'vue'
 
 // element-ui
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-default/index.css';
-Vue.use(ElementUI);
+// import ELEMENT from 'element-ui';
+// import 'element-ui/lib/theme-default/index.css';
+// Vue.use(ELEMENT);
 
 // vuex
-import Vuex from 'vuex';
-Vue.use(Vuex);
+// import Vuex from 'vuex';
+// Vue.use(Vuex);
 
 // router
-import VueRouter from 'vue-router';
-Vue.use(VueRouter);
+// import VueRouter from 'vue-router';
+// Vue.use(VueRouter);
 
 // A small wrapper for integrating axios to Vuejs
-import axios from 'axios';
+// import axios from 'axios';
 import VueAxios from 'vue-axios';
 // 设置axios支持set cookies
 axios.defaults.withCredentials = true;
@@ -72,7 +72,7 @@ router.beforeEach((to, from, next) => {
     }
 });
 
-import "babel-polyfill";
+// import "babel-polyfill";
 import App from './App.vue';
 
 Vue.filter('currency', function (value) {

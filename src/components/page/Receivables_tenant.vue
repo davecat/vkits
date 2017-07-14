@@ -77,13 +77,6 @@
                 </el-table-column>
                 <el-table-column
                         min-width="140"
-                        label="中介门店">
-                    <template scope="scope">
-                        {{ scope.row.agencyName}}-{{scope.row.branchName}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="140"
                         prop="customName"
                         label="租客姓名">
                 </el-table-column>
@@ -148,6 +141,7 @@
                         label="备注">
                 </el-table-column>
                 <el-table-column
+                        fixed="right"
                         min-width="120"
                         label="操作">
                     <template scope="scope">

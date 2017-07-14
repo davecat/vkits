@@ -559,7 +559,7 @@
                 page: this.cur_page - 1,
                 size: this.size
             }).then((res) => {
-                this.unconfirmedNumber = res.data.content.length;
+                this.unconfirmedNumber = res.data.totalElements;
             }).catch((error) => {
                 this.$message.error(error.response.data.message);
             });
@@ -580,7 +580,7 @@
                 page: this.cur_page - 1,
                 size: this.size
             }).then((res) => {
-                this.loanerRejectedNumber = res.data.content.length;
+                this.loanerRejectedNumber = res.data.totalElements;
             }).catch((error) => {
                 this.$message.error(error.response.data.message);
             });
@@ -601,7 +601,7 @@
                 page: this.cur_page - 1,
                 size: this.size
             }).then((res) => {
-                this.loanerReturnedNumber = res.data.content.length;
+                this.loanerReturnedNumber = res.data.totalElements;
             }).catch((error) => {
                 this.$message.error(error.response.data.message);
             })
@@ -682,13 +682,13 @@
                     this.totalElements = res.data.totalElements;
                     //获取单据数量
                     if(a === 'Unconfirmed'){
-                        this.unconfirmedNumber = this.tableData.length;
+                        this.unconfirmedNumber = res.data.totalElements;
                     }
                     if(a === 'LoanerRejected'){
-                        this.loanerRejectedNumber = this.tableData.length;
+                        this.loanerRejectedNumber = res.data.totalElements;
                     }
                     if(a === 'LoanerReturned'){
-                        this.loanerReturnedNumber = this.tableData.length;
+                        this.loanerReturnedNumber = res.data.totalElements;
                     }
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);

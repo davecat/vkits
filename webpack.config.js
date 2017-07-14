@@ -77,6 +77,14 @@ module.exports = {
             }
         }
     },
+    externals: {
+        'vue': 'Vue',
+        'vue-router': 'VueRouter',
+        'vuex': 'Vuex',
+        'axios': 'axios',
+        'echarts': 'echarts',
+        'element-ui': 'ELEMENT',
+    },
     performance: {
         hints: false
     },
@@ -95,7 +103,7 @@ if (process.env.NODE_ENV === 'production') {
             }
         }),
         new webpack.optimize.UglifyJsPlugin({
-            sourceMap: false,
+            sourceMap: true,
             compress: {
                 warnings: false
             }
