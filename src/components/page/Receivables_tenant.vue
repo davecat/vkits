@@ -109,6 +109,9 @@
                         min-width="100"
                         prop="overdueFee"
                         label="逾期费用">
+                    <template scope="scope">
+                        {{ scope.row.overdueFee | currency }}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="100"
