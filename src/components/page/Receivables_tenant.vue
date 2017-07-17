@@ -199,8 +199,7 @@
                             v-model="form.factPayeeDate"
                             type="date"
                             placeholder="选择日期"
-                            :default-value="form.factPayeeDate"
-                            :picker-options="pickerOptions0">
+                            :default-value="form.factPayeeDate">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="支付方式：" :label-width="formLabelWidth" prop="customPayerType">
@@ -322,11 +321,6 @@
 //                    factPayerDate: [{type: 'date', required: true, message: '请选择日期', trigger: 'blur'}],
 //                    remarks: [{required: true, message: '请输入备注', trigger: 'blur'}],
                     customPayerType: [{required: true, message: '请选择类型', trigger: 'change'}]
-                },
-                pickerOptions0: {
-                    disabledDate(time) {
-                        return time.getTime() < Date.now() - 8.64e7;
-                    }
                 },
                 overdue1:true,
                 overdue: false//控制逾期日期和逾期天数是否显示
