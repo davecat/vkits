@@ -142,15 +142,7 @@
                     style="width: 100%">
                 <el-table-column
                         type="index"
-                        width="50">
-                </el-table-column>
-                <el-table-column
-                        min-width="160"
-                        prop="amount"
-                        label="账单金额">
-                    <template scope="scope">
-                        {{ scope.row.amount |  currency}}
-                    </template>
+                        width="80">
                 </el-table-column>
                 <el-table-column
                         min-width="160"
@@ -158,6 +150,14 @@
                         label="应还款日期">
                     <template scope="scope">
                         {{ scope.row.paymentDueDate |  dateFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
+                        prop="amount"
+                        label="账单金额">
+                    <template scope="scope">
+                        {{ scope.row.amount |  currency}}
                     </template>
                 </el-table-column>
                 <el-table-column
