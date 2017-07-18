@@ -57,6 +57,15 @@
                         label="门店编号">
                 </el-table-column>
                 <el-table-column
+                        min-width="180"
+                        prop="city"
+                        label="门店城市">
+                    <template scope="scope">
+                        {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
+                        scope.row.district | districtFormat }}
+                    </template>
+                </el-table-column>
+                <el-table-column
                         prop="name"
                         label="门店名称">
                 </el-table-column>
@@ -275,6 +284,28 @@
         computed: {
             staff (){
                 return this.$store.state.staff.staff
+            }
+        },
+        filters: {
+            districtFormat: function (value) {
+                if(!value){
+                    return ''
+                }
+                let district;
+                let findLabel = (item, value) => {
+                    if(item) {
+                        return item.some(i => {
+                            if (value === i.value) {
+                                district = i;
+                                return true;
+                            } else {
+                                return findLabel(i.children, value)
+                            }
+                        });
+                    }
+                };
+                findLabel(json, value);
+                return district.label;
             }
         },
         methods: {
