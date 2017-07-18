@@ -22,7 +22,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="申请编号：">
-                    <el-input v-model="searchForm.applictionNo" placeholder="支持模糊查询"></el-input>
+                    <el-input v-model="searchForm.applicationNo" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="合同编号：">
                     <el-input v-model="searchForm.contractNo" placeholder="支持模糊查询"></el-input>
@@ -38,7 +38,7 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="租客姓名：">
-                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
+                    <el-input v-model="searchForm.customerName" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="联系方式：">
                     <el-input v-model="searchForm.mobile" placeholder="支持模糊查询"></el-input>
@@ -241,7 +241,7 @@
                 branchList: {},
                 loanerList: {},
                 searchForm: {
-                    applictionNo: '',
+                    applicationNo: '',
                     contractNo: '',
                     applyDate: '',
                     startDate: '',
@@ -363,7 +363,7 @@
                 this.billsData = currentRow.bills;
             },
             getAgencyList() {
-                this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
+                this.axios.get('/api/v1/admin/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
