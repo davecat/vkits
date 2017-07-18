@@ -76,7 +76,7 @@
                 <el-table-column
                         min-width="180"
                         prop="city"
-                        label="租房城市">
+                        label="城市">
                     <template scope="scope">
                         {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
                         scope.row.district | districtFormat }}
@@ -192,6 +192,7 @@
 
 <script>
     import { pagination } from '../mixins/pagination.js'
+    import json from "../../../static/city.json";
     export default {
         mixins: [pagination],
         data() {

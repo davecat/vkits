@@ -216,7 +216,7 @@
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="租期：">
-                        <span>{{ currentRow.rentPeriod }} 个月</span>
+                        <span>{{ currentRow.rentPeriod }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
