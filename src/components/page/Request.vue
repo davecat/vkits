@@ -8,8 +8,8 @@
         </div>
 
         <el-row>
-            <el-form v-if="staff.staffType === 'Branch'" :inline="true" :model="searchForm">
-                <el-form-item label="起租日期：">
+            <el-form :inline="true" :model="searchForm">
+                <el-form-item label="申请日期：">
                     <el-date-picker
                             v-model="searchForm.applyDate"
                             align="right"
@@ -21,45 +21,19 @@
                 </el-form-item>
                 <el-form-item label="租客姓名：">
                     <el-input v-model="searchForm.customerName" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="城市：">
+                    <el-select v-model="searchForm.cityId" filterable @change="getBranchList(searchForm.cityId)">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="city in cityList" :key="city.id" :label="city.name"
+                                   :value="city.id"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="门店：">
                     <el-select v-model="searchForm.branchId">
                         <el-option label="全部" value=""></el-option>
                         <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name"
                                    :value="branch.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="Search">查询</el-button>
-                </el-form-item>
-            </el-form>
-            <el-form v-else :inline="true" :model="searchForm">
-                <el-form-item label="申请编号：">
-                    <el-input v-model="searchForm.applictionNo" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
-                <el-form-item label="起租日期：">
-                    <el-date-picker
-                            v-model="searchForm.applyDate"
-                            align="right"
-                            type="daterange"
-                            placeholder="选择日期范围"
-                            @change="selectedData"
-                            :picker-options="pickerOptions">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="租客姓名：">
-                    <el-input v-model="searchForm.customerName" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
-                <el-form-item label="所属中介：">
-                    <el-select v-model="searchForm.agencyId" @change="getBranchList(searchForm.agencyId)">
-                        <el-option label="全部" value=""></el-option>
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="门店：">
-                    <el-select v-model="searchForm.branchId">
-                        <el-option label="全部" value=""></el-option>
-                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -110,7 +84,7 @@
                         prop="startDate"
                         label="起止日期">
                     <template scope="scope">
-                        {{ scope.row.startDate |  dateFormat}}-{{ scope.row.endDate |  dateFormat}}
+                        {{ scope.row.startDate | dateFormat}}-{{ scope.row.endDate | dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -118,7 +92,7 @@
                         prop="monthlyRent"
                         label="月租金">
                     <template scope="scope">
-                        {{ scope.row.monthlyRent |  currency}}
+                        {{ scope.row.monthlyRent | currency}}
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -148,14 +122,14 @@
                         prop="responsibleAgent"
                         label="经纪人">
                     <template scope="scope">
-                        {{ scope.row.responsibleAgency }}-{{ scope.row.responsibleBranch }}-{{ scope.row.responsibleAgent }}
+                        {{ scope.row.responsibleBranch }}-{{ scope.row.responsibleAgent }}
                     </template>
                 </el-table-column>
                 <el-table-column v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
-                        fixed="right"
-                        min-width="80"
-                        prop="enabled"
-                        label="操作">
+                                 fixed="right"
+                                 min-width="80"
+                                 prop="enabled"
+                                 label="操作">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="补充／修改分期申请" placement="top-end">
                             <el-button size="small" type="primary"
@@ -611,8 +585,8 @@
 <script>
     import json from "../../../static/city.json";
     import format from 'date-fns/format'
-//    import { pagination } from '../mixins/pagination.js'
-    import { qiniu } from '../mixins/qiniu.js'
+    //    import { pagination } from '../mixins/pagination.js'
+    import {qiniu} from '../mixins/qiniu.js'
     export default {
         mixins: [qiniu],
         data() {
@@ -634,6 +608,7 @@
                     customerName: '',
                     agencyId: '',
                     branchId: '',
+                    cityId: '',
                     status: 'Unchecked'
                 },
                 form: {
@@ -746,15 +721,21 @@
         created(){
             this.getData();
             this.init();
-            if(this.staff.staffType === 'Branch') {
-                this.getBranchListByBranch();
-            } else {
-                this.getAgencyList();
-            }
         },
         computed: {
             staff (){
                 return this.$store.state.staff.staff
+            },
+            cityList () {
+                let citys = [];
+                json.forEach(item => {
+                    if(item.children){
+                        item.children.forEach(i => {
+                            citys.push({id: i.value, name: i.label});
+                        })
+                    }
+                });
+                return citys;
             }
         },
         filters: {
@@ -800,12 +781,12 @@
                 }
             },
             districtFormat: function (value) {
-                if(!value){
+                if (!value) {
                     return ''
                 }
                 let district;
                 let findLabel = (item, value) => {
-                    if(item) {
+                    if (item) {
                         return item.some(i => {
                             if (value === i.value) {
                                 district = i;
@@ -833,10 +814,10 @@
                 }).then((res) => {
                     this.tableData = res.data.content;
                     this.totalElements = res.data.totalElements;
-                    if(a === 'Unchecked'){
+                    if (a === 'Unchecked') {
                         this.uncheckedNumber = res.data.totalElements;
                     }
-                    if(a === 'Returned'){
+                    if (a === 'Returned') {
                         this.returnedNumber = res.data.totalElements;
                     }
                 }).catch((error) => {
@@ -889,7 +870,7 @@
                 this.dialogBigPhoto = true;
             },
             handleEdit(row) {
-                this.form = Object.assign({},row);
+                this.form = Object.assign({}, row);
                 this.idCardFrontPhoto = row.idCardFrontPhoto;
                 this.idCardVersoPhoto = row.idCardVersoPhoto;
                 this.idCardAndPersonPhoto = row.idCardAndPersonPhoto;
@@ -979,15 +960,15 @@
                     //这里处理省市县的id
                     json.forEach((item) => {
                         //省
-                        if(that.currentRow.province === item.value){
-                            that.currentRow.provinceName = item.label+'/';
+                        if (that.currentRow.province === item.value) {
+                            that.currentRow.provinceName = item.label + '/';
                             //市
                             item.children.forEach((item) => {
-                                if(that.currentRow.city === item.value){
-                                    that.currentRow.cityName = item.label+'/';
+                                if (that.currentRow.city === item.value) {
+                                    that.currentRow.cityName = item.label + '/';
                                     //县
                                     item.children.forEach((item) => {
-                                        if(that.currentRow.district === item.value){
+                                        if (that.currentRow.district === item.value) {
                                             that.currentRow.districtName = item.label;
                                         }
                                     })
@@ -1035,9 +1016,10 @@
                     this.$message.error(error.response.data.message);
                 })
             },
-            getBranchList(agencyId) {
-                if(agencyId !== '') {
-                    this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencyId).then((res) => {
+            getBranchList(cityId) {
+                if (cityId !== '') {
+                    let param = {city: [cityId]};
+                    this.axios.post('/api/v1/branch/getBranchListByLocation', param).then((res) => {
                         this.branchList = res.data;
                     }).catch((error) => {
                         this.$message.error(error.response.data.message);
@@ -1046,14 +1028,7 @@
                     this.searchForm.branchId = '';
                     this.branchList = [];
                 }
-            },
-            getBranchListByBranch() {
-                this.axios.get('/api/v1/branch/getBranchList').then((res) => {
-                    this.branchList = res.data;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
-            },
+            }
         }
     }
 </script>
@@ -1083,6 +1058,7 @@
     .clearfix:after {
         clear: both
     }
+
     .avatar-uploader .el-upload {
         border: 1px dashed #d9d9d9;
         border-radius: 6px;
@@ -1091,9 +1067,11 @@
         overflow: hidden;
         width: 100%;
     }
+
     .avatar-uploader .el-upload:hover {
         border-color: #20a0ff;
     }
+
     .avatar-uploader-icon {
         font-size: 28px;
         color: #8c939d;
@@ -1102,11 +1080,13 @@
         line-height: 178px;
         text-align: center;
     }
+
     .avatar {
         width: 178px;
         height: 178px;
         display: block;
     }
+
     .item {
         margin-left: 4px;
         vertical-align: sub;

@@ -330,10 +330,12 @@
                 if(!value){
                     return ''
                 }
+                let district;
                 let findLabel = (item, value) => {
                     if(item) {
-                        return item.find(i => {
+                        return item.some(i => {
                             if (value === i.value) {
+                                district = i;
                                 return true;
                             } else {
                                 return findLabel(i.children, value)
@@ -341,7 +343,7 @@
                         });
                     }
                 };
-                let district = findLabel(json, value);
+                findLabel(json, value);
                 return district.label;
             },
         },
