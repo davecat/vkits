@@ -75,6 +75,10 @@
                         label="门店编号">
                 </el-table-column>
                 <el-table-column
+                        prop="name"
+                        label="门店名称">
+                </el-table-column>
+                <el-table-column
                         min-width="180"
                         prop="city"
                         label="门店城市">
@@ -82,10 +86,6 @@
                         {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
                         scope.row.district | districtFormat }}
                     </template>
-                </el-table-column>
-                <el-table-column
-                        prop="name"
-                        label="门店名称">
                 </el-table-column>
                 <el-table-column
                         prop="address"
