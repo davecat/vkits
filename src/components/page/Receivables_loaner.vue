@@ -35,6 +35,16 @@
                             :picker-options="pickerOptions">
                     </el-date-picker>
                 </el-form-item>
+                <el-form-item label="合同审批日期：">
+                    <el-date-picker
+                            v-model="searchForm.applyDate3"
+                            align="right"
+                            type="daterange"
+                            placeholder="选择日期范围"
+                            @change="selectedData3"
+                            :picker-options="pickerOptions">
+                    </el-date-picker>
+                </el-form-item>
                 <el-form-item label="状态：">
                     <el-select v-model="searchForm.status">
                         <el-option label="全部" value=""></el-option>
@@ -240,10 +250,13 @@
                 searchForm: {
                     applyDate: '',
                     applyDate2: '',
+                    applyDate3: '',
                     payeeDateStart: '',
                     payeeDateEnd: '',
                     factPayeeDateStart: '',
                     factPayeeDateEnd: '',
+                    contractApprovalDateStart: '',
+                    contractApprovalDateEnd: '',
                     loanerId: '',
                     status: '',
                     type: 'receivables'
@@ -286,6 +299,15 @@
                 } else {
                     this.searchForm.factPayeeDateStart = '';
                     this.searchForm.factPayeeDateEnd = '';
+                }
+            },
+            selectedData3() {
+                if (this.searchForm.applyDate3[0] !== null) {
+                    this.searchForm.contractApprovalDateStart = format(this.searchForm.applyDate3[0], 'YYYY-MM-DD');
+                    this.searchForm.contractApprovalDateEnd = format(this.searchForm.applyDate3[1], 'YYYY-MM-DD');
+                } else {
+                    this.searchForm.contractApprovalDateStart = '';
+                    this.searchForm.contractApprovalDateEnd = '';
                 }
             },
             getLoanerList() {
