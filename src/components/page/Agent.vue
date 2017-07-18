@@ -14,14 +14,17 @@
             <el-button type="primary" @click="dialogVisible1 = true">停用</el-button>
         </el-row>
         <el-row>
-            <el-form v-if="staff.staffType !== 'Branch'" :inline="true" :model="form">
+            <el-form :inline="true" :model="form">
                 <el-form-item label="姓名：">
                     <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="联系电话：">
+                    <el-input v-model="searchForm.tel" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item label="所属中介：">
-                    <el-select v-model="searchForm.agencyId" @change="getBranchList(searchForm.agencyId)">
+                    <el-select  @change="getBranchList(searchForm.agencyId)">
                         <el-option label="全部" value=""></el-option>
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name" :value="agency.id"></el-option>
+                        <el-option ></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="所属门店：">
@@ -30,42 +33,15 @@
                         <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="联系电话：">
-                    <el-input v-model="searchForm.tel" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
-                <el-form-item label="人员状态：">
-                    <el-select v-model="searchForm.status" placeholder="请选择">
-                        <el-option label="待审批" value="Pending"></el-option>
-                        <el-option label="审批不通过" value="NoPass"></el-option>
-                        <el-option label="启用" value="Enabled"></el-option>
-                        <el-option label="停用" value="Disable"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="Search">查询</el-button>
-                </el-form-item>
-            </el-form>
-            <el-form v-else :inline="true" :model="form">
-                <el-form-item label="姓名：">
-                    <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
-                <el-form-item label="所属门店：">
-                    <el-select v-model="searchForm.branchId">
-                        <el-option label="全部" value=""></el-option>
-                        <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="联系电话：">
-                    <el-input v-model="searchForm.tel" placeholder="支持模糊查询"></el-input>
-                </el-form-item>
-                <el-form-item label="人员状态：">
-                    <el-select v-model="searchForm.status" placeholder="请选择">
-                        <el-option label="待审批" value="Pending"></el-option>
-                        <el-option label="审批不通过" value="NoPass"></el-option>
-                        <el-option label="启用" value="Enabled"></el-option>
-                        <el-option label="停用" value="Disable"></el-option>
-                    </el-select>
-                </el-form-item>
+
+                <!--<el-form-item label="人员状态：">-->
+                    <!--<el-select v-model="searchForm.status" placeholder="请选择">-->
+                        <!--<el-option label="待审批" value="Pending"></el-option>-->
+                        <!--<el-option label="审批不通过" value="NoPass"></el-option>-->
+                        <!--<el-option label="启用" value="Enabled"></el-option>-->
+                        <!--<el-option label="停用" value="Disable"></el-option>-->
+                    <!--</el-select>-->
+                <!--</el-form-item>-->
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
                 </el-form-item>
@@ -82,28 +58,33 @@
                 <el-table-column type="selection" width="80">
                 </el-table-column>
                 <el-table-column
-                        prop="agentNo"
-                        label="人员编号">
+                        prop="staffNo"
+                        label="工号">
                 </el-table-column>
                 <el-table-column
                         prop="name"
                         label="姓名">
                 </el-table-column>
                 <el-table-column
-                        prop="agencyName"
-                        label="所属中介">
-                </el-table-column>
-                <el-table-column
-                        prop="branchName"
-                        label="所属门店">
-                </el-table-column>
-                <el-table-column
                         prop="tel"
                         label="联系电话">
                 </el-table-column>
                 <el-table-column
-                        prop="staffNo"
-                        label="工号">
+                        prop="agencyName"
+                        label="所属中介">
+                </el-table-column>
+                <el-table-column
+                        min-width="180"
+                        prop="city"
+                        label="租房城市">
+                    <template scope="scope">
+                        {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
+                        scope.row.district | districtFormat }}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        prop="branchName"
+                        label="所属门店">
                 </el-table-column>
                 <el-table-column
                         prop="status"
@@ -216,14 +197,11 @@
         data() {
             return {
                 url: '/api/v1/agent/getAgentPage',
-                agencyList: {},
-                branchList: {},
+                branchList: [],
                 searchForm: {
                     name: '',
-                    agencyId: '',
                     branchId: '',
                     tel: '',
-                    status: ''
                 },
                 form: {
                     name: '',
@@ -246,11 +224,7 @@
             }
         },
         created(){
-            if(this.staff.staffType === 'Branch') {
-                this.getBranchListByBranch();
-            } else {
-                this.getAgencyList();
-            }
+            this.getBranchList();
         },
         computed: {
             staff (){
@@ -268,29 +242,30 @@
                 } else if (value === "Disable") {
                     return "停用";
                 }
+            },
+            districtFormat: function (value) {
+                if(!value){
+                    return ''
+                }
+                let district;
+                let findLabel = (item, value) => {
+                    if(item) {
+                        return item.some(i => {
+                            if (value === i.value) {
+                                district = i;
+                                return true;
+                            } else {
+                                return findLabel(i.children, value)
+                            }
+                        });
+                    }
+                };
+                findLabel(json, value);
+                return district.label;
             }
         },
         methods: {
-            getAgencyList() {
-                this.axios.get('/api/v1/agency/getAgencyList').then((res) => {
-                    this.agencyList = res.data;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
-            },
-            getBranchList(agencyId) {
-                if(agencyId !== '') {
-                    this.axios.get('/api/v1/branch/getBranchListByAgencyId/' + agencyId).then((res) => {
-                        this.branchList = res.data;
-                    }).catch((error) => {
-                        this.$message.error(error.response.data.message);
-                    })
-                } else {
-                    this.searchForm.branchId = '';
-                    this.branchList = [];
-                }
-            },
-            getBranchListByBranch() {
+            getBranchList() {
                 this.axios.get('/api/v1/branch/getBranchList').then((res) => {
                     this.branchList = res.data;
                 }).catch((error) => {
