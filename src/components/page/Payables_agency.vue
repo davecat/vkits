@@ -48,6 +48,14 @@
                 </el-form-item>
             </el-form>
         </el-row>
+        <el-row style="position: absolute;width: 100%;height: 42px;line-height: 42px;color: red;">
+            <el-col :span="4" style="position: absolute;right: 20%">
+                房租合计: {{ totalRent | currency}}
+            </el-col>
+            <el-col :span="4" style="position: absolute;right: 5%">
+                代付合计: {{ totalPayment | currency}}
+            </el-col>
+        </el-row>
         <el-row>
             <el-tabs v-model="searchForm.type" type="card" @tab-click="handleChangeTab">
                 <el-tab-pane label="应付款" name="receivables"></el-tab-pane>
@@ -172,7 +180,6 @@
                 实际付款日期: {{ currentRow.factPayerDate | dateFormat }}
             </el-col>
         </el-row>
-
         <el-row>
             <el-table
                     :data="payablesDetail"
@@ -282,12 +289,14 @@
 </template>
 
 <script>
-    import {pagination} from '../mixins/pagination.js'
+//    import {pagination} from '../mixins/pagination.js'
     import format from 'date-fns/format'
     export default {
-        mixins: [pagination],
+//        mixins: [pagination],
         data() {
             return {
+                totalRent: 0,//房租合计
+                totalPayment: 0,//代付合计
                 pickerOptions: {
                     shortcuts: [
                         {
@@ -327,6 +336,10 @@
                         }
                     ]
                 },
+                tableData: [],
+                cur_page: 1,
+                size: 10,
+                totalElements: 0,
                 url: '/postlending/api/v1/payer/agency/getPayerAgencyPage',
                 searchForm: {
                     applyDate: '',
@@ -372,6 +385,7 @@
             }
         },
         created(){
+            this.getData();
             this.getAgencyList();
         },
         filters: {
@@ -382,6 +396,30 @@
             },
         },
         methods: {
+            handleCurrentChange(val){
+                this.cur_page = val;
+                this.getData();
+            },
+            getData(){
+                let that = this;
+                this.axios.post(this.url, {
+                    ...this.searchForm,
+                    page: this.cur_page - 1,
+                    size: this.size
+                }).then((res) => {
+                    this.tableData = res.data.content;
+                    this.totalElements = res.data.totalElements;
+                    this.tableData.forEach((item) =>{
+                        that.totalRent+=item.totalAmount;
+                        that.totalPayment += item.payerAmount;
+                    });
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
+            },
+            Search() {
+                this.getData();
+            },
             getAgencyList() {
                 this.axios.get('/api/v1/admin/agency/getAgencyList').then((res) => {
                     this.agencyList = res.data;
