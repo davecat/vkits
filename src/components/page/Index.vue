@@ -1,4 +1,4 @@
-<script src="../../../../../../Downloads/china.js"></script>
+<!--<script src="../../../../../../Downloads/china.js"></script>-->
 <template>
     <div>
         <div class="crumbs">
@@ -9,64 +9,60 @@
         </div>
 
         <el-row :gutter="30">
-            <el-col :span="8">
+            <el-col :span="6">
                 <el-card class="box-card">
-                    <el-row class="text item">
-                        <el-col :span="12">
-                            <span class="bigText">今日实时</span>
-                        </el-col>
-                        <el-col :span="12">
-                            <span style="line-height: 30px;">笔数: 100</span>
-                        </el-col>
+                    <div slot="header" class="clearfix" style="position: relative">
+                        <span style="line-height: 36px;text-align: center;width: 100%;display: inline-block;">申请总数</span>
+                    </div>
+                    <el-row style="text-align: center">
+                        <span class="bigText">{{total.total}}</span>
                     </el-row>
                     <el-row class="text item">
                         <el-col :span="12">
-                            <span>交易额（元）：</span>
-                            <span class="bigText">160,920</span>
+                            <span style="line-height: 30px;float: left">待审核：{{total.unconfirmed}}</span>
                         </el-col>
                         <el-col :span="12">
-                            <span style="line-height: 30px;">平均金额（元）：11,047</span>
+                            <span style="line-height: 30px;float: right">审批不通过：{{total.rejected}}</span>
                         </el-col>
                     </el-row>
                 </el-card>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="6">
                 <el-card class="box-card">
-                    <el-row class="text item">
-                        <el-col :span="12">
-                            <span class="bigText">昨日</span>
-                        </el-col>
-                        <el-col :span="12">
-                            <span style="line-height: 20px;">笔数: 100</span>
-                        </el-col>
+                    <div slot="header" class="clearfix" style="position: relative">
+                        <span style="line-height: 36px;text-align: center;width: 100%;display: inline-block;">今日申请</span>
+                    </div>
+                    <el-row style="text-align: center">
+                        <span class="bigText">{{today.total}}</span>
                     </el-row>
-                    <el-row class="text item">
-                        <el-col :span="12">
-                            <span>交易额（元）：220,833</span>
-                        </el-col>
-                        <el-col :span="12">
-                            <span style="line-height: 20px;">平均金额（元）：11,047</span>
-                        </el-col>
+                    <el-row style="text-align: center;height: 30px">
+                        <span class="text">总金额：{{today.amount}}元</span>
                     </el-row>
                 </el-card>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="6">
                 <el-card class="box-card">
-                    <el-row class="text item">
-                        <el-col :span="12">
-                            <span class="bigText">前日</span>
-                        </el-col>
-                        <el-col :span="12">
-                            <span style="line-height: 20px;">笔数: 100</span>
-                        </el-col>
+                    <div slot="header" class="clearfix" style="position: relative">
+                        <span style="line-height: 36px;text-align: center;width: 100%;display: inline-block;">本周申请</span>
+                    </div>
+                    <el-row style="text-align: center">
+                        <span class="bigText">{{week.total}}</span>
                     </el-row>
-                    <el-row class="text item">
-                        <el-col :span="12">
-                            <span>交易额（元）：199,106</span>
-                        </el-col>
-                        <el-col :span="12">
-                            <span style="line-height: 20px;">平均金额（元）：12,113</span>
-                        </el-col>
+                    <el-row style="text-align: center;height: 30px">
+                        <span class="text">总金额：{{week.amount}}元</span>
+                    </el-row>
+                </el-card>
+            </el-col>
+            <el-col :span="6">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix" style="position: relative">
+                        <span style="line-height: 36px;text-align: center;width: 100%;display: inline-block;">本月申请</span>
+                    </div>
+                    <el-row style="text-align: center">
+                        <span class="bigText">{{month.total}}</span>
+                    </el-row>
+                    <el-row style="text-align: center;height: 30px">
+                        <span class="text">总金额：{{month.amount}}元</span>
                     </el-row>
                 </el-card>
             </el-col>
@@ -140,6 +136,10 @@
         name: '',
         data () {
             return {
+                total:{},//单据数量对象
+                today: {},
+                week: {},
+                month: {},
                 lineCharts: '',
                 lineStackCharts: '',
             }
@@ -148,7 +148,20 @@
             this.drawLine('line');
             this.drawLineStack('lineStack');
         },
+        created() {
+            this.init()
+        },
         methods: {
+            init() {
+                this.axios.get('/api/v1/application/getAgentApplicationStatistics').then((res) => {
+                    this.total = res.data.total;
+                    this.today = res.data.today;
+                    this.week = res.data.week;
+                    this.month = res.data.month;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            },
             drawLine(id) {
                 this.lineCharts = echarts.init(document.getElementById(id));
                 this.lineCharts.setOption({
@@ -260,7 +273,7 @@
 </script>
 <style scoped>
     .text {
-        font-size: 12px;
+        font-size: 15px;
     }
 
     .bigText {
@@ -268,7 +281,14 @@
     }
 
     .item {
-        padding: 18px 0;
-        vertical-align: bottom;
+
+    }
+    .clearfix:before,
+    .clearfix:after {
+        display: table;
+        content: "";
+    }
+    .clearfix:after {
+        clear: both
     }
 </style>
