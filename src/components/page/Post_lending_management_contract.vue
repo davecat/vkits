@@ -50,11 +50,12 @@
         </el-row>
         <el-row>
             <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange">
-                <el-tab-pane label="已签署" name="Signed"></el-tab-pane>
                 <el-tab-pane label="还款中" name="Repayment"></el-tab-pane>
+                <el-tab-pane label="已逾期" name="Overdue"></el-tab-pane>
                 <el-tab-pane label="已结束" name="Finished"></el-tab-pane>
-                <el-tab-pane label="提前退租" name="InAdvanceFinished"></el-tab-pane>
-                <el-tab-pane label="违约" name="Breach"></el-tab-pane>
+                <el-tab-pane label="提前退租未还款" name="ExitNotRepaid"></el-tab-pane>
+                <el-tab-pane label="提前退租已还款" name="ExitRepaid"></el-tab-pane>
+                <el-tab-pane label="已签署" name="Signed"></el-tab-pane>
             </el-tabs>
             <el-table
                     :data="tableData"
@@ -250,7 +251,7 @@
                     agencyId: '',
                     loanerId: '',
                     mobile: '',
-                    status: 'Signed'
+                    status: 'Repayment'
                 },
                 pickerOptions: {
                     shortcuts: [
