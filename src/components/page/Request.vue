@@ -157,8 +157,8 @@
         <el-form label-position="left" inline
                  class="demo-table-expand">
             <el-row>
-                <el-col :span="12">
-                    <el-form-item label="审批备注：" class="reasonInputTextarea">
+                <el-col :span="10">
+                    <el-form-item label="审批备注：" id="reasonInputTextarea">
                         <el-input
                                 disabled
                                 type="textarea"
@@ -168,32 +168,20 @@
                         </el-input>
                     </el-form-item>
                 </el-col>
-                <el-col :span="12">
-                    <el-form-item label="待修改原因：" class="reasonInputTextarea1">
-                        <span style="width: 100%;height: 100%;">{{currentRow.idCardFrontOrVersoPhotoBlur?'身份证正反面照片不清晰':''}}</span>
-                        <span style="width: 100%;height: 100%;">{{currentRow.idCardAndPersonPhotoBlur?'手持身份证照片不清晰':''}}</span>
-                        <span style="width: 100%;height: 100%;">{{currentRow.contractPhotoBlur?'合同照片不清晰或不完整':''}}</span>
-                        <span style="width: 100%;height: 100%;">{{currentRow.addressBlur?'房屋地址不规范或不详细':''}}</span>
-                        <span style="width: 100%;height: 100%;">{{currentRow.customerInfoError?'租客信息有误':''}}</span>
-                        <span style="width: 100%;height: 100%;">{{currentRow.otherException?'其他问题':''}}</span>
-                    </el-form-item>
-                </el-col>
                 <el-col :span="8">
-                    <el-form-item label="经纪人：">
-                        <span>{{ currentRow.responsibleAgent }}</span>
+                    <el-form-item label="待修改原因：">
+                        <el-select v-model="reason" multiple placeholder="请选择" disabled>
+                            <el-option
+                                    v-for="item in reasonOption"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
                     </el-form-item>
                 </el-col>
-                <el-col :span="8">
-                    <el-form-item label="申请日期：">
-                        <span>{{ currentRow.applyDate | dateFormat }}</span>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                    <el-form-item label="申请状态：">
-                        <span>{{ currentRow.status | appStatusFormat }}</span>
-                    </el-form-item>
-                </el-col>
-                <!--<hr style="border-bottom-color: #d9d9d9; border-top: none;">-->
+            </el-row>
+            <el-row>
             </el-row>
             <el-row>
                 <el-col :span="8">
@@ -617,6 +605,7 @@
         mixins: [qiniu],
         data() {
             return {
+                reason: [],
                 reasonOption: [
                     {
                         value: 'idCardFrontOrVersoPhotoBlur',
@@ -1008,6 +997,24 @@
                     }
                 } else {
                     this.currentRow = val;
+                    if(this.currentRow.idCardFrontOrVersoPhotoBlur) {
+                        this.reason.push('idCardFrontOrVersoPhotoBlur')
+                    }
+                    if(this.currentRow.idCardAndPersonPhotoBlur) {
+                        this.reason.push('idCardAndPersonPhotoBlur')
+                    }
+                    if(this.currentRow.contractPhotoBlur) {
+                        this.reason.push('contractPhotoBlur')
+                    }
+                    if(this.currentRow.addressBlur) {
+                        this.reason.push('addressBlur')
+                    }
+                    if(this.currentRow.customerInfoError) {
+                        this.reason.push('customerInfoError')
+                    }
+                    if(this.currentRow.otherException) {
+                        this.reason.push('otherException')
+                    }
                     //这里处理省市县的id
                     json.forEach((item) => {
                         //省
@@ -1142,18 +1149,11 @@
         margin-left: 4px;
         vertical-align: sub;
     }
-    .reasonInputTextarea {
-        margin-right: 30px;
+    #reasonInputTextarea {
         width: 100%;
     }
-    .reasonInputTextarea1{
-        width:100%;
-    }
 
-    .reasonInputTextarea .el-form-item__content {
+    #reasonInputTextarea .el-form-item__content {
         width: 80%;
-    }
-    .reasonInputTextarea1 el-form-item__content {
-        width:80%;
     }
 </style>

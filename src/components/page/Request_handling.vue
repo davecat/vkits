@@ -93,6 +93,28 @@
                         {{ scope.row.totalAmount - scope.row.monthlyRent | currency }}
                     </template>
                 </el-table-column>
+                <el-table-column
+                        fixed="right"
+                        min-width="120"
+                        label="操作">
+                    <template scope="scope">
+                        <el-tooltip class="item" effect="dark" content="通过申请" placement="top-end">
+                            <el-button size="small" type="success" @click="openAccpetDailog(scope.row)"><i
+                                    class="fa fa-check"></i>
+                            </el-button>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="驳回修改" placement="top-end">
+                            <el-button size="small" type="warning" @click="openReturnDailog(scope.row)"><i
+                                    class="fa fa-share"></i>
+                            </el-button>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="拒绝申请" placement="top-end">
+                            <el-button size="small" type="danger" @click="openRejectDailog(scope.row)"><i
+                                    class="fa fa-minus-circle"></i>
+                            </el-button>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
             </el-table>
             <div class="pagination">
                 <el-pagination
@@ -103,37 +125,6 @@
             </div>
         </el-row>
         <el-form label-position="left" inline>
-            <el-row>
-                <el-col :span="10">
-                    <el-form-item label="审批备注：" id="reasonInputTextarea">
-                        <el-input
-                                type="textarea"
-                                autosize
-                                placeholder="请输入内容"
-                                v-model="currentRow.confirmRemarks">
-                        </el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                    <el-form-item label="待修改原因：">
-                        <el-select v-model="reason" multiple placeholder="请选择">
-                            <el-option
-                                    v-for="item in reasonOption"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                    <el-button type="primary" @click="openAccpetDailog">通过申请</el-button>
-                    <el-button type="primary" @click="openReturnDailog">驳回修改</el-button>
-                    <el-button type="primary" @click="openRejectDailog">拒绝申请</el-button>
-                </el-col>
-            </el-row>
-            <el-row>
-            </el-row>
             <el-row>
                 <el-col :span="8">
                     <el-form-item label="经纪人：">
@@ -362,9 +353,34 @@
 
         <el-dialog
                 title="驳回修改"
-                :visible.sync="dialogVisible4"
-                size="tiny">
-            <span>此操作会将选中分期申请驳回至中介修改，是否继续？</span>
+                :visible.sync="dialogVisible4">
+            <span style="margin-bottom: 24px;display: block">此操作会将选中分期申请驳回至中介修改，是否继续？</span>
+            <el-form label-position="left" inline>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="审批备注：" class="reasonInputTextarea">
+                            <el-input
+                                    type="textarea"
+                                    autosize
+                                    placeholder="请输入内容"
+                                    v-model="currentRow.confirmRemarks">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="待修改原因：">
+                            <el-select v-model="reason" multiple placeholder="请选择">
+                                <el-option
+                                        v-for="item in reasonOption"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible4 = false">取 消</el-button>
                 <el-button type="primary" @click="handleReturn">确 定</el-button>
@@ -373,9 +389,34 @@
 
         <el-dialog
                 title="审批不通过"
-                :visible.sync="dialogVisible5"
-                size="tiny">
-            <span>此操作会将选中分期申请拒绝通过审批，是否继续？</span>
+                :visible.sync="dialogVisible5">
+            <span style="margin-bottom: 24px;display: block">此操作会将选中分期申请拒绝通过审批，是否继续？</span>
+            <el-form label-position="left" inline>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="审批备注：" class="reasonInputTextarea">
+                            <el-input
+                                    type="textarea"
+                                    autosize
+                                    placeholder="请输入内容"
+                                    v-model="currentRow.confirmRemarks">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="待修改原因：">
+                            <el-select v-model="reason" multiple placeholder="请选择">
+                                <el-option
+                                        v-for="item in reasonOption"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible5 = false">取 消</el-button>
                 <el-button type="primary" @click="handleReject">确 定</el-button>
@@ -647,6 +688,7 @@
                 let ids = this.multipleSelection.map(row => {
                     return row.id
                 });
+                console.log(ids);
                 if (ids.length === 0) {
                     console.log('ids is null');
                 } else {
@@ -658,30 +700,14 @@
                 }
                 this.dialogVisible = false;
             },
-            openAccpetDailog() {
-                if (this.currentRow.id) {
-                    this.dialogVisible3 = true;
-                } else {
-                    this.$message.error('当前未选择');
-                }
+            openAccpetDailog(row) {
+                this.dialogVisible3 = true;
             },
             openReturnDailog() {
-                if (!this.currentRow.id) {
-                    this.$message.error('当前未选择');
-                } else if (!this.currentRow.confirmRemarks && this.currentRow.confirmRemarks === '' || this.reason.length === 0) {
-                    this.$message.error('请输入或选择修改原因');
-                } else {
-                    this.dialogVisible4 = true;
-                }
+                this.dialogVisible4 = true;
             },
             openRejectDailog() {
-                if (!this.currentRow.id) {
-                    this.$message.error('当前未选择');
-                } else if(!this.currentRow.confirmRemarks && this.currentRow.confirmRemarks === '' || this.reason.length === 0) {
-                    this.$message.error('请输入或选择拒绝原因');
-                } else {
-                    this.dialogVisible5 = true;
-                }
+                this.dialogVisible5 = true;
             },
             handleAccpet() {
                 let ids = [this.currentRow.id];
@@ -696,6 +722,10 @@
                 return arr.find(item => item === param) !== undefined;
             },
             handleReturn() {
+                if(!this.currentRow.confirmRemarks && this.currentRow.confirmRemarks === '' || this.reason.length === 0) {
+                    this.$message.error('请输入或选择修改原因');
+                    return;
+                }
                 let form = {
                     id: this.currentRow.id,
                     confirmRemarks: this.currentRow.confirmRemarks,
@@ -715,6 +745,10 @@
                 });
             },
             handleReject() {
+                if(!this.currentRow.confirmRemarks && this.currentRow.confirmRemarks === '' || this.reason.length === 0) {
+                    this.$message.error('请输入或选择拒绝原因');
+                    return;
+                }
                 let form = {
                     id: this.currentRow.id,
                     confirmRemarks: this.currentRow.confirmRemarks,
@@ -754,11 +788,11 @@
 </script>
 
 <style>
-    #reasonInputTextarea {
+    .reasonInputTextarea {
         width: 100%;
     }
 
-    #reasonInputTextarea .el-form-item__content {
+    .reasonInputTextarea .el-form-item__content {
         width: 80%;
     }
 </style>
