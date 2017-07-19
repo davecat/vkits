@@ -13,8 +13,8 @@
             <el-button type="primary" @click="dialogVisible = true">删除</el-button>
             <el-button type="primary" @click="dialogVisible2 = true">停用</el-button>
         </el-row>
-        <el-row v-if="staff.staffType !== 'Branch'">
-            <el-form :inline="true" :model="searchForm">
+        <el-row>
+            <el-form v-if="staff.staffType !== 'Branch'" :inline="true" :model="searchForm">
                 <el-form-item label="所属中介：">
                     <el-select v-model="searchForm.agencyId">
                         <el-option label="全部" value=""></el-option>
@@ -26,6 +26,24 @@
                 </el-form-item>
                 <el-form-item label="门店名称：">
                     <el-input v-model="searchForm.name" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
+                <el-form-item label="状态：">
+                    <el-select v-model="searchForm.enabled">
+                        <el-option label="启用" value="true"></el-option>
+                        <el-option label="停用" value="false"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="Search">查询</el-button>
+                </el-form-item>
+            </el-form>
+            <el-form v-else :inline="true" :model="searchForm">
+                <el-form-item label="城市：">
+                    <el-select v-model="searchForm.cityId" filterable>
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="city in cityList" :key="city.id" :label="city.name"
+                                   :value="city.id"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="状态：">
                     <el-select v-model="searchForm.enabled">
@@ -57,6 +75,10 @@
                         label="门店编号">
                 </el-table-column>
                 <el-table-column
+                        prop="name"
+                        label="门店名称">
+                </el-table-column>
+                <el-table-column
                         min-width="180"
                         prop="city"
                         label="门店城市">
@@ -64,10 +86,6 @@
                         {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
                         scope.row.district | districtFormat }}
                     </template>
-                </el-table-column>
-                <el-table-column
-                        prop="name"
-                        label="门店名称">
                 </el-table-column>
                 <el-table-column
                         prop="address"
@@ -243,6 +261,7 @@
                     agencyId: '',
                     code: '',
                     name: '',
+                    cityId: '',
                     enabled: 'true'
                 },
                 form: {
@@ -284,6 +303,17 @@
         computed: {
             staff (){
                 return this.$store.state.staff.staff
+            },
+            cityList () {
+                let citys = [];
+                json.forEach(item => {
+                    if(item.children){
+                        item.children.forEach(i => {
+                            citys.push({id: i.value, name: i.label});
+                        })
+                    }
+                });
+                return citys;
             }
         },
         filters: {

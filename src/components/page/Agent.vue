@@ -21,13 +21,14 @@
                 <el-form-item label="联系电话：">
                     <el-input v-model="searchForm.tel" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
-                <el-form-item label="所属中介：">
-                    <el-select  @change="getBranchList(searchForm.agencyId)">
+                <el-form-item label="城市：">
+                    <el-select v-model="searchForm.cityId" filterable @change="getBranchList(searchForm.cityId)">
                         <el-option label="全部" value=""></el-option>
-                        <el-option ></el-option>
+                        <el-option v-for="city in cityList" :key="city.id" :label="city.name"
+                                   :value="city.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="所属门店：">
+                <el-form-item label="门店：">
                     <el-select v-model="searchForm.branchId">
                         <el-option label="全部" value=""></el-option>
                         <el-option v-for="branch in branchList" :key="branch.id" :label="branch.name" :value="branch.id"></el-option>
@@ -76,7 +77,7 @@
                 <el-table-column
                         min-width="180"
                         prop="city"
-                        label="租房城市">
+                        label="城市">
                     <template scope="scope">
                         {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
                         scope.row.district | districtFormat }}
@@ -192,6 +193,7 @@
 
 <script>
     import { pagination } from '../mixins/pagination.js'
+    import json from "../../../static/city.json";
     export default {
         mixins: [pagination],
         data() {
@@ -201,6 +203,7 @@
                 searchForm: {
                     name: '',
                     branchId: '',
+                    cityId: '',
                     tel: '',
                 },
                 form: {
@@ -224,11 +227,21 @@
             }
         },
         created(){
-            this.getBranchList();
         },
         computed: {
             staff (){
                 return this.$store.state.staff.staff
+            },
+            cityList () {
+                let citys = [];
+                json.forEach(item => {
+                    if(item.children){
+                        item.children.forEach(i => {
+                            citys.push({id: i.value, name: i.label});
+                        })
+                    }
+                });
+                return citys;
             }
         },
         filters: {
@@ -265,12 +278,18 @@
             }
         },
         methods: {
-            getBranchList() {
-                this.axios.get('/api/v1/branch/getBranchList').then((res) => {
-                    this.branchList = res.data;
-                }).catch((error) => {
-                    this.$message.error(error.response.data.message);
-                })
+            getBranchList(cityId) {
+                if (cityId !== '') {
+                    let param = {city: [cityId]};
+                    this.axios.post('/api/v1/branch/getBranchListByLocation', param).then((res) => {
+                        this.branchList = res.data;
+                    }).catch((error) => {
+                        this.$message.error(error.response.data.message);
+                    })
+                } else {
+                    this.searchForm.branchId = '';
+                    this.branchList = [];
+                }
             },
             handleEdit(row) {
                 this.form.id = row.id;

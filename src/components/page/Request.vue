@@ -110,17 +110,17 @@
                 </el-table-column>
                 <el-table-column
                         min-width="180"
+                        prop="apartmentNo"
+                        label="房源编号">
+                </el-table-column>
+                <el-table-column
+                        min-width="180"
                         prop="city"
                         label="租房城市">
                     <template scope="scope">
                         {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
                         scope.row.district | districtFormat }}
                     </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="180"
-                        prop="apartmentNo"
-                        label="房源编号">
                 </el-table-column>
                 <el-table-column
                         min-width="200"

@@ -164,21 +164,6 @@
                         {{ scope.row.libApprovalDate | dateFormat }}
                     </template>
                 </el-table-column>
-                <el-table-column
-                        fixed="right"
-                        min-width="80"
-                        prop="enabled"
-                        label="操作">
-                    <template scope="scope">
-                        <el-tooltip v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
-                                    class="item" effect="dark" content="补充／修改分期申请" placement="top-end">
-                            <el-button size="small" type="primary"
-                                       @click="handleEdit(scope.row)"><i
-                                    class="fa fa-pencil-square-o"></i>
-                            </el-button>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
             </el-table>
             <div class="pagination">
                 <el-pagination
@@ -216,7 +201,7 @@
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="租期：">
-                        <span>{{ currentRow.rentPeriod }} 个月</span>
+                        <span>{{ currentRow.rentPeriod }}</span>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
