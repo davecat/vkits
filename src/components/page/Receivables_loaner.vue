@@ -57,6 +57,14 @@
                 </el-form-item>
             </el-form>
         </el-row>
+        <el-row style="position: absolute;width: 100%;height: 42px;line-height: 42px;color: red;">
+            <el-col :span="4" style="position: absolute;right: 20%">
+                合计金额: {{ totalAmount | currency}}
+            </el-col>
+            <el-col :span="4" style="position: absolute;right: 5%">
+                待确认: {{ totalConfirm | currency}}
+            </el-col>
+        </el-row>
         <el-row>
             <el-tabs v-model="searchForm.type" type="card" @tab-click="handleChangeTab">
                 <el-tab-pane label="应收款" name="receivables"></el-tab-pane>
@@ -201,10 +209,10 @@
 </template>
 
 <script>
-    import { pagination } from '../mixins/pagination.js'
+//    import { pagination } from '../mixins/pagination.js'
     import format from 'date-fns/format'
     export default {
-        mixins: [pagination],
+//        mixins: [pagination],
         data() {
             return {
                 pickerOptions: {
@@ -246,6 +254,10 @@
                         }
                     ]
                 },
+                tableData: [],
+                cur_page: 1,
+                size: 10,
+                totalElements: 0,
                 url: '/postlending/api/v1/payee/loaner/getPayeeLoanerPage',
                 searchForm: {
                     applyDate: '',
@@ -273,6 +285,7 @@
             }
         },
         created(){
+            this.getData();
             this.getLoanerList();
         },
         filters: {
@@ -282,7 +295,44 @@
                 }
             }
         },
+        computed: {
+            totalAmount() {
+                let totalAmount = 0;
+                this.tableData.forEach(item => {
+                    totalAmount+=item.payeeTotalAmount;
+                });
+                return totalAmount;
+            },
+            totalConfirm() {
+                let totalConfirm = 0;
+                this.tableData.forEach((item) =>{
+                    if(item.status === "Unconfirmed"){
+                        totalConfirm += item.payeeTotalAmount;
+                    }
+                });
+                return totalConfirm;
+            }
+        },
         methods: {
+            handleCurrentChange(val){
+                this.cur_page = val;
+                this.getData();
+            },
+            getData(){
+                this.axios.post(this.url, {
+                    ...this.searchForm,
+                    page: this.cur_page - 1,
+                    size: this.size
+                }).then((res) => {
+                    this.tableData = res.data.content;
+                    this.totalElements = res.data.totalElements;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
+            },
+            Search() {
+                this.getData();
+            },
             selectedData() {
                 if (this.searchForm.applyDate[0] !== null) {
                     this.searchForm.payeeDateStart = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');

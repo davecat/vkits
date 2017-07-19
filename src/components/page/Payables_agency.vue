@@ -295,8 +295,6 @@
 //        mixins: [pagination],
         data() {
             return {
-                totalRent: 0,//房租合计
-                totalPayment: 0,//代付合计
                 pickerOptions: {
                     shortcuts: [
                         {
@@ -395,13 +393,28 @@
                 }
             },
         },
+        computed: {
+            totalRent() {
+                let totalRent = 0;
+                this.tableData.forEach(item => {
+                    totalRent+=item.totalAmount;
+                });
+                return totalRent;
+            },
+            totalPayment() {
+                let totalPayment = 0;
+                this.tableData.forEach((item) =>{
+                    totalPayment += item.payerAmount;
+                });
+                return totalPayment;
+            }
+        },
         methods: {
             handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();
             },
             getData(){
-                let that = this;
                 this.axios.post(this.url, {
                     ...this.searchForm,
                     page: this.cur_page - 1,
@@ -409,10 +422,6 @@
                 }).then((res) => {
                     this.tableData = res.data.content;
                     this.totalElements = res.data.totalElements;
-                    this.tableData.forEach((item) =>{
-                        that.totalRent+=item.totalAmount;
-                        that.totalPayment += item.payerAmount;
-                    });
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 })
