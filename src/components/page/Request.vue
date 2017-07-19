@@ -157,6 +157,27 @@
         <el-form label-position="left" inline
                  class="demo-table-expand">
             <el-row>
+                <el-col :span="12">
+                    <el-form-item label="审批备注：" class="reasonInputTextarea">
+                        <el-input
+                                disabled
+                                type="textarea"
+                                autosize
+                                placeholder="请输入内容"
+                                v-model="currentRow.confirmRemarks">
+                        </el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="待修改原因：" class="reasonInputTextarea1">
+                        <span style="width: 100%;height: 100%;">{{currentRow.idCardFrontOrVersoPhotoBlur?'身份证正反面照片不清晰':''}}</span>
+                        <span style="width: 100%;height: 100%;">{{currentRow.idCardAndPersonPhotoBlur?'手持身份证照片不清晰':''}}</span>
+                        <span style="width: 100%;height: 100%;">{{currentRow.contractPhotoBlur?'合同照片不清晰或不完整':''}}</span>
+                        <span style="width: 100%;height: 100%;">{{currentRow.addressBlur?'房屋地址不规范或不详细':''}}</span>
+                        <span style="width: 100%;height: 100%;">{{currentRow.customerInfoError?'租客信息有误':''}}</span>
+                        <span style="width: 100%;height: 100%;">{{currentRow.otherException?'其他问题':''}}</span>
+                    </el-form-item>
+                </el-col>
                 <el-col :span="8">
                     <el-form-item label="经纪人：">
                         <span>{{ currentRow.responsibleAgent }}</span>
@@ -172,7 +193,7 @@
                         <span>{{ currentRow.status | appStatusFormat }}</span>
                     </el-form-item>
                 </el-col>
-                <hr style="border-bottom-color: #d9d9d9; border-top: none;">
+                <!--<hr style="border-bottom-color: #d9d9d9; border-top: none;">-->
             </el-row>
             <el-row>
                 <el-col :span="8">
@@ -596,6 +617,31 @@
         mixins: [qiniu],
         data() {
             return {
+                reasonOption: [
+                    {
+                        value: 'idCardFrontOrVersoPhotoBlur',
+                        label: '身份证正反面照片不清晰'
+                    },
+                    {
+                        value: 'idCardAndPersonPhotoBlur',
+                        label: '手持身份证照片不清晰'
+                    },
+                    {
+                        value: 'contractPhotoBlur',
+                        label: '合同照片不清晰或不完整'
+                    },
+                    {
+                        value: 'addressBlur',
+                        label: '房屋地址不规范或不详细'
+                    },
+                    {
+                        value: 'customerInfoError',
+                        label: '租客信息有误'
+                    },
+                    {
+                        value: 'otherException',
+                        label: '其他问题'
+                    }],
                 tableData: [],
                 cur_page: 1,
                 size: 10,
@@ -1095,5 +1141,19 @@
     .item {
         margin-left: 4px;
         vertical-align: sub;
+    }
+    .reasonInputTextarea {
+        margin-right: 30px;
+        width: 100%;
+    }
+    .reasonInputTextarea1{
+        width:100%;
+    }
+
+    .reasonInputTextarea .el-form-item__content {
+        width: 80%;
+    }
+    .reasonInputTextarea1 el-form-item__content {
+        width:80%;
     }
 </style>
