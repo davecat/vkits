@@ -35,14 +35,15 @@
                     </el-select>
                 </el-form-item>
 
-                <!--<el-form-item label="人员状态：">-->
-                    <!--<el-select v-model="searchForm.status" placeholder="请选择">-->
-                        <!--<el-option label="待审批" value="Pending"></el-option>-->
-                        <!--<el-option label="审批不通过" value="NoPass"></el-option>-->
-                        <!--<el-option label="启用" value="Enabled"></el-option>-->
-                        <!--<el-option label="停用" value="Disable"></el-option>-->
-                    <!--</el-select>-->
-                <!--</el-form-item>-->
+                <el-form-item label="人员状态：">
+                    <el-select v-model="searchForm.status" placeholder="请选择">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option label="待审批" value="Pending"></el-option>
+                        <el-option label="启用" value="Enabled"></el-option>
+                        <el-option label="停用" value="Disable"></el-option>
+                        <el-option label="审批不通过" value="NoPass"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
                 </el-form-item>
