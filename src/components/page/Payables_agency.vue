@@ -197,6 +197,14 @@
                 </el-table-column>
                 <el-table-column
                         min-width="160"
+                        prop="monthlyRent"
+                        label="月租金">
+                    <template scope="scope">
+                        {{ scope.row.monthlyRent | currency}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="160"
                         prop="totalAmount"
                         label="房租总金额">
                     <template scope="scope">

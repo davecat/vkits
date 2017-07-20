@@ -24,6 +24,11 @@
                 </el-form-item>
             </el-form>
         </el-row>
+        <el-row style="color: red;">
+            <el-col :span="4" style="float: right">
+                应收合计:{{ totalAmount | currency}}
+            </el-col>
+        </el-row>
         <el-row>
             <el-table
                     :data="tableData"
@@ -33,24 +38,29 @@
                 <el-table-column
                         prop="payeeDate"
                         sortable
+                        min-width="130"
                         label="应收款日期">
                     <template scope="scope">
                         {{ scope.row.payeeDate | dateFormat }}
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="136"
                         prop="applicationNo"
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         prop="payeeAmount"
                         label="应收金额">
                     <template scope="scope">
-                        {{ scope.row.payeeAmount | currency }}
+                        <div slot="reference" class="name-wrapper">
+                            <el-tag>{{ scope.row.payeeAmount | currency }}</el-tag>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         prop="totalAmount"
                         label="分期总金额">
                     <template scope="scope">
@@ -58,14 +68,17 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="100"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
+                        min-width="150"
                         prop="mobile"
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
+                        min-width="106"
                         prop="rentPeriod"
                         label="租期">
                 </el-table-column>
@@ -78,6 +91,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="120"
                         prop="monthlyRent"
                         label="月租金">
                     <template scope="scope">
@@ -94,6 +108,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="127"
                         prop="responsibleAgent"
                         label="经纪人">
                     <template scope="scope">
@@ -197,6 +212,15 @@
                 return district.label;
             },
         },
+        computed: {
+            totalAmount() {
+                let totalAmount = 0;
+                this.tableData.forEach(item => {
+                    totalAmount+=item.payeeAmount;
+                });
+                return totalAmount;
+            }
+        },
         methods: {
             selectedData() {
                 if (this.searchForm.applyDate[0] !== null) {
@@ -222,5 +246,9 @@
 
     .statusGood {
         color: #13CE66
+    }
+    .el-tag {
+        background-color: transparent;
+        color: #1D8CE0
     }
 </style>
