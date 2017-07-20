@@ -973,6 +973,7 @@
             },
             //点击每一行显示下面内容
             handleCurrentRow(val) {
+                this.reason = [];
                 let that = this;
                 if (val === null) {
                     this.currentRow = {
