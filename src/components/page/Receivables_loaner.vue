@@ -186,7 +186,7 @@
             <div class="pagination">
                 <el-pagination
                         @current-change="handleChange"
-                        layout="prev, pager, next"
+                        layout="total, prev, pager, next"
                         :total="detailTotalElements">
                 </el-pagination>
             </div>

@@ -134,7 +134,7 @@
             <div class="pagination">
                 <el-pagination
                         @current-change="handleCurrentChange"
-                        layout="prev, pager, next"
+                        layout="total, prev, pager, next"
                         :total="totalElements">
                 </el-pagination>
             </div>
