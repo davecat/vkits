@@ -68,17 +68,17 @@
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="150"
+                        min-width="120"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="125"
                         prop="mobile"
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="171"
                         prop="startDate"
                         label="起止日期">
                     <template scope="scope">
@@ -86,7 +86,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="150"
+                        min-width="125"
                         prop=""
                         label="借款金额">
                     <template scope="scope">
@@ -95,7 +95,7 @@
                 </el-table-column>
                 <el-table-column
                         fixed="right"
-                        min-width="120"
+                        min-width="162"
                         label="操作">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="通过申请" placement="top-end">
@@ -792,8 +792,10 @@
     .reasonInputTextarea {
         width: 100%;
     }
-
+    .reasonInputTextarea .el-form-item__label {
+        width: 96px;
+    }
     .reasonInputTextarea .el-form-item__content {
-        width: 80%;
+        width: 194px;
     }
 </style>
