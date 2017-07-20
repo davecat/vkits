@@ -39,6 +39,13 @@
                                    :value="agency.id"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="状态：">
+                    <el-select v-model="searchForm.status">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option label="待确认" value="Unconfirmed"></el-option>
+                        <el-option label="已确认" value="Accepted"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
                 </el-form-item>
@@ -295,6 +302,7 @@
                     factPayeeDateEnd: '',
                     customName: '',
                     agencyId: '',
+                    status: '',
                     type: 'receivables'
                 },
                 currentRow: {
