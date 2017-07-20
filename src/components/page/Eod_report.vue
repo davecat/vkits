@@ -91,6 +91,33 @@
         <el-form label-position="left" inline
                  class="demo-table-expand">
             <el-row>
+                <el-col :span="10">
+                    <el-form-item label="审批备注：" id="reasonInputTextarea">
+                        <el-input
+                                disabled
+                                type="textarea"
+                                autosize
+                                placeholder="请输入内容"
+                                v-model="currentRow.confirmRemarks">
+                        </el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                    <el-form-item label="待修改原因：">
+                        <el-select v-model="reason" multiple placeholder="请选择" disabled>
+                            <el-option
+                                    v-for="item in reasonOption"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+            </el-row>
+            <el-row>
                 <el-col :span="8">
                     <el-form-item label="经纪人：">
                         <span>{{ currentRow.responsibleAgent }}</span>
@@ -314,6 +341,32 @@
         mixins: [pagination, qiniu],
         data() {
             return {
+                reason: [],
+                reasonOption: [
+                    {
+                        value: 'idCardFrontOrVersoPhotoBlur',
+                        label: '身份证正反面照片不清晰'
+                    },
+                    {
+                        value: 'idCardAndPersonPhotoBlur',
+                        label: '手持身份证照片不清晰'
+                    },
+                    {
+                        value: 'contractPhotoBlur',
+                        label: '合同照片不清晰或不完整'
+                    },
+                    {
+                        value: 'addressBlur',
+                        label: '房屋地址不规范或不详细'
+                    },
+                    {
+                        value: 'customerInfoError',
+                        label: '租客信息有误'
+                    },
+                    {
+                        value: 'otherException',
+                        label: '其他问题'
+                    }],
                 url: '/riskcontrol/loaner/api/v1/application/eod/getApplicationPage',
                 searchForm: {
                     applyDate: '',
@@ -426,6 +479,24 @@
                     }
                 } else {
                     this.currentRow = val;
+                    if(this.currentRow.idCardFrontOrVersoPhotoBlur) {
+                        this.reason.push('idCardFrontOrVersoPhotoBlur')
+                    }
+                    if(this.currentRow.idCardAndPersonPhotoBlur) {
+                        this.reason.push('idCardAndPersonPhotoBlur')
+                    }
+                    if(this.currentRow.contractPhotoBlur) {
+                        this.reason.push('contractPhotoBlur')
+                    }
+                    if(this.currentRow.addressBlur) {
+                        this.reason.push('addressBlur')
+                    }
+                    if(this.currentRow.customerInfoError) {
+                        this.reason.push('customerInfoError')
+                    }
+                    if(this.currentRow.otherException) {
+                        this.reason.push('otherException')
+                    }
                 }
             },
             handleChange() {
@@ -471,5 +542,11 @@
 </script>
 
 <style>
+    #reasonInputTextarea {
+        width: 100%;
+    }
 
+    #reasonInputTextarea .el-form-item__content {
+        width: 80%;
+    }
 </style>
