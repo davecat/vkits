@@ -456,6 +456,8 @@
                 }
             },
             handleCurrentRow(val) {
+                //清空reason
+                this.reason = [];
                 if (val === null) {
                     this.currentRow = {
                         responsibleAgent: '',

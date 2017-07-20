@@ -612,6 +612,7 @@
                 }
             },
             handleCurrentRow(val) {
+                this.reason = [];
                 let that = this;
                 if (val === null) {
                     this.currentRow = {
