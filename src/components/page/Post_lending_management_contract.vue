@@ -50,8 +50,12 @@
         </el-row>
         <el-row>
             <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange">
-                <el-tab-pane label="还款中" name="Repayment"></el-tab-pane>
-                <el-tab-pane label="已逾期" name="Overdue"></el-tab-pane>
+                <el-tab-pane label="还款中" name="Repayment">
+                    <span slot="label">还款中<el-badge  :value="suppleNumber" class="item"></el-badge></span>
+                </el-tab-pane>
+                <el-tab-pane label="已逾期" name="Overdue">
+                    <span slot="label">已逾期<el-badge  :value="overdueNumber" class="item"></el-badge></span>
+                </el-tab-pane>
                 <el-tab-pane label="已结束" name="Finished"></el-tab-pane>
                 <el-tab-pane label="提前退租未还款" name="ExitNotRepaid"></el-tab-pane>
                 <el-tab-pane label="提前退租已还款" name="ExitRepaid"></el-tab-pane>
@@ -236,6 +240,8 @@
         mixins: [pagination],
         data() {
             return {
+                suppleNumber: 0,
+                overdueNumber: 0,
                 multipleSelection: [],
                 multipleEditButton: false,
                 agencyList: {},
@@ -297,6 +303,50 @@
             }
         },
         created(){
+            //还款中单据
+            let searchForm1 = {
+                applicationNo: '',
+                contractNo: '',
+                applyDate: '',
+                startDate: '',
+                endDate: '',
+                customerName: '',
+                agencyId: '',
+                loanerId: '',
+                mobile: '',
+                status: 'Repayment'
+            };
+            this.axios.post(this.url, {
+                ...searchForm1,
+                page: this.cur_page - 1,
+                size: this.size
+            }).then((res) => {
+                this.suppleNumber = res.data.totalElements;
+            }).catch((error) => {
+                this.$message.error(error.response.data.message);
+            });
+            //已逾期单据
+            let searchForm2 = {
+                applicationNo: '',
+                contractNo: '',
+                applyDate: '',
+                startDate: '',
+                endDate: '',
+                customerName: '',
+                agencyId: '',
+                loanerId: '',
+                mobile: '',
+                status: 'Overdue'
+            };
+            this.axios.post(this.url, {
+                ...searchForm2,
+                page: this.cur_page - 1,
+                size: this.size
+            }).then((res) => {
+                this.overdueNumber = res.data.totalElements;
+            }).catch((error) => {
+                this.$message.error(error.response.data.message);
+            });
             this.getAgencyList();
             this.getLoanerList();
         },
@@ -385,5 +435,8 @@
 </script>
 
 <style>
-
+    .item {
+        margin-left: 4px;
+        vertical-align: sub;
+    }
 </style>
