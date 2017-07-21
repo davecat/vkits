@@ -462,7 +462,7 @@
                 var head = [["合同编号", "租客姓名", "房租总金额", "代付金额", "服务费率", "服务费金额"]];
                 let param = {
                     agencyId: row.agencyId,
-                    payerDate: format(row.payerDate, 'YYYY-MM-DD'),
+                    payerDate: format(row.payeeDate, 'YYYY-MM-DD'),
                     status: row.status,
                     page: this.detailCurPage - 1,
                     size: this.detailSize
