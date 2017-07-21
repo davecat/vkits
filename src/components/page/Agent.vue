@@ -206,6 +206,7 @@
                     branchId: '',
                     cityId: '',
                     tel: '',
+                    status: '',
                 },
                 form: {
                     name: '',
