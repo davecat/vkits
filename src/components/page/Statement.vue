@@ -248,6 +248,7 @@
         color: #13CE66
     }
     .el-tag {
+        font-size: 14px;
         background-color: transparent;
         color: #1D8CE0
     }

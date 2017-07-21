@@ -51,7 +51,7 @@
                 <el-table-column
                         fixed
                         type="selection"
-                        width="80">
+                        width="40">
                 </el-table-column>
                 <el-table-column
                         min-width="120"
