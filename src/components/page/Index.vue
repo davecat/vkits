@@ -91,7 +91,7 @@
             this.drawLineStack('lineStack');
         },
         created() {
-            this.init()
+//            this.init()
         },
         methods: {
             init() {
