@@ -2,16 +2,10 @@
     <div>
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 分期管理</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="fa fa-dashboard"></i> 内部管理</el-breadcrumb-item>
                 <el-breadcrumb-item>分期申请</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
-
-        <el-row>
-            <el-button type="primary" @click="dialogVisible = true">提交</el-button>
-            <el-button type="primary" @click="dialogVisible2 = true">驳回修改</el-button>
-            <el-button type="primary" @click="dialogVisible3 = true">拒绝</el-button>
-        </el-row>
         <el-row>
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="所属中介：">
@@ -162,6 +156,28 @@
                         label="确认日期">
                     <template scope="scope">
                         {{ scope.row.libApprovalDate | dateFormat }}
+                    </template>
+                </el-table-column>
+                <el-table-column v-if="handleBloor"
+                        fixed="right"
+                        min-width="180"
+                        label="操作">
+                    <template scope="scope">
+                        <el-tooltip class="item" effect="dark" content="提交" placement="top-end">
+                            <el-button size="small" type="success" @click="openAccpetDailog(scope.row)"><i
+                                    class="fa fa-check"></i>
+                            </el-button>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="驳回修改" placement="top-end">
+                            <el-button size="small" type="warning" @click="openReturnDailog(scope.row)"><i
+                                    class="fa fa-share"></i>
+                            </el-button>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="拒绝" placement="top-end">
+                            <el-button size="small" type="danger" @click="openRejectDailog(scope.row)"><i
+                                    class="fa fa-minus-circle"></i>
+                            </el-button>
+                        </el-tooltip>
                     </template>
                 </el-table-column>
             </el-table>
@@ -406,18 +422,43 @@
                         <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item>
-                    <el-button @click="dialogVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="multipleCommit">确 定</el-button>
-                </el-form-item>
             </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="multipleCommit">确 定</el-button>
+            </span>
         </el-dialog>
 
         <el-dialog
                 title="驳回修改分期申请"
-                :visible.sync="dialogVisible2"
-                size="tiny">
-            <span>此操作会将选中分期申请返回房屋中介处进行修改，是否确认？</span>
+                :visible.sync="dialogVisible2">
+            <span style="margin-bottom: 24px;display: block">此操作会将选中分期申请返回房屋中介处进行修改，是否确认？</span>
+            <el-form label-position="left" inline>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="审批备注：" class="reasonInputTextarea">
+                            <el-input
+                                    type="textarea"
+                                    autosize
+                                    placeholder="请输入内容"
+                                    v-model="currentRow.confirmRemarks">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="待修改原因：">
+                            <el-select v-model="reason" multiple placeholder="请选择">
+                                <el-option
+                                        v-for="item in reasonOption"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible2 = false">取 消</el-button>
                 <el-button type="primary" @click="multipleReturn">确 定</el-button>
@@ -428,7 +469,33 @@
                 title="拒绝分期申请"
                 :visible.sync="dialogVisible3"
                 size="tiny">
-            <span>此操作会将选中分期申请拒绝审批，是否确认？</span>
+            <span style="margin-bottom: 24px;display: block">此操作会将选中分期申请拒绝审批，是否确认？</span>
+            <el-form label-position="left" inline>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="审批备注：" class="reasonInputTextarea">
+                            <el-input
+                                    type="textarea"
+                                    autosize
+                                    placeholder="请输入内容"
+                                    v-model="currentRow.confirmRemarks">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="待修改原因：">
+                            <el-select v-model="reason" multiple placeholder="请选择">
+                                <el-option
+                                        v-for="item in reasonOption"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible3 = false">取 消</el-button>
                 <el-button type="primary" @click="multipleReject">确 定</el-button>
@@ -458,6 +525,7 @@
         mixins: [qiniu],
         data() {
             return {
+                handleBloor: true,//控制操作列是否显示
                 reason: [],
                 reasonOption: [
                     {
@@ -532,7 +600,8 @@
                     idCardFrontPhoto: '',
                     idCardVersoPhoto: '',
                     idCardAndPersonPhoto: '',
-                    contractPhotos: []
+                    contractPhotos: [],
+                    confirmRemarks: ''
                 },
                 pickerOptions: {
                     shortcuts: [
@@ -753,7 +822,15 @@
                 this.dialogBigPhoto = true;
             },
             handleChange(a) {
+                let that = this;
                 this.getData(a);
+//                Vue.nextTick(function () {
+//                    if(a === 'Commited' || a === 'Accepted' || a === 'LibRejected' || a === 'LibReturned') {
+//                        that.handleBloor = false;
+//                    } else {
+//                        that.handleBloor = true;
+//                    }
+//                });
             },
             getAgencyList() {
                 this.axios.get('/api/v1/admin/agency/getAgencyList').then((res) => {
@@ -783,6 +860,7 @@
                 })
             },
             handleCurrentRow(val) {
+                this.reason = [];
                 let that = this;
                 if (val === null) {
                     this.currentRow = {
@@ -804,6 +882,7 @@
                         emergencyContact: '',
                         emergencyContactMobile: '',
                         relation: '',
+                        confirmRemarks: ''
                     }
                 } else {
                     this.currentRow = val;
@@ -846,9 +925,22 @@
                     });
                 }
             },
+            //提交
+            openAccpetDailog() {
+                this.dialogVisible = true;
+            },
+            //驳回修改
+            openReturnDailog() {
+                this.dialogVisible2 = true;
+            },
+            //拒绝
+            openRejectDailog() {
+                this.dialogVisible3 = true;
+            },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
+            //提交单据
             multipleCommit() {
                 let ids = this.multipleSelection.map(row => {
                     return row.id
@@ -856,7 +948,7 @@
                 if (ids.length === 0) {
                     console.log('ids is null');
                 } else {
-                    this.form.applicationIds = ids;
+                    this.form.applicationIds = this.currentRow.id;
                     this.axios.post('/riskcontrol/lib/api/v1/application/commitToLoaner', this.form).then((res) => {
                         this.getData();
                     }).catch((error) => {
@@ -865,21 +957,33 @@
                 }
                 this.dialogVisible = false;
             },
+            checkParam(arr, param) {
+                return arr.find(item => item === param) !== undefined;
+            },
+            //驳回单据
             multipleReturn() {
-                let ids = this.multipleSelection.map(row => {
-                    return row.id
-                });
-                if (ids.length === 0) {
-                    console.log('ids is null');
-                } else {
-                    this.axios.post('/riskcontrol/lib/api/v1/application/libReturn', ids).then((res) => {
-                        this.getData();
-                    }).catch((error) => {
-                        this.$message.error(error.response.data.message);
-                    })
+                if(!this.currentRow.confirmRemarks && this.currentRow.confirmRemarks === '' || this.reason.length === 0) {
+                    this.$message.error('请输入或选择修改原因');
+                    return;
                 }
+                let form = {
+                    id: this.currentRow.id,
+                    confirmRemarks: this.currentRow.confirmRemarks,
+                    idCardFrontOrVersoPhotoBlur: this.checkParam(this.reason, 'idCardFrontOrVersoPhotoBlur'),
+                    idCardAndPersonPhotoBlur: this.checkParam(this.reason, 'idCardAndPersonPhotoBlur'),
+                    contractPhotoBlur: this.checkParam(this.reason, 'contractPhotoBlur'),
+                    addressBlur: this.checkParam(this.reason, 'addressBlur'),
+                    customerInfoError: this.checkParam(this.reason, 'customerInfoError'),
+                    otherException: this.checkParam(this.reason, 'otherException'),
+                };
+                this.axios.post('/riskcontrol/lib/api/v1/application/libReturn', form).then((res) => {
+                    this.getData();
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
                 this.dialogVisible2 = false;
             },
+            //拒绝单据
             multipleReject() {
                 let ids = this.multipleSelection.map(row => {
                     return row.id
@@ -918,5 +1022,14 @@
 
     #reasonInputTextarea .el-form-item__content {
         width: 80%;
+    }
+    .reasonInputTextarea {
+        width: 100%;
+    }
+    .reasonInputTextarea .el-form-item__label {
+        width: 96px;
+    }
+    .reasonInputTextarea .el-form-item__content {
+        width: 194px;
     }
 </style>
