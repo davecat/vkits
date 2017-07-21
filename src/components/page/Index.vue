@@ -67,64 +67,6 @@
                 </el-card>
             </el-col>
         </el-row>
-        <el-row>
-            <el-card class="box-card">
-                <div slot="header" class="clearfix">
-                    <span style="line-height: 36px;">还款／逾期分析</span>
-                    <el-button style="float: right;" type="primary">7日</el-button>
-                </div>
-                <el-row>
-                    <el-col :span="12">
-                        <div id="line" style="width: 600px;height:400px;"></div>
-                    </el-col>
-                    <el-col :span="12">
-                        <div id="lineStack" style="width: 600px;height:400px;"></div>
-                    </el-col>
-                </el-row>
-                <el-row :gutter="30">
-                    <el-col :span="6">
-                        <el-card class="box-card">
-                            <div class="text item">
-                                <span class="bigText">¥837,694.00</span>
-                            </div>
-                            <div class="text item">
-                                <span>7日到期金额</span>
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-card class="box-card">
-                            <div class="text item">
-                                <span class="bigText">760</span>
-                            </div>
-                            <div class="text item">
-                                <span>7日到期笔数</span>
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-card class="box-card">
-                            <div class="text item">
-                                <span class="bigText">¥17,694.50</span>
-                            </div>
-                            <div class="text item">
-                                <span>7日逾期金额</span>
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-card class="box-card">
-                            <div class="text item">
-                                <span class="bigText">56</span>
-                            </div>
-                            <div class="text item">
-                                <span>7日逾期笔数</span>
-                            </div>
-                        </el-card>
-                    </el-col>
-                </el-row>
-            </el-card>
-        </el-row>
 
     </div>
 </template>

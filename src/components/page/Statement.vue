@@ -78,7 +78,7 @@
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="106"
+                        min-width="115"
                         prop="rentPeriod"
                         label="租期">
                 </el-table-column>
