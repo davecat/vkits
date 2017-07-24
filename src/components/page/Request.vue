@@ -185,6 +185,24 @@
             </el-row>
             <el-row>
                 <el-col :span="8">
+                    <el-form-item label="经纪人：">
+                        <span>{{ currentRow.responsibleAgent }}</span>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                    <el-form-item label="申请日期：">
+                        <span>{{ currentRow.applyDate | dateFormat }}</span>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                    <el-form-item label="申请状态：">
+                        <span>{{ currentRow.status | appStatusFormat }}</span>
+                    </el-form-item>
+                </el-col>
+                <hr style="border-bottom-color: #d9d9d9; border-top: none;">
+            </el-row>
+            <el-row>
+                <el-col :span="8">
                     <el-form-item label="月租金：">
                         <span>{{ currentRow.monthlyRent | currency }} 元／月</span>
                     </el-form-item>
