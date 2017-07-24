@@ -47,7 +47,6 @@
             </el-tabs>
             <el-table
                     :data="tableData"
-                    border
                     tooltip-effect="dark"
                     highlight-current-row
                     @current-change="handleCurrentRow"
@@ -142,7 +141,6 @@
         <el-row>
             <el-table
                     :data="billsData"
-                    border
                     tooltip-effect="dark"
                     style="width: 100%">
                 <el-table-column

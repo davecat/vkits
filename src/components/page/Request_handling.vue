@@ -43,7 +43,6 @@
                     :data="tableData"
                     highlight-current-row
                     @current-change="handleCurrentRow"
-                    border
                     tooltip-effect="dark"
                     :default-sort = "{prop: 'libCommitDate', order: 'descending'}"
                     style="width: 100%"

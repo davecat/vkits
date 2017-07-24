@@ -13,7 +13,6 @@
 
         <el-row>
             <el-table :data="tableData"
-                      border
                       style="width: 100%"
                       highlight-current-row
                       @current-change="handleCurrentRow">

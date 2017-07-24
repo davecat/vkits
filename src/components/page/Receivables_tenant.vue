@@ -51,6 +51,9 @@
                 </el-form-item>
             </el-form>
         </el-row>
+        <el-row style="position: absolute;width: 92%;height: 42px;line-height: 42px;">
+            <el-button style="position: absolute;right: 0;z-index: 999" type="primary" @click="exportCSV()">导出全部</el-button>
+        </el-row>
         <el-row>
             <el-tabs v-model="searchForm.type" type="card" @tab-click="handleChangeTab(searchForm.type)">
                 <el-tab-pane label="应收款" name="receivables"></el-tab-pane>
@@ -58,7 +61,6 @@
             </el-tabs>
             <el-table
                     :data="tableData"
-                    stripe
                     max-height="500"
                     :default-sort="{prop: 'payerDate', order: 'descending'}"
                     highlight-current-row
@@ -165,11 +167,6 @@
                             <el-button size="small" type="warning"
                                        @click="unConfirmShow(scope.row)"><i
                                     class="fa fa-repeat"></i>
-                            </el-button>
-                        </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="导出" placement="top-end">
-                            <el-button size="small" type="success"
-                                       @click="exportCSV(scope.row)"><i class="fa fa-save"></i>
                             </el-button>
                         </el-tooltip>
                     </template>
@@ -459,18 +456,20 @@
                 })
             },
             exportCSV(row) {
-                var head = [["合同编号", "租客姓名", "房租总金额", "代付金额", "服务费率", "服务费金额"]];
-                let param = {
-                    agencyId: row.agencyId,
-                    payerDate: format(row.payeeDate, 'YYYY-MM-DD'),
-                    status: row.status,
-                    page: this.detailCurPage - 1,
-                    size: this.detailSize
-                };
-                this.axios.post('/postlending/api/v1/payer/agency/getPayerAgencyDetailPage', param).then((res) => {
-                        var rowData = res.data.content;
+                var head = [["应收款日期","合同编号", "租客姓名", "账单金额", "实际收款日期", "支付方式", "备注"]];
+                this.axios.get('/postlending/api/v1/payee/custom/getPayeeCustomList').then((res) => {
+                    var rowData = res.data;
                         for (let i = 0; i < rowData.length; i++) {
-                            head.push([rowData[i].contractNo, rowData[i].customerName, rowData[i].totalAmount, rowData[i].payerAmount, rowData[i].rate, rowData[i].serviceFee]);
+                            let payeeType;
+                            switch (rowData[i].payeeType){
+                                case 'WeChat': payeeType =  '微信';break;
+                                case 'Alipay': payeeType = '支付宝';break;
+                                case 'DepositCard': payeeType = '储蓄卡';break;
+                                case 'CreditCard': payeeType = '信用卡';break;
+                                case 'Cash': payeeType = '现金';break;
+                                case 'Other': payeeType = '其他';break
+                            }
+                            head.push([rowData[i].payeeDate, rowData[i].contractNo, rowData[i].customName, rowData[i].payeeAmount, rowData[i].factPayeeDate, payeeType, rowData[i].remarks]);
                         };
                         var csvRows = [];
                         head.forEach(item => csvRows.push(item.join(',')));
@@ -481,7 +480,7 @@
                         var a = document.createElement('a');
                         a.href = 'data:attachment/csv,' + encodeURI(csvString);
                         a.target = '_blank';
-                        a.download = row.payerDate + row.agencyName +".csv";
+                        a.download = '用户还款' +".csv";
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);

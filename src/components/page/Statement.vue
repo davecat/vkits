@@ -32,7 +32,6 @@
         <el-row>
             <el-table
                     :data="tableData"
-                    stripe
                     :default-sort="{prop: 'payeeDate', order: 'descending'}"
                     style="width: 100%">
                 <el-table-column

@@ -63,7 +63,6 @@
             </el-tabs>
             <el-table
                     :data="tableData"
-                    border
                     tooltip-effect="dark"
                     highlight-current-row
                     @current-change="handleCurrentRow"
