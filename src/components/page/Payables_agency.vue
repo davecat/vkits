@@ -63,7 +63,6 @@
             </el-tabs>
             <el-table
                     :data="tableData"
-                    stripe
                     max-height="500"
                     :default-sort="{prop: 'payerDate', order: 'descending'}"
                     highlight-current-row
@@ -183,7 +182,6 @@
         <el-row>
             <el-table
                     :data="payablesDetail"
-                    stripe
                     style="width: 100%">
                 <el-table-column
                         min-width="160"

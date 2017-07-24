@@ -12,7 +12,7 @@
         </el-row>
 
         <el-row>
-            <el-table :data="tableData" border width="100%">
+            <el-table :data="tableData"  width="100%">
                 <el-table-column prop="rate" label="费率">
                     <template scope="scope">
                         {{scope.row.rate}}%
