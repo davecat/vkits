@@ -1,20 +1,20 @@
 import Vue from 'vue'
 
 // errorHandler
-Vue.config.errorHandler = function(err, vm)
-{
-    var componentName = Vue.util.formatComponentName(vm);
-    var propsData = vm.$options.propsData;
-
-    fundebug.notifyError(err,
-        {
-            metaData:
-                {
-                    componentName: componentName,
-                    propsData: propsData
-                }
-        });
-};
+// Vue.config.errorHandler = function(err, vm)
+// {
+//     var componentName = Vue.util.formatComponentName(vm);
+//     var propsData = vm.$options.propsData;
+//
+//     fundebug.notifyError(err,
+//         {
+//             metaData:
+//                 {
+//                     componentName: componentName,
+//                     propsData: propsData
+//                 }
+//         });
+// };
 
 // element-ui
 // import ELEMENT from 'element-ui';

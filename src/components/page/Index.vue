@@ -1,4 +1,3 @@
-<!--<script src="../../../../../../Downloads/china.js"></script>-->
 <template>
     <div>
         <div class="crumbs">
@@ -67,13 +66,10 @@
                 </el-card>
             </el-col>
         </el-row>
-
     </div>
 </template>
 
 <script>
-    import echarts from 'echarts';
-    import chinaJson from 'echarts/map/json/china';
     export default {
         name: '',
         data () {
@@ -86,12 +82,8 @@
                 lineStackCharts: '',
             }
         },
-        mounted(){
-            this.drawLine('line');
-            this.drawLineStack('lineStack');
-        },
         created() {
-//            this.init()
+            this.init()
         },
         methods: {
             init() {
@@ -103,113 +95,7 @@
                 }).catch((error) => {
                     console.log(error);
                 })
-            },
-            drawLine(id) {
-                this.lineCharts = echarts.init(document.getElementById(id));
-                this.lineCharts.setOption({
-                    title: {
-                        text: '近7日到期账单'
-                    },
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {
-                            type: 'cross',
-                            label: {
-                                backgroundColor: '#6a7985'
-                            }
-                        }
-                    },
-                    legend: {
-                        data: ['金额（千元）', '到期笔数']
-                    },
-                    toolbox: {
-                        feature: {
-                            saveAsImage: {}
-                        }
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    xAxis: [
-                        {
-                            type: 'category',
-                            boundaryGap: false,
-                            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-                        }
-                    ],
-                    yAxis: [
-                        {
-                            type: 'value'
-                        }
-                    ],
-                    series: [
-                        {
-                            name: '金额（千元）',
-                            type: 'line',
-                            stack: '总量',
-                            areaStyle: {normal: {}},
-                            data: [120, 132, 101, 134, 90, 230, 210]
-                        },
-                        {
-                            name: '到期笔数',
-                            type: 'line',
-                            stack: '总量',
-                            areaStyle: {normal: {}},
-                            data: [220, 182, 191, 234, 290, 330, 310]
-                        }
-                    ]
-                })
-            },
-            drawLineStack(id) {
-                this.lineStackCharts = echarts.init(document.getElementById(id));
-                this.lineStackCharts.setOption({
-                    title: {
-                        text: '近7日逾期账单'
-                    },
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        data: ['金额（千元）', '到期笔数']
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    toolbox: {
-                        feature: {
-                            saveAsImage: {}
-                        }
-                    },
-                    xAxis: {
-                        type: 'category',
-                        boundaryGap: false,
-                        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-                    },
-                    yAxis: {
-                        type: 'value'
-                    },
-                    series: [
-                        {
-                            name: '金额（千元）',
-                            type: 'line',
-                            stack: '总量',
-                            data: [212, 132, 99, 134, 90, 121, 210]
-                        },
-                        {
-                            name: '到期笔数',
-                            type: 'line',
-                            stack: '总量',
-                            data: [210, 182, 191, 234, 300, 260, 310]
-                        }
-                    ]
-                })
-            },
+            }
         }
     }
 </script>
