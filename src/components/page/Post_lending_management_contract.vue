@@ -49,7 +49,7 @@
             </el-form>
         </el-row>
         <el-row>
-            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange">
+            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange(searchForm.status)">
                 <el-tab-pane label="还款中" name="Repayment">
                     <span slot="label">还款中<el-badge  :value="suppleNumber" class="item"></el-badge></span>
                 </el-tab-pane>
@@ -159,6 +159,20 @@
                         prop="loanerName"
                         label="资金端名称">
                 </el-table-column>
+                <el-table-column
+                        v-if="advanceRent"
+                        fixed="right"
+                        min-width="50"
+                        label="操作">
+                    <template scope="scope">
+                        <el-tooltip class="item" effect="dark" content="提前退租" placement="top-end">
+                            <el-button size="small" type="warning"
+                                       @click="handleEdit(scope.row)"><i
+                                    class="fa fa-pencil-square-o"></i>
+                            </el-button>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
             </el-table>
             <div class="pagination">
                 <el-pagination
@@ -228,6 +242,28 @@
                 </el-table-column>
             </el-table>
         </el-row>
+        <el-dialog title="提前退租" :visible.sync="dialogVisible" size="tiny">
+            <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="退租日期：" :label-width="formLabelWidth" prop="factPayerDate">
+                    <el-date-picker
+                            v-model="form.factPayeeDate"
+                            type="date"
+                            placeholder="选择日期"
+                            :default-value="form.factPayeeDate">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="退租金额：" :label-width="formLabelWidth">
+                    <el-input v-model="form.name" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="备注：" :label-width="formLabelWidth" prop="remarks">
+                    <el-input type="textarea" v-model="form.remarks"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="resetForm('form')">取 消</el-button>
+                <el-button type="primary" @click="confirm('form')">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -239,6 +275,9 @@
         mixins: [pagination],
         data() {
             return {
+                advanceRent: true,//提前退租操作列是否显示
+                dialogVisible: false,
+                form: {},//提前退租form
                 suppleNumber: 0,
                 overdueNumber: 0,
                 multipleSelection: [],
@@ -298,7 +337,13 @@
                     ]
                 },
                 url: '/postlending/api/v1/contract/getContractPage',
-                billsData: []
+                billsData: [],
+                formLabelWidth: '120px',
+                rules: {
+//                    factPayerDate: [{type: 'date', required: true, message: '请选择日期', trigger: 'blur'}],
+//                    remarks: [{required: true, message: '请输入备注', trigger: 'blur'}],
+//                    customPayerType: [{required: true, message: '请选择类型', trigger: 'change'}]
+                }
             }
         },
         created(){
@@ -398,6 +443,28 @@
             },
         },
         methods: {
+            handleEdit(row) {
+                this.dialogVisible = true;
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+                this.form = {factPayerDate: Date.now()};
+                this.dialogVisible = false;
+            },
+            //确认提前还款
+            confirm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if(valid){
+                        this.form.factPayeeDate = format(this.form.factPayeeDate, 'YYYY-MM-DD HH:mm:ss');
+                        this.axios.post('/postlending/api/v1/payee/custom/confirm', this.form).then(() => {
+                            this.getData();
+                            this.dialogVisible = false;
+                        }).catch((error) => {
+                            this.$message.error(error.response.data.message);
+                        })
+                    }
+                });
+            },
             selectedData() {
                 if (this.searchForm.applyDate[0] !== null) {
                     this.searchForm.startDate = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
@@ -407,7 +474,12 @@
                     this.searchForm.endDate = '';
                 }
             },
-            handleChange() {
+            handleChange(a) {
+                if(a === 'Finished' || a === 'ExitNotRepaid' || a === 'ExitRepaid' || a === 'Signed') {
+                    this.advanceRent = false;
+                } else {
+                    this.advanceRent = true;
+                }
                 this.getData();
                 this.billsData = [];
             },
