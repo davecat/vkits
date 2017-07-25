@@ -60,7 +60,6 @@
                     :data="tableData"
                     highlight-current-row
                     @current-change="handleCurrentRow"
-                    border
                     tooltip-effect="dark"
                     style="width: 100%">
                 <el-table-column
@@ -132,7 +131,7 @@
                 </el-table-column>
                 <el-table-column v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
                                  fixed="right"
-                                 min-width="80"
+                                 min-width="50"
                                  prop="enabled"
                                  label="操作">
                     <template scope="scope">

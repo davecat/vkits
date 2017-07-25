@@ -34,19 +34,18 @@
             <el-table
                     ref="multipleTable"
                     :data="tableData"
-                    border
                     tooltip-effect="dark"
                     style="width: 100%"
                     @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="80">
+                <el-table-column type="selection" width="50">
                 </el-table-column>
                 <el-table-column
-                        min-width="110"
+                        min-width="86"
                         prop="name"
                         label="资金端名称">
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="70"
                         prop="repaymentType"
                         label="还款方式">
                     <template scope="scope">
@@ -54,17 +53,17 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="142"
+                        min-width="103"
                         prop="collectionBankCard"
                         label="银行帐号（收款)">
                 </el-table-column>
                 <el-table-column
-                        min-width="135"
+                        min-width="102"
                         prop="collectionBankAccount"
                         label="开户行（收款）">
                 </el-table-column>
                 <el-table-column
-                        min-width="176"
+                        min-width="141"
                         prop="paymentBankAccount"
                         label="银行账号（付款至LIB)">
                 </el-table-column>
@@ -74,6 +73,7 @@
                         label="开户行（付款）">
                 </el-table-column>
                 <el-table-column
+                        min-width="50"
                         prop="enabled"
                         label="状态"
                         show-overflow-tooltip>
@@ -81,7 +81,7 @@
                         {{ scope.row.enabled ? '启用':'停用' }}
                     </template>
                 </el-table-column>
-                <el-table-column label="操作">
+                <el-table-column  min-width="76" label="操作">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="修改" placement="top-end">
                             <el-button size="small" type="primary"

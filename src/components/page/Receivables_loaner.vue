@@ -72,7 +72,6 @@
             </el-tabs>
             <el-table
                     :data="tableData"
-                    border
                     max-height="500"
                     tooltip-effect="dark"
                     highlight-current-row
@@ -89,12 +88,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
+                        min-width="100"
                         prop="loanerName"
                         label="付款方">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         class-name="payerAmountFont"
                         prop="payeeTotalAmount"
                         label="付款金额">
@@ -103,7 +102,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="100"
                         prop="contractCount"
                         label="合同数量">
                 </el-table-column>
@@ -113,7 +112,7 @@
                         label="收款账号">
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="80"
                         class-name="statusGood"
                         prop="status"
                         label="状态">
@@ -122,7 +121,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="50"
                         label="操作">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="确认收款" placement="top-end">

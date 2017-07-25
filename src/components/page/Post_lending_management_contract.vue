@@ -68,7 +68,7 @@
                     @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
-                        min-width="140"
+                        min-width="100"
                         prop="agencyName"
                         label="中介名称">
                 </el-table-column>
@@ -91,7 +91,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
+                        min-width="100"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>

@@ -145,7 +145,7 @@
                     style="width: 100%">
                 <el-table-column
                         type="index"
-                        width="80">
+                        width="50">
                 </el-table-column>
                 <el-table-column
                         min-width="160"

@@ -53,11 +53,10 @@
             <el-table
                     ref="multipleTable"
                     :data="tableData"
-                    border
                     tooltip-effect="dark"
                     style="width: 100%"
                     @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="80">
+                <el-table-column type="selection" width="50">
                 </el-table-column>
                 <el-table-column
                         prop="staffNo"
@@ -95,7 +94,7 @@
                         {{ scope.row.status | agentStatusFormat }}
                     </template>
                 </el-table-column>
-                <el-table-column label="操作">
+                <el-table-column  min-width="50" label="操作">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="修改" placement="top-end">
                             <el-button size="small" type="primary"
