@@ -37,7 +37,6 @@
             <el-table
                     ref="multipleTable"
                     :data="tableData"
-                    border
                     tooltip-effect="dark"
                     style="width: 100%"
                     @selection-change="handleSelectionChange">
@@ -85,7 +84,7 @@
                         {{ scope.row.enabled ? '启用':'停用' }}
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="320">
+                <el-table-column label="操作" min-width="50">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="修改" placement="top-end">
                             <el-button size="small" type="primary"

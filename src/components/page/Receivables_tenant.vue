@@ -66,7 +66,7 @@
                     highlight-current-row
                     style="width: 100%">
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         sortable
                         prop="payeeDate"
                         label="应收款日期">
@@ -75,22 +75,22 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
+                        min-width="100"
                         prop="contractNo"
                         label="合同编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="145"
+                        min-width="120"
                         prop="billNo"
                         label="账单编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
+                        min-width="70"
                         prop="customName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="80"
                         sortable
                         prop="payeeAmount"
                         label="账单金额">
@@ -99,7 +99,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="106"
                         sortable
                         prop="payeeDate"
                         label="实际收款日期">
@@ -109,13 +109,13 @@
                 </el-table-column>
                 <el-table-column
                         v-if="overdue"
-                        min-width="100"
+                        min-width="70"
                         prop="overdueDays"
                         label="逾期天数">
                 </el-table-column>
                 <el-table-column
                         v-if="overdue"
-                        min-width="100"
+                        min-width="70"
                         prop="overdueFee"
                         label="逾期费用">
                     <template scope="scope">
@@ -123,7 +123,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="70"
                         prop="payeeType"
                         label="支付方式">
                     <template scope="scope">
@@ -131,7 +131,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="50"
                         class-name="statusGood"
                         prop="status"
                         label="状态">
@@ -140,7 +140,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="70"
                         prop="confirmType"
                         label="确认方式">
                     <template scope="scope">
@@ -154,7 +154,7 @@
                 </el-table-column>
                 <el-table-column
                         fixed="right"
-                        min-width="120"
+                        min-width="50"
                         label="操作">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="确认收款" placement="top-end" v-if="scope.row.status === 'Unconfirmed'">
@@ -455,9 +455,14 @@
                     this.$message.error(error.response.data.message);
                 })
             },
-            exportCSV(row) {
+            exportCSV() {
                 var head = [["应收款日期","合同编号", "租客姓名", "账单金额", "实际收款日期", "支付方式", "备注"]];
-                this.axios.get('/postlending/api/v1/payee/custom/getPayeeCustomList').then((res) => {
+                let param = {
+                    ...this.searchForm,
+                    page: this.cur_page - 1,
+                    size: this.size
+                };
+                this.axios.post('/postlending/api/v1/payee/custom/getPayeeCustomList',param).then((res) => {
                     var rowData = res.data;
                         for (let i = 0; i < rowData.length; i++) {
                             let payeeType;

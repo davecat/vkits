@@ -94,7 +94,7 @@
                 </el-table-column>
                 <el-table-column
                         fixed="right"
-                        min-width="162"
+                        min-width="100"
                         label="操作">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="通过申请" placement="top-end">

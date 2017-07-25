@@ -35,7 +35,6 @@
                     :data="tableData"
                     highlight-current-row
                     @current-change="handleCurrentRow"
-                    border
                     :default-sort="{prop: 'approvalDate', order: 'descending'}"
                     tooltip-effect="dark"
                     style="width: 100%">

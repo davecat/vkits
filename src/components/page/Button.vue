@@ -37,6 +37,7 @@
                             label="标识">
                     </el-table-column>
                     <el-table-column
+                            min-width="50"
                             prop="opt"
                             label="操作">
                         <template scope="scope">

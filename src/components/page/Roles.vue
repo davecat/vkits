@@ -22,7 +22,7 @@
                 </el-table-column>
                 <el-table-column prop="description" label="描述">
                 </el-table-column>
-                <el-table-column label="操作">
+                <el-table-column min-width="50" label="操作">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
                             <el-button size="small" type="warning"
