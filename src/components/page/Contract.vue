@@ -337,7 +337,7 @@
                 if(!value){
                     return ''
                 }
-                let district;
+                let district = {};
                 let findLabel = (item, value) => {
                     if(item) {
                         return item.some(i => {
