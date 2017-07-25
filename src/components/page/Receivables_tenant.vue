@@ -455,14 +455,14 @@
                     this.$message.error(error.response.data.message);
                 })
             },
-            exportCSV(row) {
+            exportCSV() {
                 var head = [["应收款日期","合同编号", "租客姓名", "账单金额", "实际收款日期", "支付方式", "备注"]];
                 let param = {
-                    agencyId: row.agencyId,
-                    payerDate: format(row.payerDate, 'YYYY-MM-DD'),
-                    status: row.status,
+                    ...this.searchForm,
+                    page: this.cur_page - 1,
+                    size: this.size
                 };
-                this.axios.get('/postlending/api/v1/payee/custom/getPayeeCustomList',param).then((res) => {
+                this.axios.post('/postlending/api/v1/payee/custom/getPayeeCustomList',param).then((res) => {
                     var rowData = res.data;
                         for (let i = 0; i < rowData.length; i++) {
                             let payeeType;
