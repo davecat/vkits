@@ -58,17 +58,17 @@
                         label="银行帐号（收款)">
                 </el-table-column>
                 <el-table-column
-                        min-width="102"
+                        min-width="150"
                         prop="collectionBankAccount"
                         label="开户行（收款）">
                 </el-table-column>
                 <el-table-column
-                        min-width="141"
+                        min-width="142"
                         prop="paymentBankAccount"
                         label="银行账号（付款至LIB)">
                 </el-table-column>
                 <el-table-column
-                        min-width="135"
+                        min-width="150"
                         prop="paymentBankCard"
                         label="开户行（付款）">
                 </el-table-column>
@@ -81,7 +81,7 @@
                         {{ scope.row.enabled ? '启用':'停用' }}
                     </template>
                 </el-table-column>
-                <el-table-column  min-width="76" label="操作">
+                <el-table-column  min-width="81" label="操作">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="修改" placement="top-end">
                             <el-button size="small" type="primary"

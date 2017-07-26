@@ -136,7 +136,7 @@
                         prop="status"
                         label="状态">
                     <template scope="scope">
-                        <p :class="{ statusAlert: scope.row.status === 'Unconfirmed' }">{{ scope.row.status === 'Unconfirmed'?'待确认':'已确认' }}</p>
+                        <p :class="{statusAlert:scope.row.status === 'Unconfirmed'}" :id="scope.row.status === 'Termination'?'statusAlert1':'statusAlert2'">{{ scope.row.status | statusFilter }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -148,7 +148,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="150"
                         prop="remarks"
                         label="备注">
                 </el-table-column>
@@ -338,6 +338,13 @@
             this.getAgencyList();
         },
         filters: {
+            statusFilter: function (value) {
+                switch (value) {
+                    case 'Unconfirmed': return '待确认';
+                    case 'Accepted': return '已确认';
+                    case 'Termination': return '已退租';
+                }
+            },
             dateFormat: function (value) {
                 if (typeof value === "string") {
                     return value.substring(0, value.length - 9)
@@ -511,6 +518,9 @@
 
     .statusAlert {
         color: #F7BA2A
+    }
+    #statusAlert1 {
+        color: red;
     }
 
     .statusGood {

@@ -49,7 +49,7 @@
             </el-form>
         </el-row>
         <el-row>
-            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange">
+            <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange(searchForm.status)">
                 <el-tab-pane label="还款中" name="Repayment">
                     <span slot="label">还款中<el-badge  :value="suppleNumber" class="item"></el-badge></span>
                 </el-tab-pane>
@@ -68,22 +68,22 @@
                     @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
-                        min-width="100"
+                        min-width="70"
                         prop="agencyName"
                         label="中介名称">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="100"
                         prop="applicationNo"
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="110"
                         prop="contractNo"
                         label="合同编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
+                        min-width="80"
                         prop="overdueDays"
                         label="账单状态">
                     <template scope="scope">
@@ -91,17 +91,17 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="80"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="86"
                         prop="mobile"
                         label="租客联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="150"
                         prop="startDate"
                         label="起止日期">
                     <template scope="scope">
@@ -109,7 +109,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="80"
                         prop="monthlyRent"
                         label="月租金">
                     <template scope="scope">
@@ -117,12 +117,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
+                        min-width="80"
                         prop="rentPeriod"
                         label="分期期数">
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="80"
                         prop="serviceFee"
                         label="手续费">
                     <template scope="scope">
@@ -130,7 +130,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="totalAmount"
                         label="分期总金额">
                     <template scope="scope">
@@ -147,7 +147,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="150"
                         prop="responsibleAgent"
                         label="签单经纪人">
                     <template scope="scope">
@@ -155,9 +155,23 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="150"
+                        min-width="100"
                         prop="loanerName"
                         label="资金端名称">
+                </el-table-column>
+                <el-table-column
+                        v-if="advanceRent"
+                        fixed="right"
+                        min-width="50"
+                        label="操作">
+                    <template scope="scope">
+                        <el-tooltip class="item" effect="dark" content="提前退租" placement="top-end">
+                            <el-button size="small" type="warning"
+                                       @click="handleEdit(scope.row)"><i
+                                    class="fa fa-pencil-square-o"></i>
+                            </el-button>
+                        </el-tooltip>
+                    </template>
                 </el-table-column>
             </el-table>
             <div class="pagination">
@@ -171,7 +185,6 @@
         <el-row>
             <el-table
                     :data="billsData"
-                    border
                     tooltip-effect="dark"
                     style="width: 100%">
                 <el-table-column
@@ -179,7 +192,7 @@
                         width="50">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="paymentDueDate"
                         label="应还款日期">
                     <template scope="scope">
@@ -187,7 +200,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="amount"
                         label="账单金额">
                     <template scope="scope">
@@ -195,7 +208,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="80"
                         prop="serviceFee"
                         label="手续费">
                     <template scope="scope">
@@ -203,7 +216,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="overdueFee"
                         label="逾期费用">
                     <template scope="scope">
@@ -211,7 +224,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="80"
                         prop="status"
                         label="账单状态">
                     <template scope="scope">
@@ -219,7 +232,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="130"
                         prop="paymentDate"
                         label="实际还款日期">
                     <template scope="scope">
@@ -228,6 +241,28 @@
                 </el-table-column>
             </el-table>
         </el-row>
+        <el-dialog title="提前退租" :visible.sync="dialogVisible" size="tiny">
+            <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="退租日期：" :label-width="formLabelWidth" prop="refundDate">
+                    <el-date-picker
+                            v-model="form.refundDate"
+                            type="date"
+                            placeholder="选择日期"
+                            :default-value="form.refundDate">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="退租金额：" :label-width="formLabelWidth" prop="refundAmount">
+                    <el-input v-model="form.refundAmount" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="备注：" :label-width="formLabelWidth" prop="remarks">
+                    <el-input type="textarea" v-model="form.remarks"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="resetForm('form')">取 消</el-button>
+                <el-button type="primary" @click="confirm('form')">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -239,6 +274,14 @@
         mixins: [pagination],
         data() {
             return {
+                advanceRent: true,//提前退租操作列是否显示
+                dialogVisible: false,
+                form: {
+                    contractNo: '',
+                    refundAmount: '',
+                    refundDate: '',
+                    remarks: ''
+                },//提前退租form
                 suppleNumber: 0,
                 overdueNumber: 0,
                 multipleSelection: [],
@@ -298,7 +341,12 @@
                     ]
                 },
                 url: '/postlending/api/v1/contract/getContractPage',
-                billsData: []
+                billsData: [],
+                formLabelWidth: '120px',
+                rules: {
+                    refundDate: [{type: 'date', required: true, message: '请选择日期', trigger: 'blur'}],
+                    refundAmount: [{required: true, message: '请输入退租金额', trigger: 'blur'}]
+                }
             }
         },
         created(){
@@ -359,6 +407,10 @@
                     return "正常";
                 } else if (value > 0) {
                     return "逾期";
+                } else if (value === -3) {
+                    return "退租";
+                } else if (value === -4) {
+                    return "作废";
                 }
             },
             dateFormat: function (value) {
@@ -374,13 +426,15 @@
                     return "已还款";
                 } else if (value === 'OverdueRepayment') {
                     return "逾期未还款";
+                } else if (value === 'Exit') {
+                    return "已退租";
                 }
             },
             districtFormat: function (value) {
                 if(!value){
                     return ''
                 }
-                let district;
+                let district = {};
                 let findLabel = (item, value) => {
                     if(item) {
                         return item.some(i => {
@@ -398,6 +452,28 @@
             },
         },
         methods: {
+            handleEdit(row) {
+                this.dialogVisible = true;
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+                this.dialogVisible = false;
+            },
+            //确认提前还款
+            confirm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if(valid){
+                        this.form.refundDate = format(this.form.refundDate, 'YYYY-MM-DD HH:mm:ss');
+                        this.axios.post('/postlending/api/v1/contract/termination', this.form).then(() => {
+                            this.getData();
+                            this.$refs[formName].resetFields();
+                            this.dialogVisible = false;
+                        }).catch((error) => {
+                            this.$message.error(error.response.data.message);
+                        })
+                    }
+                });
+            },
             selectedData() {
                 if (this.searchForm.applyDate[0] !== null) {
                     this.searchForm.startDate = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
@@ -407,12 +483,20 @@
                     this.searchForm.endDate = '';
                 }
             },
-            handleChange() {
+            handleChange(a) {
+                if(a === 'Finished' || a === 'ExitNotRepaid' || a === 'ExitRepaid') {
+                    this.advanceRent = false;
+                } else {
+                    this.advanceRent = true;
+                }
                 this.getData();
                 this.billsData = [];
             },
             handleCurrentRow(currentRow) {
-                this.billsData = currentRow.bills;
+                if(currentRow !== null) {
+                    this.billsData = currentRow.bills;
+                    this.form.contractNo = currentRow.contractNo;
+                }
             },
             getAgencyList() {
                 this.axios.get('/api/v1/admin/agency/getAgencyList').then((res) => {

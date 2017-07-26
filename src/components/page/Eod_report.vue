@@ -48,22 +48,22 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="100"
                         prop="applictionNo"
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="150"
+                        min-width="80"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="86"
                         prop="mobile"
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="150"
                         prop="startDate"
                         label="起止日期">
                     <template scope="scope">
@@ -71,7 +71,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="100"
                         prop=""
                         label="借款金额">
                     <template scope="scope">
