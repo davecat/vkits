@@ -13,10 +13,10 @@
                     <el-date-picker
                             v-model="searchForm.applyDate"
                             align="right"
-                            type="daterange"
-                            placeholder="选择日期范围"
+                            type="date"
+                            placeholder="选择日期"
                             @change="selectedData"
-                            :picker-options="pickerOptions">
+                            :picker-options="pickerOptions0">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item>
@@ -135,50 +135,14 @@
         mixins: [pagination],
         data() {
             return {
-                pickerOptions: {
-                    shortcuts: [
-                        {
-                            text: '今日',
-                            onClick(picker) {
-                                const end = new Date();
-                                const start = new Date();
-                                picker.$emit('pick', [start, end]);
-                            }
-                        },
-                        {
-                            text: '最近三天',
-                            onClick(picker) {
-                                const end = new Date();
-                                const start = new Date();
-                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 3);
-                                picker.$emit('pick', [start, end]);
-                            }
-                        },
-                        {
-                            text: '最近七天',
-                            onClick(picker) {
-                                const end = new Date();
-                                const start = new Date();
-                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                                picker.$emit('pick', [start, end]);
-                            }
-                        },
-                        {
-                            text: '最近三十天',
-                            onClick(picker) {
-                                const end = new Date();
-                                const start = new Date();
-                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                                picker.$emit('pick', [start, end]);
-                            }
-                        }
-                    ]
+                pickerOptions0: {
+                    disabledDate(time) {
+                        return time.getTime() < Date.now() - 8.64e7;
+                    }
                 },
                 url: '/counter/api/v1/payee/lib/getPayeeLibPage',
                 searchForm: {
-                    applyDate: '',
-                    payeeDateStart: '',
-                    payeeDateEnd: '',
+                    applyDate: format(Date.now(), 'YYYY-MM-DD')
                 },
                 formLabelWidth: '120px',
             }
@@ -219,6 +183,9 @@
                 });
                 return totalAmount;
             }
+        },
+        created() {
+            console.log();
         },
         methods: {
             selectedData() {

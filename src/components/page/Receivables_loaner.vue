@@ -52,6 +52,9 @@
                         <el-option label="已确认" value="Accepted"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="租客姓名：">
+                    <el-input v-model="searchForm.customerName" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
                 </el-form-item>
@@ -258,6 +261,7 @@
                 totalElements: 0,
                 url: '/postlending/api/v1/payee/loaner/getPayeeLoanerPage',
                 searchForm: {
+                    customerName: '',
                     applyDate: '',
                     applyDate2: '',
                     applyDate3: '',

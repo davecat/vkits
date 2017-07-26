@@ -650,7 +650,7 @@
                 } else if (value === "Accepted") {
                     return "审核通过";
                 } else if (value === "LibReturned") {
-                    return "待修改（待确认）";
+                    return "待修改（已确认）";
                 } else if (value === "LoanerRejected") {
                     return "审批不通过-待确认";
                 } else if (value === "LoanerReturned") {
