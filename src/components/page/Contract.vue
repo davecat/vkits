@@ -316,6 +316,10 @@
                     return "正常";
                 } else if (value > 0) {
                     return "逾期";
+                } else if (value === -3) {
+                    return "退租";
+                } else if (value === -4) {
+                    return "作废";
                 }
             },
             dateFormat: function (value) {
@@ -331,6 +335,8 @@
                     return "已还款";
                 } else if (value === 'OverdueRepayment') {
                     return "逾期未还款";
+                } else if (value === 'Exit') {
+                    return "已退租";
                 }
             },
             districtFormat: function (value) {

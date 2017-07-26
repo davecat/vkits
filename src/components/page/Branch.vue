@@ -66,7 +66,7 @@
                 <el-table-column type="selection" width="50">
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="70"
                         prop="agencyName"
                         label="所属中介">
                 </el-table-column>
@@ -81,7 +81,7 @@
                         label="门店名称">
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="215"
                         prop="city"
                         label="门店城市">
                     <template scope="scope">
@@ -90,12 +90,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="300"
                         prop="address"
                         label="门店地址">
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="80"
                         prop="enabled"
                         label="门店状态"
                         show-overflow-tooltip>
@@ -103,7 +103,7 @@
                         {{ scope.row.enabled ? '启用':'停用' }}
                     </template>
                 </el-table-column>
-                <el-table-column  min-width="50" label="操作">
+                <el-table-column  min-width="122" label="操作">
                     <template scope="scope">
                         <el-tooltip v-if="staff.staffType !== 'Branch'" class="item" effect="dark" content="修改" placement="top-end">
                             <el-button size="small" type="primary"

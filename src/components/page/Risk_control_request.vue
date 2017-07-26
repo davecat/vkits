@@ -76,28 +76,28 @@
                     style="width: 100%"
                     @selection-change="handleSelectionChange">
                 <el-table-column
-                        min-width="50"
+                        min-width="40"
                         fixed
                         type="selection">
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
+                        min-width="100"
                         prop="id"
                         sortable
                         label="申请编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="80"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
+                        min-width="86"
                         prop="mobile"
                         label="联系方式">
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
+                        min-width="80"
                         prop="monthlyRent"
                         label="月租金">
                     <template scope="scope">
@@ -105,7 +105,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="131"
                         prop="startDate"
                         label="起止日期">
                     <template scope="scope">
@@ -113,13 +113,13 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
+                        min-width="80"
                         prop="rentPeriod"
                         label="租期">
                 </el-table-column>
                 <el-table-column
-                        min-width="140"
-                        prop=""
+                        min-width="80"
+                        prop="totalAmount"
                         label="房租总额">
                     <template scope="scope">
                         {{ scope.row.totalAmount | currency }}
@@ -135,7 +135,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="180"
+                        min-width="207"
                         prop="responsibleAgent"
                         label="经纪人">
                     <template scope="scope">
@@ -143,12 +143,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column v-if="searchForm.status !== 'Unconfirmed'"
-                        min-width="120"
+                        min-width="100"
                         prop="loanerName"
                         label="提交资金端">
                 </el-table-column>
                 <el-table-column v-if="searchForm.status !== 'Unconfirmed' && searchForm.status !== 'Commited'"
-                        min-width="120"
+                        min-width="80"
                         prop="loanerApprovalDate"
                         label="审批日期">
                     <template scope="scope">
@@ -156,7 +156,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column v-if="searchForm.status === 'LibRejected' || searchForm.status === 'LibReturned'"
-                        min-width="120"
+                        min-width="80"
                         prop="libApprovalDate"
                         label="确认日期">
                     <template scope="scope">
@@ -916,6 +916,6 @@
     }
 
     #reasonInputTextarea .el-form-item__content {
-        width: 80%;
+        width: 60%;
     }
 </style>

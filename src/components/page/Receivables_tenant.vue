@@ -148,7 +148,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="150"
                         prop="remarks"
                         label="备注">
                 </el-table-column>

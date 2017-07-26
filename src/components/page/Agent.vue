@@ -59,18 +59,22 @@
                 <el-table-column type="selection" width="50">
                 </el-table-column>
                 <el-table-column
+                        min-width="100"
                         prop="staffNo"
                         label="工号">
                 </el-table-column>
                 <el-table-column
+                        min-width="80"
                         prop="name"
                         label="姓名">
                 </el-table-column>
                 <el-table-column
+                        min-width="86"
                         prop="tel"
                         label="联系电话">
                 </el-table-column>
                 <el-table-column
+                        min-width="100"
                         prop="agencyName"
                         label="所属中介">
                 </el-table-column>
@@ -84,10 +88,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        min-width="100"
                         prop="branchName"
                         label="所属门店">
                 </el-table-column>
                 <el-table-column
+                        min-width="100"
                         prop="status"
                         label="人员状态">
                     <template scope="scope">

@@ -14,6 +14,11 @@
 </script>
 
 <style>
+    /*全局修改table*/
+    .el-table .cell, .el-table th>div {
+        padding-left: 0;
+        padding-right: 0;
+    }
     *{margin:0;padding:0;}
     html,body,#app,.wrapper{
         width:100%;
@@ -148,11 +153,5 @@
     }
     .el-row {
         margin-bottom: 20px;
-
-    &
-    :last-child {
-        margin-bottom: 0;
-    }
-
     }
 </style>

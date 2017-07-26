@@ -69,7 +69,7 @@
                     @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
-                        min-width="140"
+                        min-width="100"
                         prop="payerDate"
                         sortable
                         label="应付款日期">
@@ -78,32 +78,32 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="85"
                         prop="agencyName"
                         label="收款方">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="payee.bank"
                         label="收款开户银行">
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="80"
                         prop="payee.name"
                         label="开户人">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="190"
                         prop="payee.accountNumber"
                         label="收款银行账号">
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="70"
                         prop="contractCount"
                         label="合同数量">
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="110"
                         prop="totalAmount"
                         label="房租总金额">
                     <template scope="scope">
@@ -111,7 +111,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="110"
                         class-name="payerAmountFont"
                         prop="payerAmount"
                         label="代付金额">
@@ -120,17 +120,16 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="80"
                         class-name="statusGood"
                         prop="status"
                         label="状态">
                     <template scope="scope">
-                        <p :class="{ statusAlert: scope.row.status === 'Unconfirmed' }">{{ scope.row.status ===
-                            'Unconfirmed'?'待确认':'已确认' }}</p>
+                        <p :class="{statusAlert:scope.row.status === 'Unconfirmed'}" :id="scope.row.status === 'Termination'?'statusAlert1':'statusAlert2'">{{ scope.row.status | statusFilter }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="120"
+                        min-width="81"
                         label="操作">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="确认放款" placement="top-end" v-if="scope.row.status === 'Unconfirmed'">
@@ -184,17 +183,17 @@
                     :data="payablesDetail"
                     style="width: 100%">
                 <el-table-column
-                        min-width="160"
+                        min-width="70"
                         prop="contractNo"
                         label="合同编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="80"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="80"
                         prop="monthlyRent"
                         label="月租金">
                     <template scope="scope">
@@ -202,7 +201,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="110"
                         prop="totalAmount"
                         label="房租总金额">
                     <template scope="scope">
@@ -210,7 +209,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="110"
                         prop="payerAmount"
                         label="代付金额">
                     <template scope="scope">
@@ -218,7 +217,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="rate"
                         label="服务费率">
                     <template scope="scope">
@@ -226,7 +225,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="120"
                         prop="serviceFee"
                         label="服务费金额">
                     <template scope="scope">
@@ -234,11 +233,25 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="120"
                         prop="factPayerDate"
                         label="实际付款日期">
                     <template scope="scope">
                         {{ scope.row.factPayerDate |  dateFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        v-if="advanceRent"
+                        fixed="right"
+                        min-width="50"
+                        label="操作">
+                    <template scope="scope">
+                        <el-tooltip class="item" effect="dark" content="提前退租" placement="top-end">
+                            <el-button size="small" type="warning"
+                                       @click="handleEdit3(scope.row)"><i
+                                    class="fa fa-pencil-square-o"></i>
+                            </el-button>
+                        </el-tooltip>
                     </template>
                 </el-table-column>
             </el-table>
@@ -291,6 +304,17 @@
             </span>
         </el-dialog>
 
+        <el-dialog
+                title="提前退租"
+                :visible.sync="dialogVisible3"
+                size="tiny">
+            <p>此操作将提前退租，确认操作？</p>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible3=false">取 消</el-button>
+                <el-button type="primary" @click="confirm3">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -301,6 +325,8 @@
 //        mixins: [pagination],
         data() {
             return {
+                contractNo: '',//存放单据id
+                advanceRent: false,
                 pickerOptions: {
                     shortcuts: [
                         {
@@ -368,6 +394,7 @@
                 agencyList: {},
                 dialogVisible: false,
                 dialogVisible2: false,
+                dialogVisible3: false,
                 unConfirmRow: {},
                 payablesDetail: [],
                 detailCurPage: 1,
@@ -398,6 +425,13 @@
                     return value.substring(0, value.length - 9)
                 }
             },
+            statusFilter: function (value) {
+                switch (value) {
+                    case 'Unconfirmed': return '待确认';
+                    case 'Accepted': return '已确认';
+                    case 'Termination': return '已退租';
+                }
+            }
         },
         computed: {
             totalRent() {
@@ -416,6 +450,20 @@
             }
         },
         methods: {
+            handleEdit3(row) {
+                this.dialogVisible3 = true;
+                this.contractNo = row.contractNo;
+            },
+            //确认提前退租
+            confirm3() {
+                this.axios.post('/postlending/api/v1/payer/agency/termination/'+this.contractNo).then(() => {
+                    this.getData();
+                    this.advanceRent = false;
+                    this.dialogVisible3 = false;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
+            },
             handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();
@@ -495,6 +543,11 @@
                     this.currentRow.agencyId = row.agencyId || '';
                     this.currentRow.payerDate = row.payerDate || '';
                     this.currentRow.status = row.status || '';
+                    if(this.currentRow.status === 'Unconfirmed') {
+                        this.advanceRent = true;
+                    } else {
+                        this.advanceRent = false;
+                    }
                     this.getDetail();
                 } else {
                     this.currentRow = {
@@ -605,6 +658,9 @@
 
     .statusAlert {
         color: #F7BA2A
+    }
+    #statusAlert1 {
+        color: red;
     }
 
     .statusGood {

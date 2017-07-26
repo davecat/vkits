@@ -1172,6 +1172,6 @@
     }
 
     #reasonInputTextarea .el-form-item__content {
-        width: 80%;
+        width: 60%;
     }
 </style>

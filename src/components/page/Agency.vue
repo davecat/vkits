@@ -40,20 +40,20 @@
                     tooltip-effect="dark"
                     style="width: 100%"
                     @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="80">
+                <el-table-column type="selection" width="50">
                 </el-table-column>
                 <el-table-column
-                        min-width="94"
+                        min-width="100"
                         prop="code"
                         label="中介编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="94"
+                        min-width="100"
                         prop="name"
                         label="中介名称">
                 </el-table-column>
                 <el-table-column
-                        min-width="94"
+                        min-width="70"
                         prop="branchAmount"
                         label="门店数量">
                 </el-table-column>
@@ -63,7 +63,7 @@
                         label="开户行（收款）">
                 </el-table-column>
                 <el-table-column
-                        min-width="149"
+                        min-width="150"
                         prop="payeeAccountNumber"
                         label="银行卡号（收款）">
                 </el-table-column>
@@ -73,18 +73,19 @@
                         label="开户行（付款）">
                 </el-table-column>
                 <el-table-column
-                        min-width="149"
+                        min-width="150"
                         prop="payerAccountNumber"
                         label="银行卡号（付款）">
                 </el-table-column>
                 <el-table-column
+                        min-width="80"
                         label="状态"
                         show-overflow-tooltip>
                     <template scope="scope">
                         {{ scope.row.enabled ? '启用':'停用' }}
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" min-width="50">
+                <el-table-column label="操作" min-width="81">
                     <template scope="scope">
                         <el-tooltip class="item" effect="dark" content="修改" placement="top-end">
                             <el-button size="small" type="primary"

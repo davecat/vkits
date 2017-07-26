@@ -79,7 +79,7 @@
                     @current-change="handleCurrentRow"
                     style="width: 100%">
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="payeeDate"
                         sortable
                         label="应收款日期">
@@ -88,7 +88,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="85"
                         prop="loanerName"
                         label="付款方">
                 </el-table-column>
@@ -102,12 +102,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="100"
+                        min-width="70"
                         prop="contractCount"
                         label="合同数量">
                 </el-table-column>
                 <el-table-column
-                        min-width="240"
+                        min-width="220"
                         prop="payeeBankAccount"
                         label="收款账号">
                 </el-table-column>
@@ -145,20 +145,19 @@
         <el-row>
             <el-table
                     :data="receivablesDetail"
-                    stripe
                     style="width: 100%">
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="contractNo"
                         label="合同编号">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="80"
                         prop="customerName"
                         label="租客姓名">
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="payeeAmount"
                         label="分期总金额">
                     <template scope="scope">
@@ -166,7 +165,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="payeeDate"
                         label="应收款日期">
                     <template scope="scope">
@@ -174,7 +173,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        min-width="160"
+                        min-width="100"
                         prop="factPayeeDate"
                         label="实际收款日期">
                     <template scope="scope">
