@@ -251,7 +251,7 @@
                             :default-value="form.refundDate">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="退租金额：" :label-width="formLabelWidth" prop="refundAmount">
+                <el-form-item label="退款金额：" :label-width="formLabelWidth" prop="refundAmount">
                     <el-input v-model="form.refundAmount" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="备注：" :label-width="formLabelWidth" prop="remarks">
