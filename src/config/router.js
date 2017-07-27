@@ -101,6 +101,11 @@ export default new Router({
                     component: resolve => require(['../components/page/Eod_report.vue'], resolve)
                 },
                 {
+                    path: '/receivables_agency',
+                    meta: { requiresAuth: true },
+                    component: resolve => require(['../components/page/Receivables_agency.vue'], resolve)
+                },
+                {
                     path: '/receivables_loaner',
                     meta: { requiresAuth: true },
                     component: resolve => require(['../components/page/Receivables_loaner.vue'], resolve)

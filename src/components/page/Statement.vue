@@ -189,12 +189,11 @@
         },
         methods: {
             selectedData() {
-                if (this.searchForm.applyDate[0] !== null) {
-                    this.searchForm.payeeDateStart = format(this.searchForm.applyDate[0], 'YYYY-MM-DD');
-                    this.searchForm.payeeDateEnd = format(this.searchForm.applyDate[1], 'YYYY-MM-DD');
+                console.log(this.searchForm.applyDate);
+                if(this.searchForm.applyDate !== undefined && this.searchForm.applyDate !== 'Invalid Date' && this.searchForm.applyDate !== '') {
+                    this.searchForm.applyDate = format(this.searchForm.applyDate, 'YYYY-MM-DD');
                 } else {
-                    this.searchForm.payeeDateStart = '';
-                    this.searchForm.payeeDateEnd = '';
+                    this.searchForm.applyDate = format(Date.now(), 'YYYY-MM-DD');
                 }
             },
         }
