@@ -11,6 +11,7 @@
             <el-button type="primary" @click="dialogVisible = true">提交</el-button>
             <el-button type="primary" @click="dialogVisible2 = true">驳回修改</el-button>
             <el-button type="primary" @click="dialogVisible3 = true">拒绝</el-button>
+            <el-button type="primary" @click="dialogVisible4 = true">审批模式</el-button>
         </el-row>
         <el-row>
             <el-form :inline="true" :model="searchForm">
@@ -435,6 +436,46 @@
         </el-dialog>
 
         <el-dialog
+                title="配置默认提交资金端"
+                :visible.sync="dialogVisible4"
+                size="tiny">
+            <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="资金端：" prop="loanerId">
+                    <el-select v-model="form.loanerId">
+                        <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible4 = false;dialogVisible5 = true">跳 过</el-button>
+                <el-button type="primary" @click="multipleReject">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog
+                :visible.sync="dialogVisible5"
+                size="large">
+            <div class="left">
+                <el-button @click="dialogVisible5 = false">结束审核</el-button>
+                <el-form :model="form" ref="form" :rules="rules">
+                    <el-form-item label="资金端：" prop="loanerId">
+                        <el-select v-model="form.loanerId">
+                            <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div class="right">
+                右侧内容
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible5 = false">提 交</el-button>
+                <el-button @click="dialogVisible5 = false">驳 回</el-button>
+                <el-button type="primary" @click="dialogVisible5 = false">拒 绝</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog
                 title="大图"
                 :visible.sync="dialogBigPhoto"
                 size="small">
@@ -577,6 +618,8 @@
                 dialogVisible: false,
                 dialogVisible2: false,
                 dialogVisible3: false,
+                dialogVisible4: false,
+                dialogVisible5: false,
                 idCardFrontPhoto: '',
                 idCardVersoPhoto: '',
                 idCardAndPersonPhoto: '',
@@ -917,5 +960,34 @@
 
     #reasonInputTextarea .el-form-item__content {
         width: 60%;
+    }
+    .left {
+        background: none repeat scroll 0 0 #fff;
+        padding:40px;
+        box-sizing: border-box;
+        overflow-y: scroll;
+        display: block;
+        position: absolute;
+        width: 500px;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        border-right: 1px dashed black;
+    }
+
+    .left > .el-form {
+        height: 100%;
+    }
+    .right{
+        background: none repeat scroll 0 0 #fff;
+        position: absolute;
+        left: 500px;
+        right: 0;
+        top: 0;
+        bottom:0;
+        width: auto;
+        padding:40px;
+        box-sizing: border-box;
+        overflow-y: scroll;
     }
 </style>
