@@ -128,11 +128,9 @@
 </template>
 
 <script>
-    import {pagination} from '../mixins/pagination.js'
     import format from 'date-fns/format'
     import json from "../../../static/city.json";
     export default {
-        mixins: [pagination],
         data() {
             return {
                 pickerOptions0: {
@@ -140,6 +138,10 @@
                         return time.getTime() < Date.now() - 8.64e7;
                     }
                 },
+                tableData: [],
+                cur_page: 1,
+                size: 10,
+                totalElements: 0,
                 url: '/counter/api/v1/payee/lib/getPayeeLibPage',
                 searchForm: {
                     applyDate: format(Date.now(), 'YYYY-MM-DD')
@@ -185,11 +187,30 @@
             }
         },
         created() {
-            console.log();
+            this.getData();
         },
         methods: {
+            handleCurrentChange(val){
+                this.cur_page = val;
+                this.getData();
+            },
+            getData(){
+                this.axios.post(this.url, {
+                    ...this.searchForm,
+                    page: this.cur_page - 1,
+                    size: this.size
+                }).then((res) => {
+                    this.tableData = res.data.content;
+                    this.totalElements = res.data.totalElements;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
+            },
+            Search() {
+                this.searchForm.applyDate = format(this.searchForm.applyDate, 'YYYY-MM-DD');
+                this.getData();
+            },
             selectedData() {
-                console.log(this.searchForm.applyDate);
                 if(this.searchForm.applyDate !== undefined && this.searchForm.applyDate !== 'Invalid Date' && this.searchForm.applyDate !== '') {
                     this.searchForm.applyDate = format(this.searchForm.applyDate, 'YYYY-MM-DD');
                 } else {
