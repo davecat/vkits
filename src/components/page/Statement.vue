@@ -15,8 +15,7 @@
                             align="right"
                             type="date"
                             placeholder="选择日期"
-                            @change="selectedData"
-                            :picker-options="pickerOptions0">
+                            @change="selectedData">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item>
@@ -40,13 +39,20 @@
                         min-width="130"
                         label="应收款日期">
                     <template scope="scope">
-                        {{ scope.row.payeeDate | dateFormat }}
+                        <div slot="reference" class="name-wrapper-normal">
+                            <el-tag>{{ scope.row.payeeDate | dateFormat }}</el-tag>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column
                         min-width="136"
                         prop="applicationNo"
                         label="申请编号">
+                    <template scope="scope">
+                        <div slot="reference" class="name-wrapper-normal">
+                            <el-tag>{{ scope.row.applicationNo }}</el-tag>
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="120"
@@ -63,30 +69,49 @@
                         prop="totalAmount"
                         label="分期总金额">
                     <template scope="scope">
-                        {{ scope.row.totalAmount | currency }}
+                        <div slot="reference" class="name-wrapper-normal">
+                            <el-tag>{{ scope.row.totalAmount | currency }}</el-tag>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column
                         min-width="100"
                         prop="customerName"
                         label="租客姓名">
+                    <template scope="scope">
+                        <div slot="reference" class="name-wrapper-normal">
+                            <el-tag>{{ scope.row.customerName}}</el-tag>
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="150"
                         prop="mobile"
                         label="联系方式">
+                    <template scope="scope">
+                        <div slot="reference" class="name-wrapper-normal">
+                            <el-tag>{{ scope.row.mobile}}</el-tag>
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="115"
                         prop="rentPeriod"
                         label="租期">
+                    <template scope="scope">
+                        <div slot="reference" class="name-wrapper-normal">
+                            <el-tag>{{ scope.row.rentPeriod}}</el-tag>
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="180"
                         prop="startDate"
                         label="起止时间">
                     <template scope="scope">
-                        {{ scope.row.startDate | dateFormat}}-{{ scope.row.endDate | dateFormat}}
+                        <div slot="reference" class="name-wrapper-normal">
+                            <el-tag>{{ scope.row.startDate | dateFormat}}-{{ scope.row.endDate | dateFormat}}</el-tag>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -94,7 +119,9 @@
                         prop="monthlyRent"
                         label="月租金">
                     <template scope="scope">
-                        {{ scope.row.monthlyRent | currency }}
+                        <div slot="reference" class="name-wrapper-normal">
+                            <el-tag>{{ scope.row.monthlyRent | currency }}</el-tag>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -102,8 +129,10 @@
                         prop="city"
                         label="城市">
                     <template scope="scope">
-                        {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
-                        scope.row.district | districtFormat }}
+                        <div slot="reference" class="name-wrapper-normal">
+                            <el-tag>{{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
+                                scope.row.district | districtFormat }}</el-tag>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -111,7 +140,9 @@
                         prop="responsibleAgent"
                         label="经纪人">
                     <template scope="scope">
-                        {{ scope.row.responsibleBranch }}-{{ scope.row.responsibleAgent }}
+                        <div slot="reference" class="name-wrapper-normal">
+                            <el-tag>{{ scope.row.responsibleBranch }}-{{ scope.row.responsibleAgent }}</el-tag>
+                        </div>
                     </template>
                 </el-table-column>
             </el-table>
@@ -128,18 +159,15 @@
 </template>
 
 <script>
-    import {pagination} from '../mixins/pagination.js'
     import format from 'date-fns/format'
     import json from "../../../static/city.json";
     export default {
-        mixins: [pagination],
         data() {
             return {
-                pickerOptions0: {
-                    disabledDate(time) {
-                        return time.getTime() < Date.now() - 8.64e7;
-                    }
-                },
+                tableData: [],
+                cur_page: 1,
+                size: 10,
+                totalElements: 0,
                 url: '/counter/api/v1/payee/lib/getPayeeLibPage',
                 searchForm: {
                     applyDate: format(Date.now(), 'YYYY-MM-DD')
@@ -185,11 +213,30 @@
             }
         },
         created() {
-            console.log();
+            this.getData();
         },
         methods: {
+            handleCurrentChange(val){
+                this.cur_page = val;
+                this.getData();
+            },
+            getData(){
+                this.axios.post(this.url, {
+                    ...this.searchForm,
+                    page: this.cur_page - 1,
+                    size: this.size
+                }).then((res) => {
+                    this.tableData = res.data.content;
+                    this.totalElements = res.data.totalElements;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
+            },
+            Search() {
+                this.searchForm.applyDate = format(this.searchForm.applyDate, 'YYYY-MM-DD');
+                this.getData();
+            },
             selectedData() {
-                console.log(this.searchForm.applyDate);
                 if(this.searchForm.applyDate !== undefined && this.searchForm.applyDate !== 'Invalid Date' && this.searchForm.applyDate !== '') {
                     this.searchForm.applyDate = format(this.searchForm.applyDate, 'YYYY-MM-DD');
                 } else {
@@ -216,5 +263,10 @@
         font-size: 14px;
         background-color: transparent;
         color: #1D8CE0
+    }
+    .name-wrapper-normal .el-tag {
+        font-size: 14px;
+        background-color: transparent;
+        color: black;
     }
 </style>
