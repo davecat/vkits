@@ -402,6 +402,7 @@
                     loanerId: this.currentRow.loanerId,
                     payeeDate: format(this.currentRow.payeeDate, 'YYYY-MM-DD'),
                     status: this.currentRow.status,
+                    customerName: this.searchForm.customerName,
                     page: this.detailCurPage - 1,
                     size: this.detailSize
                 };
