@@ -25,7 +25,7 @@
         </el-row>
         <el-row style="color: red;">
             <el-col :span="4" style="float: right">
-                应收合计:{{ totalAmount | currency}}
+                应收合计:{{ sumPayeeAmount | currency}}
             </el-col>
         </el-row>
         <el-row>
@@ -131,7 +131,8 @@
                     <template scope="scope">
                         <div slot="reference" class="name-wrapper-normal">
                             <el-tag>{{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
-                                scope.row.district | districtFormat }}</el-tag>
+                                scope.row.district | districtFormat }}
+                            </el-tag>
                         </div>
                     </template>
                 </el-table-column>
@@ -168,6 +169,7 @@
                 cur_page: 1,
                 size: 10,
                 totalElements: 0,
+                sumPayeeAmount: 0,
                 url: '/counter/api/v1/payee/lib/getPayeeLibPage',
                 searchForm: {
                     applyDate: format(Date.now(), 'YYYY-MM-DD')
@@ -183,12 +185,12 @@
                 }
             },
             districtFormat: function (value) {
-                if(!value){
+                if (!value) {
                     return ''
                 }
                 let district = {};
                 let findLabel = (item, value) => {
-                    if(item) {
+                    if (item) {
                         return item.some(i => {
                             if (value === i.value) {
                                 district = i;
@@ -204,13 +206,13 @@
             },
         },
         computed: {
-            totalAmount() {
-                let totalAmount = 0;
-                this.tableData.forEach(item => {
-                    totalAmount+=item.payeeAmount;
-                });
-                return totalAmount;
-            }
+//            totalAmount() {
+//                let totalAmount = 0;
+//                this.tableData.forEach(item => {
+//                    totalAmount += item.payeeAmount;
+//                });
+//                return totalAmount;
+//            }
         },
         created() {
             this.getData();
@@ -228,6 +230,11 @@
                 }).then((res) => {
                     this.tableData = res.data.content;
                     this.totalElements = res.data.totalElements;
+                    if (res.data.sumPayeeAmount !== undefined) {
+                        this.sumPayeeAmount = res.data.sumPayeeAmount;
+                    } else {
+                        this.sumPayeeAmount = 0;
+                    }
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
                 })
@@ -237,7 +244,7 @@
                 this.getData();
             },
             selectedData() {
-                if(this.searchForm.applyDate !== undefined && this.searchForm.applyDate !== 'Invalid Date' && this.searchForm.applyDate !== '') {
+                if (this.searchForm.applyDate !== undefined && this.searchForm.applyDate !== 'Invalid Date' && this.searchForm.applyDate !== '') {
                     this.searchForm.applyDate = format(this.searchForm.applyDate, 'YYYY-MM-DD');
                 } else {
                     this.searchForm.applyDate = format(Date.now(), 'YYYY-MM-DD');
@@ -259,11 +266,13 @@
     .statusGood {
         color: #13CE66
     }
+
     .el-tag {
         font-size: 14px;
         background-color: transparent;
         color: #1D8CE0
     }
+
     .name-wrapper-normal .el-tag {
         font-size: 14px;
         background-color: transparent;
