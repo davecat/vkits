@@ -573,6 +573,7 @@
                 let param = {
                     agencyId: this.currentRow.agencyId,
                     payerDate: format(this.currentRow.payerDate, 'YYYY-MM-DD'),
+                    customerName: this.searchForm.customerName,
                     status: this.currentRow.status,
                     page: this.detailCurPage - 1,
                     size: this.detailSize
