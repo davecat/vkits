@@ -8,9 +8,7 @@
         </div>
 
         <el-row>
-            <el-button type="primary" @click="dialogVisible = true">提交</el-button>
-            <el-button type="primary" @click="dialogVisible2 = true">驳回修改</el-button>
-            <el-button type="primary" @click="dialogVisible3 = true">拒绝</el-button>
+            <el-button type="primary" @click="approval()">审批模式</el-button>
         </el-row>
         <el-row>
             <el-form :inline="true" :model="searchForm">
@@ -395,8 +393,25 @@
             </el-row>
         </el-form>
 
+
         <el-dialog
-                title="提交"
+                title="配置默认提交资金端"
+                :visible.sync="dialogVisible4"
+                size="tiny">
+            <el-form :model="form" ref="form">
+                <el-form-item label="资金端：">
+                    <el-select v-model="form.loanerId">
+                        <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible4 = false;dialogVisible5 = true">跳 过</el-button>
+                <el-button type="primary" @click="dialogVisible4 = false;dialogVisible5 = true">确 定</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog
+                title="提交至资金端"
                 :visible.sync="dialogVisible"
                 size="tiny">
             <el-form :model="form" ref="form" :rules="rules">
@@ -405,33 +420,98 @@
                         <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item>
-                    <el-button @click="dialogVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="multipleCommit">确 定</el-button>
-                </el-form-item>
             </el-form>
-        </el-dialog>
-
-        <el-dialog
-                title="驳回修改分期申请"
-                :visible.sync="dialogVisible2"
-                size="tiny">
-            <span>此操作会将选中分期申请返回房屋中介处进行修改，是否确认？</span>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible2 = false">取 消</el-button>
-                <el-button type="primary" @click="multipleReturn">确 定</el-button>
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="multipleCommit">确 定</el-button>
             </span>
         </el-dialog>
 
         <el-dialog
-                title="拒绝分期申请"
-                :visible.sync="dialogVisible3"
-                size="tiny">
-            <span>此操作会将选中分期申请拒绝审批，是否确认？</span>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible3 = false">取 消</el-button>
-                <el-button type="primary" @click="multipleReject">确 定</el-button>
-            </span>
+                :visible.sync="dialogVisible5"
+                size="large">
+            <div id="dialog-body">
+                <div class="left">
+                    <el-button type="primary" @click="dialogVisible5 = false" style="margin-bottom: 10px">结束审核</el-button>
+                    <el-row>
+                        <div class="leftSpan">申请编号：{{currentRow.id}}</div>
+                    </el-row>
+                    <el-row>
+                        <div class="leftSpan">姓名：{{currentRow.customerName}}</div>
+                        <div class="leftSpan">手机号：{{currentRow.mobile}}</div>
+                        <div class="leftSpan">身份证号：{{currentRow.idCardNo}}</div>
+                    </el-row>
+                    <el-row>
+                        <div class="leftSpan">月租金：{{currentRow.monthlyRent}}</div>
+                        <div class="leftSpan">起止日期：{{ currentRow.startDate |  dateFormat}}-{{ currentRow.endDate |  dateFormat}}</div>
+                        <div class="leftSpan">租期：{{currentRow.rentPeriod}}</div>
+                        <div class="leftSpan">尾款：{{currentRow.retainage | currency}}</div>
+                    </el-row>
+                    <el-row>
+                        <div class="leftSpan">经纪人：{{currentRow.responsibleAgent}}</div>
+                        <div class="leftSpan">联系电话：{{currentRow.responsibleAgentPhone}}</div>
+                        <div class="leftSpan">申请日期：{{currentRow.applyDate | dateFormat}}</div>
+                    </el-row>
+                    <el-collapse>
+                        <el-collapse-item title="房屋信息" name="1">
+                            <div>{{currentRow.address}}</div>
+                            <div>详细地址：{{ currentRow.provinceName }}{{ currentRow.cityName }}{{ currentRow.districtName }}</div>
+                            <div>台账号：{{currentRow.apartmentNo}}</div>
+                        </el-collapse-item>
+                        <el-collapse-item title="租客其他信息" name="2">
+                            <div>学历：{{currentRow.education | educationFormat}}</div>
+                            <div>工作单位：{{currentRow.companyName}}</div>
+                            <div>单位地址：{{currentRow.companyAddress}}</div>
+                        </el-collapse-item>
+                        <el-collapse-item title="应急联系人" name="3">
+                            <div>应急联系人：{{currentRow.emergencyContact}}</div>
+                            <div>联系方式：{{currentRow.emergencyContactMobile}}</div>
+                            <div>关系：{{currentRow.relation | relationFormat}}</div>
+                        </el-collapse-item>
+                    </el-collapse>
+                </div>
+                <div class="right">
+                    <div style="width: 100%;text-align: center;margin-bottom: 5px">
+                        <el-button style="float: left" @click="prev()" :disabled="!tableData[index-1]">上一条</el-button>
+                        <el-button type="success" @click="dialogVisible = true">提 交</el-button>
+                        <el-button type="warning" @click="multipleReturn">驳 回</el-button>
+                        <el-button type="danger" @click="multipleReject">拒 绝</el-button>
+                        <el-button style="float: right" @click="next()" :disabled="!tableData[index+1]">下一条</el-button>
+                    </div>
+                    <div style="width: 100%;text-align: center;margin-bottom: 5px">
+                        <el-button @click="hashClick('slide1')" :class="a">身份证正面</el-button>
+                        <el-button @click="hashClick('slide2')" :class="b">身份证反面</el-button>
+                        <el-button @click="hashClick('slide3')" :class="c">手持身份证</el-button>
+                        <el-button @click="hashClick('slide4')" :class="d">房租合同</el-button>
+                    </div>
+                    <!-- swiper -->
+                    <swiper :options="swiperOption">
+                        <swiper-slide data-hash="slide1" style="overflow-y: scroll">
+                            <div class="swiper-zoom-container">
+                                <img :src="photo(currentRow.idCardFrontPhoto)" alt="" @click="imgClick1()" id="idCardFrontPhoto">
+                            </div>
+                        </swiper-slide>
+                        <swiper-slide data-hash="slide2" style="overflow-y: scroll">
+                            <div class="swiper-zoom-container">
+                                <img :src="photo(currentRow.idCardVersoPhoto)" alt="" @click="imgClick2()" id="idCardVersoPhoto">
+                            </div>
+                        </swiper-slide>
+                        <swiper-slide data-hash="slide3" style="overflow-y: scroll">
+                            <div class="swiper-zoom-container">
+                                <img :src="photo(currentRow.idCardAndPersonPhoto)" alt="" @click="imgClick3()" id="idCardAndPersonPhoto">
+                            </div>
+                        </swiper-slide>
+                        <swiper-slide v-for="(item,index) in currentRow.contractPhotos" data-hash="slide4" style="overflow-y: scroll">
+                            <div class="swiper-zoom-container">
+                                <img :src="photo(item)" alt="" @click="imgClick4(index)" class="contractPhotos">
+                            </div>
+                        </swiper-slide>
+                        <div class="swiper-pagination" slot="pagination"></div>
+                        <div class="swiper-button-prev" slot="button-prev" @click="prevClick()"></div>
+                        <div class="swiper-button-next" slot="button-next" @click="nextClick()"></div>
+                    </swiper>
+                </div>
+            </div>
         </el-dialog>
 
         <el-dialog
@@ -448,15 +528,40 @@
 </template>
 
 <script>
+    import VueAwesomeSwiper from 'vue-awesome-swiper'
+    import { swiper, swiperSlide } from 'vue-awesome-swiper'
     import json from "../../../static/city.json";
     import format from 'date-fns/format'
-//    import { pagination } from '../mixins/pagination.js'
     import { qiniu } from '../mixins/qiniu.js'
     export default {
-//        mixins: [pagination, qiniu],
+        components: {
+            swiper,
+            swiperSlide
+        },
+        name: 'carrousel',
         mixins: [qiniu],
         data() {
             return {
+                current1: 0,
+                current2: 0,
+                current3: 0,
+                current4: 0,
+                index: 0,//默认审阅模式从第一条开始
+                //控制右边内容tab样式
+                a: 'is-active',
+                b: '',
+                c: '',
+                d: '',
+                //初始化seiper
+                swiperOption: {
+                    pagination: '.swiper-pagination',
+                    paginationClickable: true,
+                    nextButton: '.swiper-button-next',
+                    prevButton: '.swiper-button-prev',
+                    spaceBetween: 30,
+                    hashnav: true,
+                    hashnavWatchState: true
+                },
                 reason: [],
                 reasonOption: [
                     {
@@ -511,6 +616,7 @@
                 },
                 currentRow: {
                     responsibleAgent: '',
+                    responsibleAgentPhone: '',
                     applyDate: '',
                     status: '',
                     monthlyRent: '',
@@ -575,8 +681,8 @@
                 bigPhotoUrl: '',
                 dialogBigPhoto: false,
                 dialogVisible: false,
-                dialogVisible2: false,
-                dialogVisible3: false,
+                dialogVisible4: false,
+                dialogVisible5: false,
                 idCardFrontPhoto: '',
                 idCardVersoPhoto: '',
                 idCardAndPersonPhoto: '',
@@ -709,6 +815,180 @@
             },
         },
         methods: {
+            //上一条
+            prev() {
+                //跳转到上一条
+                this.index = this.index - 1;
+                this.approvalDetail();
+            },
+            //下一条
+            next() {
+                //跳转到下一条
+                this.index = this.index + 1;
+                this.approvalDetail();
+            },
+            //照片旋转
+            imgClick1() {
+                this.current1 = (this.current1+90)%360;
+                document.getElementById('idCardFrontPhoto').style.transform = 'rotate('+this.current1+'deg)';
+            },
+            imgClick2() {
+                this.current2 = (this.current2+90)%360;
+                document.getElementById('idCardVersoPhoto').style.transform = 'rotate('+this.current2+'deg)';
+            },
+            imgClick3() {
+                this.current3 = (this.current3+90)%360;
+                document.getElementById('idCardAndPersonPhoto').style.transform = 'rotate('+this.current3+'deg)';
+            },
+            imgClick4(index) {
+                this.current4 = (this.current4+90)%360;
+                document.getElementsByClassName('contractPhotos')[index].style.transform = 'rotate('+this.current4+'deg)';
+            },
+            //获取审批数据
+            approvalDetail() {
+                //初始化数据
+                this.current1 = 0;
+                this.current2 = 0;
+                this.current3 = 0;
+                this.current4 = 0;
+                let that = this;
+                this.currentRow = this.tableData[this.index];
+                if(this.currentRow.idCardFrontOrVersoPhotoBlur) {
+                    this.reason.push('idCardFrontOrVersoPhotoBlur')
+                }
+                if(this.currentRow.idCardAndPersonPhotoBlur) {
+                    this.reason.push('idCardAndPersonPhotoBlur')
+                }
+                if(this.currentRow.contractPhotoBlur) {
+                    this.reason.push('contractPhotoBlur')
+                }
+                if(this.currentRow.addressBlur) {
+                    this.reason.push('addressBlur')
+                }
+                if(this.currentRow.customerInfoError) {
+                    this.reason.push('customerInfoError')
+                }
+                if(this.currentRow.otherException) {
+                    this.reason.push('otherException')
+                }
+                //这里处理省市县的id
+                json.forEach((item) => {
+                    //省
+                    if(that.currentRow.province === item.value){
+                        that.currentRow.provinceName = item.label+'/';
+                        //市
+                        item.children.forEach((item) => {
+                            if(that.currentRow.city === item.value){
+                                that.currentRow.cityName = item.label+'/';
+                                //县
+                                item.children.forEach((item) => {
+                                    if(that.currentRow.district === item.value){
+                                        that.currentRow.districtName = item.label;
+                                    }
+                                })
+                            }
+                        })
+                    }
+                });
+            },
+            //审批模式
+            approval() {
+                if(this.tableData.length === 0){
+                    this.$message({
+                        message: '当前没有要审批的单据',
+                        type: 'warning'
+                    });
+                    return;
+                }
+                //重置hash
+                this.index = 0;
+                window.location.hash = '#slide1';
+                this.a = 'is-active';
+                this.b = '';
+                this.c = '';
+                this.d = '';
+                this.dialogVisible4 = true;
+                this.approvalDetail();
+            },
+            prevClick() {
+                console.log(window.location.hash);
+                if(window.location.hash === '#slide4') {
+                    this.a = '';
+                    this.b = '';
+                    this.c = 'is-active';
+                    this.d = ''
+                }
+                if(window.location.hash === '#slide3') {
+                    this.a = '';
+                    this.b = 'is-active';
+                    this.c = '';
+                    this.d = ''
+                }
+                if(window.location.hash === '#slide2') {
+                    this.a = 'is-active';
+                    this.b = '';
+                    this.c = '';
+                    this.d = ''
+                }
+            },
+            nextClick() {
+                console.log(window.location.hash);
+                if(window.location.hash === '#slide1') {
+                    this.a = '';
+                    this.b = 'is-active';
+                    this.c = '';
+                    this.d = ''
+                }
+                if(window.location.hash === '#slide2') {
+                    this.a = '';
+                    this.b = '';
+                    this.c = 'is-active';
+                    this.d = ''
+                }
+                if(window.location.hash === '#slide3') {
+                    this.a = '';
+                    this.b = '';
+                    this.c = '';
+                    this.d = 'is-active'
+                }
+                if(window.location.hash === '#slide4') {
+                    this.a = '';
+                    this.b = '';
+                    this.c = '';
+                    this.d = 'is-active'
+                }
+            },
+            //根据hash来跳转
+            hashClick(a) {
+                if(a === 'slide1') {
+                    window.location.hash='#slide1';
+                    this.a = 'is-active';
+                    this.b = '';
+                    this.c = '';
+                    this.d = ''
+                }
+                if(a === 'slide2') {
+                    window.location.hash='#slide2';
+                    this.a = '';
+                    this.b = 'is-active';
+                    this.c = '';
+                    this.d = ''
+                }
+                if(a === 'slide3') {
+                    window.location.hash='#slide3';
+                    this.a = '';
+                    this.b = '';
+                    this.c = 'is-active';
+                    this.d = ''
+                }
+                if(a === 'slide4') {
+                    window.location.hash='#slide4';
+                    this.a = '';
+                    this.b = '';
+                    this.c = '';
+                    this.d = 'is-active'
+                }
+            },
             getData(a){
                 this.axios.post(this.url, {
                     ...this.searchForm,
@@ -849,56 +1129,80 @@
                 this.multipleSelection = val;
             },
             multipleCommit() {
-                let ids = this.multipleSelection.map(row => {
-                    return row.id
-                });
-                if (ids.length === 0) {
-                    console.log('ids is null');
-                } else {
-                    this.form.applicationIds = ids;
+                this.form.applicationIds[0] = this.currentRow.id;
                     this.axios.post('/riskcontrol/lib/api/v1/application/commitToLoaner', this.form).then((res) => {
                         this.getData();
                     }).catch((error) => {
                         this.$message.error(error.response.data.message);
-                    })
-                }
+                    });
                 this.dialogVisible = false;
+                //跳转到下一条
+                this.index = this.index + 1;
+                if(this.tableData[this.index] === undefined) {
+                    this.$message.error('没有下一条数据');
+                    return;
+                } else {
+                    window.location.hash = '#slide1';
+                    this.a = 'is-active';
+                    this.b = '';
+                    this.c = '';
+                    this.d = '';
+                    this.approvalDetail();
+                }
+
             },
             multipleReturn() {
-                let ids = this.multipleSelection.map(row => {
-                    return row.id
+                let ids = [];
+                ids[0] = this.currentRow.id;
+                this.axios.post('/riskcontrol/lib/api/v1/application/libReturn', ids).then((res) => {
+                    this.getData();
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
                 });
-                if (ids.length === 0) {
-                    console.log('ids is null');
+                //跳转到下一条
+                this.index = this.index + 1;
+                if(this.tableData[this.index] === undefined) {
+                    this.$message.error('没有下一条数据');
+                    return;
                 } else {
-                    this.axios.post('/riskcontrol/lib/api/v1/application/libReturn', ids).then((res) => {
-                        this.getData();
-                    }).catch((error) => {
-                        this.$message.error(error.response.data.message);
-                    })
+                    window.location.hash = '#slide1';
+                    this.a = 'is-active';
+                    this.b = '';
+                    this.c = '';
+                    this.d = '';
+                    this.approvalDetail();
                 }
-                this.dialogVisible2 = false;
             },
             multipleReject() {
-                let ids = this.multipleSelection.map(row => {
-                    return row.id
+                let ids = [];
+                ids[0] = this.currentRow.id;
+                this.axios.post('/riskcontrol/lib/api/v1/application/libReject', ids).then((res) => {
+                    this.getData();
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
                 });
-                if (ids.length === 0) {
-                    console.log('ids is null');
+                //跳转到下一条
+                this.index = this.index + 1;
+                if(this.tableData[this.index] === undefined) {
+                    this.$message.error('没有下一条数据');
+                    return;
                 } else {
-                    this.axios.post('/riskcontrol/lib/api/v1/application/libReject', ids).then((res) => {
-                        this.getData();
-                    }).catch((error) => {
-                        this.$message.error(error.response.data.message);
-                    })
+                    window.location.hash = '#slide1';
+                    this.a = 'is-active';
+                    this.b = '';
+                    this.c = '';
+                    this.d = '';
+                    this.approvalDetail();
                 }
-                this.dialogVisible3 = false;
             }
         }
     }
 </script>
 
 <style>
+    .leftSpan {
+        margin-bottom: 8px;
+    }
     .demo-table-expand {
         font-size: 0;
     }
@@ -917,5 +1221,62 @@
 
     #reasonInputTextarea .el-form-item__content {
         width: 60%;
+    }
+    .left {
+        background: none repeat scroll 0 0 #fff;
+        padding:40px;
+        box-sizing: border-box;
+        overflow-y: scroll;
+        display: block;
+        position: absolute;
+        width: 350px;
+        height: 700px;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        border-right: 1px dashed black;
+    }
+    .left > .el-form {
+        height: 100%;
+    }
+    .right{
+        height: 700px;
+        background: none repeat scroll 0 0 #fff;
+        position: absolute;
+        left: 350px;
+        right: 0;
+        top: 0;
+        bottom:0;
+        width: auto;
+        padding:40px;
+        box-sizing: border-box;
+        overflow-y: scroll;
+    }
+    .swiper-container {
+        height:100%;
+    }
+
+    .swiper-pagination-bullet-custom {
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        font-size: 12px;
+        color: #000;
+        opacity: 1;
+        background: rgba(0,0,0,0.2);
+    }
+    .swiper-pagination-bullet-custom.swiper-pagination-bullet-active {
+        color:#fff;
+        background: #007aff;
+    }
+    .swiper-pagination-bullet {
+        width: 71px;
+        height: 8px;
+        display: inline-block;
+        border-radius: 100%;
+        background: #000;
+        opacity: .2;
+
     }
 </style>

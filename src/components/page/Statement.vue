@@ -18,6 +18,9 @@
                             @change="selectedData">
                     </el-date-picker>
                 </el-form-item>
+                <el-form-item label="租客姓名：">
+                    <el-input v-model="searchForm.customerName" placeholder="支持模糊查询"></el-input>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
                 </el-form-item>
@@ -172,7 +175,8 @@
                 sumPayeeAmount: 0,
                 url: '/counter/api/v1/payee/lib/getPayeeLibPage',
                 searchForm: {
-                    applyDate: format(Date.now(), 'YYYY-MM-DD')
+                    applyDate: format(Date.now(), 'YYYY-MM-DD'),
+                    customerName: ''
                 },
                 formLabelWidth: '120px',
             }
