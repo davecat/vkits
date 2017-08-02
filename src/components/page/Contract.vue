@@ -42,8 +42,8 @@
                     <span slot="label">已逾期<el-badge  :value="overdueNumber" class="item"></el-badge></span>
                 </el-tab-pane>
                 <el-tab-pane label="已结束" name="Finished"></el-tab-pane>
-                <el-tab-pane label="提前退租未还款" name="ExitNotRepaid"></el-tab-pane>
-                <el-tab-pane label="提前退租已还款" name="ExitRepaid"></el-tab-pane>
+                <el-tab-pane label="提前退租未退款" name="ExitNotRepaid"></el-tab-pane>
+                <el-tab-pane label="提前退租已退款" name="ExitRepaid"></el-tab-pane>
             </el-tabs>
             <el-table
                     :data="tableData"

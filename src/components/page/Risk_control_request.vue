@@ -478,7 +478,7 @@
                         <el-button type="danger" @click="multipleReject">拒 绝</el-button>
                         <el-button style="float: right" @click="next()" :disabled="!tableData[index+1]">下一条</el-button>
                     </div>
-                    <div style="width: 100%;text-align: center;margin-bottom: 5px">
+                    <div style="width: 100%;text-align: center;margin-bottom: 15px">
                         <el-button @click="hashClick('slide1')" :class="a">身份证正面</el-button>
                         <el-button @click="hashClick('slide2')" :class="b">身份证反面</el-button>
                         <el-button @click="hashClick('slide3')" :class="c">手持身份证</el-button>
@@ -488,22 +488,22 @@
                     <swiper :options="swiperOption">
                         <swiper-slide data-hash="slide1" style="overflow-y: scroll">
                             <div class="swiper-zoom-container">
-                                <img :src="photo(currentRow.idCardFrontPhoto)" alt="" @click="imgClick1()" id="idCardFrontPhoto">
+                                <img :src="showquanPhoto(currentRow.idCardFrontPhoto)" alt="" @click="imgClick1()" id="idCardFrontPhoto">
                             </div>
                         </swiper-slide>
                         <swiper-slide data-hash="slide2" style="overflow-y: scroll">
                             <div class="swiper-zoom-container">
-                                <img :src="photo(currentRow.idCardVersoPhoto)" alt="" @click="imgClick2()" id="idCardVersoPhoto">
+                                <img :src="showquanPhoto(currentRow.idCardVersoPhoto)" alt="" @click="imgClick2()" id="idCardVersoPhoto">
                             </div>
                         </swiper-slide>
                         <swiper-slide data-hash="slide3" style="overflow-y: scroll">
                             <div class="swiper-zoom-container">
-                                <img :src="photo(currentRow.idCardAndPersonPhoto)" alt="" @click="imgClick3()" id="idCardAndPersonPhoto">
+                                <img :src="showquanPhoto(currentRow.idCardAndPersonPhoto)" alt="" @click="imgClick3()" id="idCardAndPersonPhoto">
                             </div>
                         </swiper-slide>
                         <swiper-slide v-for="(item,index) in currentRow.contractPhotos" data-hash="slide4" style="overflow-y: scroll">
-                            <div class="swiper-zoom-container">
-                                <img :src="photo(item)" alt="" @click="imgClick4(index)" class="contractPhotos">
+                            <div class="imgContainer">
+                                <img :src="showquanPhoto(item)" alt="" @click="imgClick4(index)" class="contractPhotos" width="80%" height="100%">
                             </div>
                         </swiper-slide>
                         <div class="swiper-pagination" slot="pagination"></div>
@@ -558,7 +558,7 @@
                     paginationClickable: true,
                     nextButton: '.swiper-button-next',
                     prevButton: '.swiper-button-prev',
-                    spaceBetween: 30,
+                    spaceBetween: 100,
                     hashnav: true,
                     hashnavWatchState: true
                 },
@@ -1031,6 +1031,11 @@
                 this.bigPhotoUrl = this.qiniu + token + '?imageMogr2/auto-orient';
                 this.dialogBigPhoto = true;
             },
+            showquanPhoto(token) {
+                if (token !== undefined && token !== '' && token !== null) {
+                    return this.qiniu + token + '?imageMogr2/auto-orient|imageView2/1';
+                }
+            },
             handleChange(a) {
                 this.getData(a);
             },
@@ -1230,7 +1235,7 @@
         display: block;
         position: absolute;
         width: 350px;
-        height: 700px;
+        height: 720px;
         left: 0;
         top: 0;
         bottom: 0;
@@ -1240,20 +1245,21 @@
         height: 100%;
     }
     .right{
-        height: 700px;
+        height: 720px;
         background: none repeat scroll 0 0 #fff;
         position: absolute;
         left: 350px;
         right: 0;
         top: 0;
         bottom:0;
-        width: auto;
+        width: 71%;
         padding:40px;
         box-sizing: border-box;
         overflow-y: scroll;
     }
     .swiper-container {
-        height:100%;
+        height:85%;
+        width:100%;
     }
 
     .swiper-pagination-bullet-custom {
@@ -1278,5 +1284,12 @@
         background: #000;
         opacity: .2;
 
+    }
+    .el-dialog--large {
+        width: 1200px;
+    }
+    .imgContainer {
+        width:100%;
+        text-align: center;
     }
 </style>
