@@ -30,6 +30,7 @@
             <el-col :span="4" style="float: right">
                 应收合计:{{ sumPayeeAmount | currency}}
             </el-col>
+            <el-button  type="primary" @click="exportCSV()">导出全部</el-button>
         </el-row>
         <el-row>
             <el-table
@@ -222,6 +223,47 @@
             this.getData();
         },
         methods: {
+            //导出全部
+            exportCSV() {
+                var head = [["应收款日期","申请编号","应收金额","分期总金额", "租客姓名", "联系方式", "租期", "起租时间","结束时间", "月租金","所属店","经纪人"]];
+                let param = {
+                    ...this.searchForm,
+                    page: this.cur_page - 1,
+                    size: this.size
+                };
+                this.axios.post('/counter/api/v1/payee/lib/getPayeeLibList',param).then((res) => {
+                        var rowData = res.data;
+                        console.log(rowData);
+                        for (let i = 0; i < rowData.length; i++) {
+                            let payeeType;
+                            switch (rowData[i].payeeType){
+                                case 'WeChat': payeeType =  '微信';break;
+                                case 'Alipay': payeeType = '支付宝';break;
+                                case 'DepositCard': payeeType = '储蓄卡';break;
+                                case 'CreditCard': payeeType = '信用卡';break;
+                                case 'Cash': payeeType = '现金';break;
+                                case 'Other': payeeType = '其他';break
+                            }
+                            head.push([rowData[i].payeeDate, rowData[i].applicationNo, rowData[i].payeeAmount, rowData[i].totalAmount, rowData[i].customerName, rowData[i].mobile,rowData[i].rentPeriod,rowData[i].startDate,rowData[i].endDate,rowData[i].monthlyRent,rowData[i].responsibleBranch, rowData[i].responsibleAgent]);
+                        };
+                        var csvRows = [];
+                        head.forEach(item => csvRows.push(item.join(',')));
+                        var csvString = csvRows.join('\n');
+                        //BOM的方式解决EXCEL乱码问题
+                        var BOM = '\uFEFF';
+                        csvString = BOM + csvString;
+                        var a = document.createElement('a');
+                        a.href = 'data:attachment/csv,' + encodeURI(csvString);
+                        a.target = '_blank';
+                        a.download = '用户还款' +".csv";
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    }
+                ).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                });
+            },
             handleCurrentChange(val){
                 this.cur_page = val;
                 this.getData();

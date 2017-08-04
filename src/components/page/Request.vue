@@ -56,6 +56,97 @@
                 <el-tab-pane label="已取消" name="Canceled"></el-tab-pane>
             </el-tabs>
             <el-table
+                    id="dave1"
+                    ref="multipleTable"
+                    :data="tableData"
+                    highlight-current-row
+                    @current-change="handleCurrentRow"
+                    tooltip-effect="dark"
+                    style="width: 100%;display: none">
+                <el-table-column
+                        fixed
+                        min-width="140"
+                        prop="id"
+                        label="申请编号">
+                </el-table-column>
+                <el-table-column
+                        min-width="100"
+                        prop="customerName"
+                        label="租客姓名">
+                </el-table-column>
+                <el-table-column
+                        min-width="130"
+                        prop="mobile"
+                        label="联系方式">
+                </el-table-column>
+                <el-table-column
+                        min-width="180"
+                        prop="startDate"
+                        label="起止日期">
+                    <template scope="scope">
+                        {{ scope.row.startDate | dateFormat}}-{{ scope.row.endDate | dateFormat}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="180"
+                        prop="apartmentNo"
+                        label="台账号">
+                </el-table-column>
+                <el-table-column
+                        min-width="180"
+                        prop="city"
+                        label="租房城市">
+                    <template scope="scope">
+                        {{ scope.row.province | districtFormat }}-{{ scope.row.city | districtFormat }}-{{
+                        scope.row.district | districtFormat }}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="130"
+                        prop="monthlyRent"
+                        label="月租金">
+                    <template scope="scope">
+                        {{ scope.row.monthlyRent | currency}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="130"
+                        prop="rentPeriod"
+                        label="租期">
+                </el-table-column>
+                <el-table-column
+                        min-width="130"
+                        prop="totalAmount"
+                        label="房租总额">
+                    <template scope="scope">
+                        {{ scope.row.totalAmount | currency }}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="200"
+                        prop="responsibleAgent"
+                        label="经纪人">
+                    <template scope="scope">
+                        {{ scope.row.responsibleBranch }}-{{ scope.row.responsibleAgent }}
+                    </template>
+                </el-table-column>
+                <el-table-column v-if="searchForm.status === 'Unchecked' || searchForm.status === 'Returned'"
+                                 fixed="right"
+                                 min-width="50"
+                                 prop="enabled"
+                                 label="操作">
+                    <template scope="scope">
+                        <el-tooltip class="item" effect="dark" content="补充／修改分期申请" placement="top-end">
+                            <el-button size="small" type="primary"
+                                       @click="handleEdit(scope.row)"><i
+                                    class="fa fa-pencil-square-o"></i>
+                            </el-button>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <el-table
+                    id="dave2"
                     ref="multipleTable"
                     :data="tableData"
                     highlight-current-row
@@ -602,7 +693,6 @@
 <script>
     import json from "../../../static/city.json";
     import format from 'date-fns/format'
-    //    import { pagination } from '../mixins/pagination.js'
     import {qiniu} from '../mixins/qiniu.js'
     export default {
         mixins: [qiniu],
@@ -973,6 +1063,13 @@
             },
             handleChangeTab(a) {
                 this.getData(a);
+                if(a === 'Unchecked') {
+                    document.getElementById('dave1').style.display = 'none';
+                    document.getElementById('dave2').style.display = 'block';
+                } else {
+                    document.getElementById('dave1').style.display = 'block';
+                    document.getElementById('dave2').style.display = 'none';
+                }
             },
             //点击每一行显示下面内容
             handleCurrentRow(val) {
@@ -1159,5 +1256,8 @@
 
     #reasonInputTextarea .el-form-item__content {
         width: 60%;
+    }
+    #reasonInputTextarea .el-form-item__content textarea {
+        color: red;
     }
 </style>
