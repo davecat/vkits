@@ -11,7 +11,7 @@
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="日结日期：">
                     <el-date-picker
-                            v-model="searchForm.applyDate"
+                            v-model="searchForm.eodDate"
                             align="right"
                             type="date"
                             placeholder="选择日期"
@@ -23,6 +23,11 @@
                     <el-button type="primary" @click="Search">查询</el-button>
                 </el-form-item>
             </el-form>
+        </el-row>
+        <el-row style="position: absolute;width: 100%;height: 42px;line-height: 42px;color: red;">
+            <el-col :span="4" style="position: absolute;right: 5%">
+                借款合计: {{ tatleAmountAll | currency}}
+            </el-col>
         </el-row>
         <el-row>
             <el-tabs v-model="searchForm.status" type="card" @tab-click="handleChange">
@@ -334,12 +339,17 @@
 
 <script>
     import format from 'date-fns/format'
-    import { pagination } from '../mixins/pagination.js'
     import { qiniu } from '../mixins/qiniu.js'
     export default {
-        mixins: [pagination, qiniu],
+        mixins: [qiniu],
         data() {
             return {
+                // 借款金额合计
+                tatleAmountAll: 0,
+                tableData: [],
+                cur_page: 1,
+                size: 10,
+                totalElements: 0,
                 reason: [],
                 reasonOption: [
                     {
@@ -368,8 +378,7 @@
                     }],
                 url: '/riskcontrol/loaner/api/v1/application/eod/getApplicationPage',
                 searchForm: {
-                    applyDate: '',
-                    eodDate: '',
+                    eodDate: format(Date.now(), 'YYYY-MM-DD'),
                     status: 'Accepted'
                 },
                 form: {},
@@ -446,12 +455,37 @@
                 }
             },
         },
+        created(){
+            this.getData();
+        },
         methods: {
+            handleCurrentChange(val){
+                this.cur_page = val;
+                this.getData();
+            },
+            getData(){
+                this.axios.post(this.url, {
+                    ...this.searchForm,
+                    page: this.cur_page - 1,
+                    size: this.size
+                }).then((res) => {
+                    this.tableData = res.data.content;
+                    this.totalElements = res.data.totalElements;
+                    //借款金额合计
+                    this.tatleAmountAll = res.data.borrowAmount || 0;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                });
+            },
+            Search() {
+                this.searchForm.eodDate = format(this.searchForm.eodDate, 'YYYY-MM-DD');
+                this.getData();
+            },
             selectedData() {
-                if (this.searchForm.applyDate) {
-                    this.searchForm.eodDate = format(this.searchForm.applyDate, 'YYYY-MM-DD');
+                if (this.searchForm.eodDate) {
+                    this.searchForm.eodDate = format(this.searchForm.eodDate, 'YYYY-MM-DD');
                 } else {
-                    this.searchForm.eodDate = '';
+                    this.searchForm.eodDate = format(Date.now(), 'YYYY-MM-DD');
                 }
             },
             handleCurrentRow(val) {

@@ -3,7 +3,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="fa fa-dashboard"></i> 内部管理</el-breadcrumb-item>
-                <el-breadcrumb-item>中介合同款</el-breadcrumb-item>
+                <el-breadcrumb-item>代客还房租</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
 
@@ -19,32 +19,10 @@
                             :picker-options="pickerOptions">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="中介名称：">
-                    <el-select v-model="searchForm.agencyId">
-                        <el-option label="全部" value=""></el-option>
-                        <el-option v-for="agency in agencyList" :key="agency.id" :label="agency.name"
-                                   :value="agency.id"></el-option>
+                <el-form-item label="收款方：">
+                    <el-select v-model="searchForm.loanerId">
+                        <el-option v-for="loaner in loanerList" :key="loaner.id" :label="loaner.name" :value="loaner.id"></el-option>
                     </el-select>
-                </el-form-item>
-                <el-form-item label="实际付款日期：">
-                    <el-date-picker
-                            v-model="searchForm.applyDate2"
-                            align="right"
-                            type="daterange"
-                            placeholder="选择日期范围"
-                            @change="selectedData2"
-                            :picker-options="pickerOptions">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="状态：">
-                    <el-select v-model="searchForm.status">
-                        <el-option label="全部" value=""></el-option>
-                        <el-option label="待确认" value="Unconfirmed"></el-option>
-                        <el-option label="已确认" value="Accepted"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="租客姓名：">
-                    <el-input v-model="searchForm.customerName" placeholder="支持模糊查询"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">查询</el-button>
@@ -52,9 +30,6 @@
             </el-form>
         </el-row>
         <el-row style="position: absolute;width: 100%;height: 42px;line-height: 42px;color: red;">
-            <el-col :span="4" style="position: absolute;right: 20%">
-                房租合计: {{ totalRent | currency}}
-            </el-col>
             <el-col :span="4" style="position: absolute;right: 5%">
                 代付合计: {{ totalPayment | currency}}
             </el-col>
@@ -66,7 +41,7 @@
             </el-tabs>
             <el-table
                     :data="tableData"
-                    max-height="500"
+                    max-height="250"
                     :default-sort="{prop: 'payerDate', order: 'descending'}"
                     highlight-current-row
                     @current-change="handleCurrentRow"
@@ -82,36 +57,8 @@
                 </el-table-column>
                 <el-table-column
                         min-width="85"
-                        prop="agencyName"
+                        prop="loanerName"
                         label="收款方">
-                </el-table-column>
-                <el-table-column
-                        min-width="100"
-                        prop="payee.bank"
-                        label="收款开户银行">
-                </el-table-column>
-                <el-table-column
-                        min-width="80"
-                        prop="payee.name"
-                        label="开户人">
-                </el-table-column>
-                <el-table-column
-                        min-width="190"
-                        prop="payee.accountNumber"
-                        label="收款银行账号">
-                </el-table-column>
-                <el-table-column
-                        min-width="70"
-                        prop="contractCount"
-                        label="合同数量">
-                </el-table-column>
-                <el-table-column
-                        min-width="110"
-                        prop="totalAmount"
-                        label="房租总金额">
-                    <template scope="scope">
-                        {{ scope.row.totalAmount | currency }}
-                    </template>
                 </el-table-column>
                 <el-table-column
                         min-width="110"
@@ -124,24 +71,121 @@
                 </el-table-column>
                 <el-table-column
                         min-width="80"
+                        prop="plan"
+                        label="进度">
+                </el-table-column>
+                <el-table-column
+                        min-width="80"
                         class-name="statusGood"
                         prop="status"
                         label="状态">
                     <template scope="scope">
-                        <p :class="{statusAlert:scope.row.status === 'Unconfirmed'}" :id="scope.row.status === 'Termination'?'statusAlert1':'statusAlert2'">{{ scope.row.status | statusFilter }}</p>
+                        <p :class="{statusAlert:scope.row.status === '待确认'}" :id="scope.row.status === '未完成'?'statusAlert1':'statusAlert2'">{{ scope.row.status }}</p>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-row>
+
+        <el-row>
+            <el-col :span="4">
+                应付款明细:
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-table
+                    :data="payablesDetail"
+                    style="width: 100%">
+                <el-table-column
+                        min-width="100"
+                        prop="contractNo"
+                        label="合同编号">
+                </el-table-column>
+                <el-table-column
+                        min-width="106"
+                        prop="billNo"
+                        label="账单编号">
+                </el-table-column>
+                <el-table-column
+                        min-width="80"
+                        prop="monthlyRent"
+                        label="月租金">
+                    <template scope="scope">
+                        {{ scope.row.monthlyRent | currency}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="110"
+                        prop="interest"
+                        label="贷款利息">
+                    <template scope="scope">
+                        {{ scope.row.interest | currency}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="110"
+                        prop="payerAmount"
+                        label="代还合计">
+                    <template scope="scope">
+                        <div slot="reference" class="name-wrapper-normal">
+                            <el-tag>{{ scope.row.payerAmount | currency}}</el-tag>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="80"
+                        class-name="statusGood"
+                        prop="libPayerStatus"
+                        label="代还状态">
+                    <template scope="scope">
+                        <p :class="{statusAlert:scope.row.libPayerStatus === 'Unconfirmed'}" :id="scope.row.libPayerStatus === 'Termination'?'statusAlert1':'statusAlert2'">{{ scope.row.libPayerStatus | statusFilter }}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="85"
+                        class-name="statusGood"
+                        prop="customPayerStatus"
+                        label="客户还款状态">
+                    <template scope="scope">
+                        <p :class="{statusAlert:scope.row.customPayerStatus === 'Unconfirmed'}" :id="scope.row.customPayerStatus === 'Termination'?'statusAlert1':'statusAlert2'">{{ scope.row.customPayerStatus | statusFilter }}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="120"
+                        prop="payerType"
+                        label="（代还）支付方式">
+                    <template scope="scope">
+                        {{ scope.row.payerType?'银行转账':''}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        min-width="120"
+                        prop="payer.bank"
+                        label="（代还）付款银行">
+                </el-table-column>
+                <el-table-column
+                        min-width="120"
+                        prop="payer.accountNumber"
+                        label="（代还）付款账号">
+                </el-table-column>
+                <el-table-column
+                        min-width="120"
+                        prop="factPayerDate"
+                        label="实际付款日期">
+                    <template scope="scope">
+                        {{ scope.row.factPayerDate |  dateFormat}}
                     </template>
                 </el-table-column>
                 <el-table-column
                         min-width="81"
                         label="操作">
                     <template scope="scope">
-                        <el-tooltip class="item" effect="dark" content="确认放款" placement="top-end" v-if="scope.row.status === 'Unconfirmed'">
+                        <el-tooltip class="item" effect="dark" content="确认付款" placement="top-end" v-if="scope.row.libPayerStatus === 'Unconfirmed'">
                             <el-button size="small" type="primary"
                                        @click="handleEdit(scope.row)"><i
                                     class="fa fa-pencil-square-o"></i>
                             </el-button>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="取消确认" placement="top-end" v-else>
+                        <el-tooltip class="item" effect="dark" content="修改确认付款" placement="top-end" v-else>
                             <el-button size="small" type="warning"
                                        @click="unConfirmShow(scope.row)"><i
                                     class="fa fa-repeat"></i>
@@ -155,125 +199,26 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <!--<div class="pagination">-->
-            <!--<el-pagination-->
-            <!--@current-change="handleCurrentChange"-->
-            <!--layout="prev, pager, next"-->
-            <!--:total="totalElements">-->
-            <!--</el-pagination>-->
-            <!--</div>-->
-        </el-row>
-
-        <el-row>
-            <el-col :span="4">
-                应付款明细:
-            </el-col>
-            <el-col :span="5">
-                支付方式: {{ currentRow.payerType==='BankTransfer'?'银行转账':'' }}
-            </el-col>
-            <el-col :span="5">
-                付款银行: {{ currentRow.payer.bank }}
-            </el-col>
-            <el-col :span="5">
-                付款账号: {{ currentRow.payer.accountNumber }}
-            </el-col>
-            <el-col :span="5">
-                实际付款日期: {{ currentRow.factPayerDate | dateFormat }}
-            </el-col>
-        </el-row>
-        <el-row>
-            <el-table
-                    :data="payablesDetail"
-                    style="width: 100%">
-                <el-table-column
-                        min-width="70"
-                        prop="contractNo"
-                        label="合同编号">
-                </el-table-column>
-                <el-table-column
-                        min-width="80"
-                        prop="customerName"
-                        label="租客姓名">
-                </el-table-column>
-                <el-table-column
-                        min-width="80"
-                        prop="monthlyRent"
-                        label="月租金">
-                    <template scope="scope">
-                        {{ scope.row.monthlyRent | currency}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="110"
-                        prop="totalAmount"
-                        label="房租总金额">
-                    <template scope="scope">
-                        {{ scope.row.totalAmount | currency}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="110"
-                        prop="payerAmount"
-                        label="代付金额">
-                    <template scope="scope">
-                        {{ scope.row.payerAmount | currency}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="100"
-                        prop="rate"
-                        label="服务费率">
-                    <template scope="scope">
-                        {{ scope.row.rate }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="120"
-                        prop="serviceFee"
-                        label="服务费金额">
-                    <template scope="scope">
-                        {{ scope.row.serviceFee | currency}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="120"
-                        prop="factPayerDate"
-                        label="实际付款日期">
-                    <template scope="scope">
-                        {{ scope.row.factPayerDate |  dateFormat}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        min-width="100"
-                        prop="loanerName"
-                        label="资金来源">
-                </el-table-column>
-                <el-table-column
-                        v-if="advanceRent"
-                        fixed="right"
-                        min-width="50"
-                        label="操作">
-                    <template scope="scope">
-                        <el-tooltip class="item" effect="dark" content="提前退租" placement="top-end">
-                            <el-button size="small" type="warning"
-                                       @click="handleEdit3(scope.row)"><i
-                                    class="fa fa-pencil-square-o"></i>
-                            </el-button>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
-            </el-table>
             <div class="pagination">
                 <el-pagination
-                        @current-change="handleChange"
+                        @current-change="handleCurrentChange"
                         layout="total, prev, pager, next"
                         :total="detailTotalElements">
                 </el-pagination>
             </div>
         </el-row>
 
-        <el-dialog title="确认付款" :visible.sync="dialogVisible">
+        <el-dialog title="确认还款" :visible.sync="dialogVisible">
             <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="开户人：" :label-width="formLabelWidth" prop="name">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="开户行：" :label-width="formLabelWidth" prop="bank">
+                    <el-input v-model="form.bank"></el-input>
+                </el-form-item>
+                <el-form-item label="开户卡号：" :label-width="formLabelWidth" prop="accountNumber">
+                    <el-input v-model="form.accountNumber"></el-input>
+                </el-form-item>
                 <el-form-item label="实际付款日期：" :label-width="formLabelWidth" prop="factPayerDate">
                     <el-date-picker
                             v-model="form.factPayerDate"
@@ -288,11 +233,8 @@
                         <el-option label="银行转账" value="BankTransfer"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="付款银行：" :label-width="formLabelWidth" prop="bank">
-                    <el-input v-model="form.bank"></el-input>
-                </el-form-item>
-                <el-form-item label="付款账号：" :label-width="formLabelWidth" prop="accountNumber">
-                    <el-input v-model="form.accountNumber"></el-input>
+                <el-form-item label="备注：" :label-width="formLabelWidth" prop="remarks">
+                    <el-input type="textarea" v-model="form.remarks"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -301,38 +243,49 @@
             </span>
         </el-dialog>
 
-        <el-dialog
-                title="取消确认付款"
-                :visible.sync="dialogVisible2"
-                size="tiny">
-            <p>此操作将取消确认付款，该付款记录状态变更为 “待确认”，确认操作？</p>
+        <el-dialog title="修改确认还款" :visible.sync="dialogVisible2">
+            <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="开户人：" :label-width="formLabelWidth" prop="name">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="开户行：" :label-width="formLabelWidth" prop="bank">
+                    <el-input v-model="form.bank"></el-input>
+                </el-form-item>
+                <el-form-item label="开户卡号：" :label-width="formLabelWidth" prop="accountNumber">
+                    <el-input v-model="form.accountNumber"></el-input>
+                </el-form-item>
+                <el-form-item label="实际付款日期：" :label-width="formLabelWidth" prop="factPayerDate">
+                    <el-date-picker
+                            v-model="form.factPayerDate"
+                            type="date"
+                            placeholder="选择日期"
+                            :default-value="form.factPayerDate"
+                            :picker-options="pickerOptions0">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="支付方式：" :label-width="formLabelWidth" prop="payerType">
+                    <el-select v-model="form.payerType">
+                        <el-option label="银行转账" value="BankTransfer"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="备注：" :label-width="formLabelWidth" prop="remarks">
+                    <el-input type="textarea" v-model="form.remarks"></el-input>
+                </el-form-item>
+            </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible2=false">取 消</el-button>
                 <el-button type="primary" @click="unConfirm">确 定</el-button>
             </span>
         </el-dialog>
-
-        <el-dialog
-                title="提前退租"
-                :visible.sync="dialogVisible3"
-                size="tiny">
-            <p>此操作将提前退租，确认操作？</p>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible3=false">取 消</el-button>
-                <el-button type="primary" @click="confirm3">确 定</el-button>
-            </span>
-        </el-dialog>
-
     </div>
 </template>
 
 <script>
-//    import {pagination} from '../mixins/pagination.js'
     import format from 'date-fns/format'
     export default {
-//        mixins: [pagination],
         data() {
             return {
+                loanerList: [],
                 contractNo: '',//存放单据id
                 advanceRent: false,
                 pickerOptions: {
@@ -378,18 +331,13 @@
                 cur_page: 1,
                 size: 10,
                 totalElements: 0,
-                url: '/postlending/api/v1/payer/agency/getPayerAgencyPage',
+                url: '/postlending/api/v1/payer/loaner/getPayerLoanerPage',
                 searchForm: {
-                    customerName: '',
+                    loanerId: '',
                     applyDate: '',
-                    applyDate2: '',
                     payeeDateStart: '',
                     payeeDateEnd: '',
-                    factPayerDateStart: '',
-                    factPayerDateEnd: '',
-                    agencyId: '',
                     type: 'receivables',
-                    status: ''
                 },
                 currentRow: {
                     payer: {
@@ -398,7 +346,15 @@
                     }
                 },
                 form: {
-                    factPayerDate: Date.now()
+                    name: '',
+                    payer:{
+                        bank: '',
+                        accountNumber: ''
+                    },
+                    billNo: '',
+                    payerType: '',
+                    factPayerDate: Date.now(),
+                    remarks: ''
                 },
                 agencyList: {},
                 dialogVisible: false,
@@ -427,6 +383,7 @@
         created(){
             this.getData();
             this.getAgencyList();
+            this.getLoanerList();
         },
         filters: {
             dateFormat: function (value) {
@@ -459,6 +416,15 @@
             }
         },
         methods: {
+            //获取资金端
+            getLoanerList() {
+                let self = this;
+                this.axios.get('/riskcontrol/api/v1/loaner/getLoanerList').then((res) => {
+                    self.loanerList = res.data;
+                }).catch((error) => {
+                    this.$message.error(error.response.data.message);
+                })
+            },
             handleEdit3(row) {
                 this.dialogVisible3 = true;
                 this.contractNo = row.contractNo;
@@ -475,7 +441,7 @@
             },
             handleCurrentChange(val){
                 this.cur_page = val;
-                this.getData();
+                this.getDetail();
             },
             getData(){
                 this.axios.post(this.url, {
@@ -484,6 +450,7 @@
                     size: this.size
                 }).then((res) => {
                     this.tableData = res.data.content;
+                    console.log(this.tableData);
                     this.totalElements = res.data.totalElements;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
@@ -509,15 +476,6 @@
                     this.searchForm.payeeDateEnd = '';
                 }
             },
-            selectedData2() {
-                if (this.searchForm.applyDate2[0] !== null) {
-                    this.searchForm.factPayerDateStart = format(this.searchForm.applyDate2[0], 'YYYY-MM-DD');
-                    this.searchForm.factPayerDateEnd = format(this.searchForm.applyDate2[1], 'YYYY-MM-DD');
-                } else {
-                    this.searchForm.factPayerDateStart = '';
-                    this.searchForm.factPayerDateEnd = '';
-                }
-            },
             handleChangeTab() {
                 this.getData();
                 this.currentRow = {
@@ -530,13 +488,15 @@
                 this.detailTotalElements = 0;
             },
             handleEdit(row) {
-                this.form.agencyId = row.agencyId || '';
-                this.form.payerDate = row.payerDate || '';
+                this.form.remarks = row.remarks || '';
+                this.form.payer = row.payer || {};
+                this.form.name = this.form.payer.name || '';
+                this.form.accountNumber = this.form.payer.accountNumber || '';
+                this.form.bank = this.form.payer.bank || '';
+                this.form.billNo = row.billNo || '';
                 this.form.factPayerDate = row.factPayerDate || Date.now();
                 this.form.payerType = row.payerType || 'BankTransfer';
-                this.form.payer = row.payer || {};
-                this.form.accountNumber = this.form.payer.accountNumber || '';
-                this.form.bank = this.form.payer.accountNumber || '';
+
                 this.dialogVisible = true;
             },
             resetForm(formName) {
@@ -549,14 +509,9 @@
                     this.currentRow.factPayerDate = row.factPayerDate || '';
                     this.currentRow.payerType = row.payerType || '';
                     this.currentRow.payer = row.payer || '';
-                    this.currentRow.agencyId = row.agencyId || '';
+                    this.currentRow.loanerId = row.loanerId || '';
                     this.currentRow.payerDate = row.payerDate || '';
                     this.currentRow.status = row.status || '';
-                    if(this.currentRow.status === 'Unconfirmed') {
-                        this.advanceRent = true;
-                    } else {
-                        this.advanceRent = false;
-                    }
                     this.getDetail();
                 } else {
                     this.currentRow = {
@@ -576,15 +531,14 @@
             },
             getDetail() {
                 let param = {
-                    agencyId: this.currentRow.agencyId,
+                    loanerId: this.currentRow.loanerId,
                     payerDate: format(this.currentRow.payerDate, 'YYYY-MM-DD'),
-                    customerName: this.searchForm.customerName,
-                    status: this.currentRow.status,
                     page: this.detailCurPage - 1,
                     size: this.detailSize
                 };
-                this.axios.post('/postlending/api/v1/payer/agency/getPayerAgencyDetailPage', param).then((res) => {
+                this.axios.post('/postlending/api/v1/payer/loaner/getPayerLoanerDetailPage', param).then((res) => {
                     this.payablesDetail = res.data.content;
+                    console.log(this.payablesDetail);
                     this.detailTotalElements = res.data.totalElements;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
@@ -592,14 +546,15 @@
             },
             confirm() {
                 let form = {
+                    name: this.form.name,
                     bank: this.form.bank,
                     accountNumber: this.form.accountNumber,
                     payerType: this.form.payerType,
                     factPayerDate: format(this.form.factPayerDate, 'YYYY-MM-DD'),
-                    agencyId: this.form.agencyId,
-                    payerDate: format(this.form.payerDate, 'YYYY-MM-DD'),
+                    billNo: this.form.billNo,
+                    remarks: this.form.remarks
                 };
-                this.axios.post('/postlending/api/v1/payer/agency/confirm', form).then((res) => {
+                this.axios.post('/postlending/api/v1/payer/loaner/confirm', form).then((res) => {
                     this.getData();
                     this.dialogVisible = false;
                 }).catch((error) => {
@@ -607,15 +562,27 @@
                 })
             },
             unConfirmShow(row) {
-                this.unConfirmRow = row;
+                this.form.remarks = row.remarks || '';
+                this.form.payer = row.payer || {};
+                this.form.name = this.form.payer.name || '';
+                this.form.accountNumber = this.form.payer.accountNumber || '';
+                this.form.bank = this.form.payer.bank || '';
+                this.form.billNo = row.billNo || '';
+                this.form.factPayerDate = row.factPayerDate || Date.now();
+                this.form.payerType = row.payerType || 'BankTransfer';
                 this.dialogVisible2 = true;
             },
             unConfirm() {
                 let form = {
-                    agencyId: this.unConfirmRow.agencyId,
-                    payerDate: format(this.unConfirmRow.payerDate, 'YYYY-MM-DD'),
+                    name: this.form.name,
+                    bank: this.form.bank,
+                    accountNumber: this.form.accountNumber,
+                    payerType: this.form.payerType,
+                    factPayerDate: format(this.form.factPayerDate, 'YYYY-MM-DD'),
+                    billNo: this.form.billNo,
+                    remarks: this.form.remarks
                 };
-                this.axios.post('/postlending/api/v1/payer/agency/backConfirm', form).then((res) => {
+                this.axios.post('/postlending/api/v1/payer/loaner/modify', form).then((res) => {
                     this.getData();
                     this.dialogVisible2 = false;
                 }).catch((error) => {
@@ -662,6 +629,11 @@
 </script>
 
 <style>
+    .el-tag {
+        font-size: 14px;
+        background-color: transparent;
+        color: #1D8CE0
+    }
     .payerAmountFont {
         color: #1D8CE0
     }

@@ -156,6 +156,11 @@
                 </el-table-column>
                 <el-table-column
                         min-width="100"
+                        prop="responsibleAgentPhone"
+                        label="联系电话">
+                </el-table-column>
+                <el-table-column
+                        min-width="100"
                         prop="loanerName"
                         label="资金端名称">
                 </el-table-column>

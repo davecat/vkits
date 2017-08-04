@@ -163,7 +163,7 @@
                                     class="fa fa-pencil-square-o"></i>
                             </el-button>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="取消确认" placement="top-end" v-else>
+                        <el-tooltip class="item" effect="dark" content="修改" placement="top-end" v-else>
                             <el-button size="small" type="warning"
                                        @click="unConfirmShow(scope.row)"><i
                                     class="fa fa-repeat"></i>
@@ -201,12 +201,11 @@
 
         <el-dialog title="确认收款" :visible.sync="dialogVisible">
             <el-form :model="form" ref="form" :rules="rules">
-                <el-form-item label="实际收款日期：" :label-width="formLabelWidth" prop="factPayerDate">
+                <el-form-item label="实际收款日期：" :label-width="formLabelWidth" prop="factPayeeDate">
                     <el-date-picker
                             v-model="form.factPayeeDate"
                             type="date"
-                            placeholder="选择日期"
-                            :default-value="form.factPayeeDate">
+                            placeholder="选择日期">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="支付方式：" :label-width="formLabelWidth" prop="customPayerType">
@@ -229,14 +228,32 @@
             </span>
         </el-dialog>
 
-        <el-dialog
-                title="取消确认收款"
-                :visible.sync="dialogVisible2"
-                size="tiny">
-            <p>此操作将取消确认付款，该付款记录状态变更为 “待确认”，确认操作？</p>
+        <el-dialog title="修改确认收款" :visible.sync="dialogVisible2">
+            <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="实际收款日期：" :label-width="formLabelWidth" prop="factPayeeDate">
+                    <el-date-picker
+                            v-model="form.factPayeeDate"
+                            type="date"
+                            placeholder="选择日期">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="支付方式：" :label-width="formLabelWidth" prop="customPayerType">
+                    <el-select v-model="form.customPayerType">
+                        <el-option label="微信" value="WeChat"></el-option>
+                        <el-option label="支付宝" value="Alipay"></el-option>
+                        <el-option label="储蓄卡" value="DepositCard"></el-option>
+                        <el-option label="信用卡" value="CreditCard"></el-option>
+                        <el-option label="现金" value="Cash"></el-option>
+                        <el-option label="其他" value="Other"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="备注：" :label-width="formLabelWidth" prop="remarks">
+                    <el-input type="textarea" v-model="form.remarks"></el-input>
+                </el-form-item>
+            </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible2=false">取 消</el-button>
-                <el-button type="primary" @click="unConfirm">确 定</el-button>
+                <el-button @click="resetForm1('form')">取 消</el-button>
+                <el-button type="primary" @click="unConfirm('form')">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -311,14 +328,13 @@
                 form: {
                     billNo: '',
                     customPayerType: 'WeChat',
-                    factPayeeDate: '',
+                    factPayeeDate: new Date(),
                     remarks: ''
                 },
                 agencyList: [],
                 customerList: [],
                 dialogVisible: false,
                 dialogVisible2: false,
-                unConfirmRow: {},
                 payablesDetail: [],
                 detailCurPage: 1,
                 detailSize: 10,
@@ -326,7 +342,7 @@
                 detailPage: 0,
                 formLabelWidth: '120px',
                 rules: {
-//                    factPayerDate: [{type: 'date', required: true, message: '请选择日期', trigger: 'blur'}],
+                    factPayeeDate: [{type: 'date', required: true, message: '请选择日期', trigger: 'blur'}],
 //                    remarks: [{required: true, message: '请输入备注', trigger: 'blur'}],
                     customPayerType: [{required: true, message: '请选择类型', trigger: 'change'}]
                 },
@@ -408,14 +424,18 @@
             },
             handleEdit(row) {
                 this.form.billNo = row.billNo;
-                this.form.factPayeeDate = row.factPayeeDate || Date.now();
-                this.form.customPayerType = row.customPayerType || 'WeChat';
+                this.form.factPayeeDate = new Date();
+                this.form.customPayerType = row.payeeType || 'WeChat';
                 this.dialogVisible = true;
             },
             resetForm(formName) {
                 this.$refs[formName].resetFields();
-                this.form = {factPayerDate: Date.now()};
                 this.dialogVisible = false;
+            },
+            resetForm1(formName) {
+                this.$refs[formName].resetFields();
+                this.form.remarks = '';
+                this.dialogVisible2 = false;
             },
             getDetail() {
                 let param = {
@@ -436,27 +456,32 @@
             confirm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if(valid){
-                        this.form.factPayeeDate = format(this.form.factPayeeDate, 'YYYY-MM-DD HH:mm:ss');
-                        this.axios.post('/postlending/api/v1/payee/custom/confirm', this.form).then(() => {
-                            this.getData();
-                            this.dialogVisible = false;
-                        }).catch((error) => {
-                            this.$message.error(error.response.data.message);
-                        })
+                        if(this.form.factPayeeDate){
+                            this.form.factPayeeDate = format(this.form.factPayeeDate, 'YYYY-MM-DD HH:mm:ss');
+                            this.axios.post('/postlending/api/v1/payee/custom/confirm', this.form).then(() => {
+                                this.getData();
+                                this.$refs[formName].resetFields();
+                                this.dialogVisible = false;
+                            }).catch((error) => {
+                                this.$message.error(error.response.data.message);
+                            })
+                        }
                     }
                 });
             },
             unConfirmShow(row) {
-                this.unConfirmRow = row;
+                this.form.billNo = row.billNo;
+                this.form.factPayeeDate = row.factPayeeDate;
+                this.form.customPayerType = row.payeeType;
+                this.form.remarks = row.remarks;
                 this.dialogVisible2 = true;
             },
             //取消确认收款
-            unConfirm() {
-                let form = {
-                    billNo: this.unConfirmRow.billNo,
-                };
-                this.axios.post('/postlending/api/v1/payee/custom/unConfirm', form).then((res) => {
+            unConfirm(formName) {
+                this.form.factPayeeDate = format(this.form.factPayeeDate, 'YYYY-MM-DD HH:mm:ss');
+                this.axios.post('/postlending/api/v1/payee/custom/modify', this.form).then((res) => {
                     this.getData();
+                    this.$refs[formName].resetFields();
                     this.dialogVisible2 = false;
                 }).catch((error) => {
                     this.$message.error(error.response.data.message);
